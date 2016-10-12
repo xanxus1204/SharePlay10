@@ -28,6 +28,7 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     
     
     
+    @IBOutlet weak var startBtn: UIButton!
     
     
     @IBOutlet weak var textField: UITextField!
@@ -42,7 +43,8 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
         session = MCSession(peer: peerID)//↑で作ったIDを利用してセッションを作成
         
         session.delegate = self //MCSessiondelegateを設定
-       
+        
+        
         
     }
 
@@ -52,17 +54,18 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
+        
         if self.textField.text != nil{
-            startClientWithName(name: headName + self.textField.text!)
+                        startServerWithName(name: headName + self.textField.text!)
         }
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
         if self.textField.text != nil{
-            startServerWithName(name: headName + self.textField.text!)
+            startClientWithName(name: headName + self.textField.text!)
+
         }
-        segueFirstToSecond()
-    }
+            }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             segueFirstToSecond()
     }
@@ -73,10 +76,12 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     
     //MARK: tableview delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return  1
+        return  peerNameArray.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "peerCell",for: indexPath)
+        let peerName = peerNameArray[indexPath.row]
+        cell.textLabel!.text = peerName
     
         return cell
 
@@ -89,11 +94,29 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
         
         if state == MCSessionState.connected{
             peerNameArray.append(peerID.displayName)
-        }
+          
         print("接続完了")
-        if self.browser != nil{
+            if self.browser != nil{
             self.browser.stopBrowsingForPeers()//探す側の場合接続完了時に探すのをやめる
+            DispatchQueue.main.async(execute: {() -> Void in
+                self.segueFirstToSecond()})
+
+            }else{
+                DispatchQueue.main.async(execute: {() -> Void in
+                    self.startBtn.isHidden = false
+                    self.peerTable.reloadData()})
+            }
         }else if state == MCSessionState.notConnected{
+            var num = 0
+            for name in peerNameArray {
+                
+                if name == peerID.displayName{
+                    peerNameArray.remove(at: num)
+                    DispatchQueue.main.async(execute: {() -> Void in
+                        self.peerTable.reloadData()})
+                }
+                num = num + 1
+            }
             print("接続解除")
         }
     }
@@ -144,6 +167,17 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     //招待されたとき
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
         print("招待された")
+        let alert:UIAlertController = UIAlertController(title: "接続要求", message:"接続する", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: {action in invitationHandler(true,self.session)})
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {action in invitationHandler(false,self.session)})
+        
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        self.present(alert, animated: true, completion: nil)
+        
+
+             
     }
     //MARK: 自作関数　主にデータ送受信系
     func startServerWithName(name:String?) -> Swift.Void {
@@ -171,6 +205,10 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "1to2" {
             // インスタンスの引き継ぎ
+            let secondViewController:SecondViewController = segue.destination as! SecondViewController
+            secondViewController.session = self.session
+            secondViewController.peerNameArray = self.peerNameArray
+            
             
         }
     }

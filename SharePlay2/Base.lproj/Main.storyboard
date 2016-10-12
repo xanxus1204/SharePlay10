@@ -42,7 +42,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vfC-mT-N6m" id="wiP-RI-O4i">
-                                            <frame key="frameInset" width="375" height="43"/>
+                                            <frame key="frameInset" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -78,6 +78,7 @@
                     </view>
                     <connections>
                         <outlet property="peerTable" destination="jWh-su-X1t" id="eOV-ra-JOh"/>
+                        <outlet property="startBtn" destination="hzk-y9-hct" id="lpO-Rb-bQ4"/>
                         <outlet property="textField" destination="h0J-BO-gEq" id="pnV-UC-boq"/>
                         <segue destination="VyZ-mK-Ub2" kind="presentation" identifier="1to2" id="ehk-vf-HeP"/>
                     </connections>
@@ -105,29 +106,39 @@
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="SvE-vO-IuD">
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="239" id="Rb3-y4-41R"/>
+                                    <constraint firstAttribute="height" constant="239" id="L8l-uz-Awy"/>
                                 </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7y8-l1-fFN">
-                                <state key="normal" title="ストリーミング再生"/>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j6E-dw-lRX">
                                 <state key="normal" title="曲を選択"/>
+                                <connections>
+                                    <action selector="selectBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="t1I-bZ-8Jk"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7y8-l1-fFN">
+                                <state key="normal" title="ストリーミング再生"/>
+                                <connections>
+                                    <action selector="playBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="acm-g2-sS1"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="j6E-dw-lRX" firstAttribute="trailing" secondItem="Thh-6z-3Lt" secondAttribute="trailingMargin" id="4kf-s0-2uu"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="7y8-l1-fFN" secondAttribute="centerX" id="Trb-3P-gsH"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="144-CI-nf5" secondAttribute="bottom" constant="97" id="bHY-6S-h7R"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="Thh-6z-3Lt" secondAttribute="top" constant="318" id="hhQ-OG-ZVw"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="48" id="oQo-1O-9LH"/>
-                            <constraint firstItem="7y8-l1-fFN" firstAttribute="top" secondItem="SvE-vO-IuD" secondAttribute="bottom" constant="46" id="p2S-hu-icl"/>
-                            <constraint firstItem="j6E-dw-lRX" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="38" id="qUY-Gw-0hK"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="shw-g7-oe5"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="144-CI-nf5" secondAttribute="centerX" id="zbM-eR-qZE"/>
+                            <constraint firstItem="7y8-l1-fFN" firstAttribute="top" secondItem="SvE-vO-IuD" secondAttribute="bottom" constant="62" id="2h2-Hv-yGn"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="144-CI-nf5" secondAttribute="centerX" id="2pY-j3-CiL"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="3cG-hv-rvT"/>
+                            <constraint firstItem="j6E-dw-lRX" firstAttribute="trailing" secondItem="Thh-6z-3Lt" secondAttribute="trailingMargin" id="CLa-By-sON"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="48" id="HBb-iV-xRb"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerY" secondItem="Thh-6z-3Lt" secondAttribute="centerY" id="Hy7-lP-9CA"/>
+                            <constraint firstItem="j6E-dw-lRX" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="38" id="TOD-XX-Hkw"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="144-CI-nf5" secondAttribute="bottom" constant="64" id="UdS-k3-awd"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="7y8-l1-fFN" secondAttribute="centerX" id="ZMO-1h-aoc"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="titleArt" destination="SvE-vO-IuD" id="GH0-wb-B20"/>
+                        <outlet property="titlelabel" destination="144-CI-nf5" id="x6P-AK-JdL"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qlm-J5-tSb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
