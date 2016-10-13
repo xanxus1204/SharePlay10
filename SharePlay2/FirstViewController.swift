@@ -22,9 +22,9 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     
     private var  buttonState:Bool = false //開始ボタンの表示・非表示デフォルトで非表示
     
-    private let headName:String = "abcdefg"
+    private var roomName:String = "abcdefg"
     
-    
+    private var roomNum:Decimal = 0
     
     
     
@@ -57,17 +57,26 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
-        
-        if self.textField.text != nil{
-                        startServerWithName(name: headName + self.textField.text!)
+        if roomNum == 0 {
+            roomNum = createRandomNum() //部屋作成時の４けたの鍵
         }
+        let roomNumStr = String(describing: roomNum)
+        roomName = roomName + roomNumStr
+        let alert = UIAlertController(title: roomNumStr, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in})
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+        
+        
+                startServerWithName(name: roomName)
+        
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-        if self.textField.text != nil{
-            startClientWithName(name: headName + self.textField.text!)
+        
+            startClientWithName(name: roomName + self.textField.text!)
 
-        }
+        
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             segueFirstToSecond()
@@ -185,18 +194,36 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     //MARK: 自作関数　主にデータ送受信系
     func startServerWithName(name:String?) -> Swift.Void {
         if name != nil{
-            nearbyAd = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: name!)//サービス用のアドバタイズオブジェクト生成
-            nearbyAd.delegate = self//delegate設定
-            nearbyAd.startAdvertisingPeer() //サービス公開
+            if nearbyAd == nil{
+                nearbyAd = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: name!)//サービス用のアドバタイズオブジェクト生成
+                nearbyAd.delegate = self//delegate設定
+                nearbyAd.startAdvertisingPeer() //サービス公開
+            }
+           
         }
     }
     func startClientWithName(name:String?) -> Swift.Void {
         if name != nil{
-            browser = MCNearbyServiceBrowser(peer: peerID, serviceType: name!) //探索用オブジェクトの生成
-            browser.delegate = self //delegateの設定
-            browser.startBrowsingForPeers()//探索の開始
+            if browser == nil{
+                browser = MCNearbyServiceBrowser(peer: peerID, serviceType: name!) //探索用オブジェクトの生成
+                browser.delegate = self //delegateの設定
+                browser.startBrowsingForPeers()//探索の開始
+            }
+           
             
         }
+    }
+    func createRandomNum() -> Decimal {
+        var random = 0
+        var returnNum:Decimal = 0
+        for num in 0..<4 {
+            random = Int(arc4random()) % 10
+            let deciran = Decimal(random)
+            
+            returnNum = returnNum + deciran * pow(10, num)
+            
+        }
+        return returnNum
     }
     
     //MARK : segue
