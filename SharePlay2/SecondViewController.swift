@@ -29,8 +29,9 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
   
     private var playerUrl:NSURL?
     
+    private var streamingPlayer:StreamingPlayer!
     
-    
+   
     @IBOutlet weak var titlelabel: UILabel!
 
     @IBOutlet weak var titleArt: UIImageView!
@@ -40,6 +41,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         session.delegate = self
         recvData = Data()
         let audiosession = AVAudioSession.sharedInstance()
+        streamingPlayer = StreamingPlayer()
+        streamingPlayer.start()
         do {
             try audiosession.setCategory(AVAudioSessionCategoryPlayback)
         } catch  {
@@ -73,15 +76,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         print(playerUrl!)
        
         if playerUrl != nil{
-            do{
-                 let data:NSData = try NSData(contentsOf: self.playerUrl! as URL)
-                print("おくるで")
-                sendData(data: data)
-            }catch{
-                print("error")
-            }
-           
-            
+
+                    if let data = NSData(contentsOf: self.playerUrl! as URL) {
+                        sendData(data: data)
+                    }
             
             
         }
@@ -112,26 +110,24 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     // ピアからデータを受信したとき.
     
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        if (NSString(data: data, encoding: String.Encoding.utf8.rawValue) == "end"){
-            print("受信完了")
-             let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
-            let path = docDir + "/test.m4a"
-            print(path)
-            let manager = FileManager.default
-            
-            manager.createFile(atPath: path, contents: recvData, attributes: nil)
-            recvData = Data()
-           let player = AudioQueuePlayer()
-            player.initializeAudioQueue(NSURL(fileURLWithPath: path) as URL!)
-            player.prepareBuffer()
-            player.play()
-        }else{
-            
-                recvData.append(data)
-
-            
-            
-        }
+        streamingPlayer.recvAudio(data)
+//        if (NSString(data: data, encoding: String.Encoding.utf8.rawValue) == "end"){
+//            print("受信完了")
+////             let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
+////            let path = docDir + "/test.m4a"
+////            print(path)
+////            let manager = FileManager.default
+////            
+////            manager.createFile(atPath: path, contents: recvData, attributes: nil)
+////            recvData = Data()
+//         
+//        }else{
+//            
+//               // recvData.append(data)
+//
+//            
+//            
+//        }
     }
     
     
@@ -215,6 +211,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
               return url as NSURL
     }
     
+  
+
 }
 
 

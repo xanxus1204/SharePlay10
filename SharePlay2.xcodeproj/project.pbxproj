@@ -8,17 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		430D43041DA349F80090465A /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430D42FD1DA349F80090465A /* AudioExporter.swift */; };
+		4354A6991DAE04F700D003D0 /* AudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6941DAE04F700D003D0 /* AudioConverter.m */; };
+		4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */; };
+		4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6981DAE04F700D003D0 /* StreamingPlayer.m */; };
 		43D4E24D1D9CBADB005631E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E24C1D9CBADB005631E5 /* AppDelegate.swift */; };
 		43D4E24F1D9CBADB005631E5 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */; };
 		43D4E2521D9CBADB005631E5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2501D9CBADB005631E5 /* Main.storyboard */; };
 		43D4E2541D9CBADB005631E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2531D9CBADB005631E5 /* Assets.xcassets */; };
 		43D4E2571D9CBADB005631E5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2551D9CBADB005631E5 /* LaunchScreen.storyboard */; };
 		43D4E25F1D9CF387005631E5 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E25E1D9CF387005631E5 /* SecondViewController.swift */; };
-		BB6DE8D91DABB95600384CEF /* AudioQueuePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB6DE8D81DABB95600384CEF /* AudioQueuePlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		430D42FD1DA349F80090465A /* AudioExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
+		4354A6931DAE04F700D003D0 /* AudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioConverter.h; sourceTree = "<group>"; };
+		4354A6941DAE04F700D003D0 /* AudioConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioConverter.m; sourceTree = "<group>"; };
+		4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtAudioConverter.h; sourceTree = "<group>"; };
+		4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtAudioConverter.m; sourceTree = "<group>"; };
+		4354A6971DAE04F700D003D0 /* StreamingPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingPlayer.h; sourceTree = "<group>"; };
+		4354A6981DAE04F700D003D0 /* StreamingPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamingPlayer.m; sourceTree = "<group>"; };
 		43D4E2491D9CBADB005631E5 /* SharePlay2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SharePlay2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43D4E24C1D9CBADB005631E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -28,8 +36,6 @@
 		43D4E2581D9CBADB005631E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		43D4E25E1D9CF387005631E5 /* SecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		BB6DE8D61DABB95600384CEF /* SharePlay2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SharePlay2-Bridging-Header.h"; sourceTree = "<group>"; };
-		BB6DE8D71DABB95600384CEF /* AudioQueuePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioQueuePlayer.h; sourceTree = "<group>"; };
-		BB6DE8D81DABB95600384CEF /* AudioQueuePlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioQueuePlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,8 +72,12 @@
 				43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */,
 				43D4E25E1D9CF387005631E5 /* SecondViewController.swift */,
 				430D42FD1DA349F80090465A /* AudioExporter.swift */,
-				BB6DE8D71DABB95600384CEF /* AudioQueuePlayer.h */,
-				BB6DE8D81DABB95600384CEF /* AudioQueuePlayer.m */,
+				4354A6931DAE04F700D003D0 /* AudioConverter.h */,
+				4354A6941DAE04F700D003D0 /* AudioConverter.m */,
+				4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */,
+				4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */,
+				4354A6971DAE04F700D003D0 /* StreamingPlayer.h */,
+				4354A6981DAE04F700D003D0 /* StreamingPlayer.m */,
 				43D4E2501D9CBADB005631E5 /* Main.storyboard */,
 				43D4E2531D9CBADB005631E5 /* Assets.xcassets */,
 				43D4E2551D9CBADB005631E5 /* LaunchScreen.storyboard */,
@@ -157,10 +167,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				43D4E25F1D9CF387005631E5 /* SecondViewController.swift in Sources */,
+				4354A6991DAE04F700D003D0 /* AudioConverter.m in Sources */,
 				430D43041DA349F80090465A /* AudioExporter.swift in Sources */,
-				BB6DE8D91DABB95600384CEF /* AudioQueuePlayer.m in Sources */,
 				43D4E24F1D9CBADB005631E5 /* FirstViewController.swift in Sources */,
+				4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */,
 				43D4E24D1D9CBADB005631E5 /* AppDelegate.swift in Sources */,
+				4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

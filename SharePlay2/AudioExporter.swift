@@ -24,32 +24,39 @@ class AudioExporter: NSObject {
         
         let filePath:String = docDir + "/" + itemTitleString + ".m4a"
         
+        let savePathforCAF:String = docDir + "/" + itemTitleString + ".caf"
         exportSession.outputURL = NSURL(fileURLWithPath: filePath) as URL
         let fileManager:FileManager = FileManager()
-      
+        let saveUrlforCAF:NSURL = NSURL(fileURLWithPath: savePathforCAF)
         //ファイルの消去作業　べつの場所でやろう
-//        fileManager.removeItemAtPath(filePath)
-//        fileManager.removeItemAtPath(savePath)
+        //        fileManager.removeItemAtPath(filePath)
+        //        fileManager.removeItemAtPath(savePath)
         do{
             try fileManager.createDirectory(atPath: docDir, withIntermediateDirectories: true, attributes: nil)
             
         }catch{
             print("Cannnot make a direc†ory")
         }
+        let savePathforAAC:String = docDir + "/" + itemTitleString + ".aac"
+        let saveUrlforAAC = NSURL(fileURLWithPath: savePathforAAC)
         
         //ここまで準備
         exportSession.exportAsynchronously(completionHandler: { () -> Void in
             print("Export Complete")
             
+            let converter:AudioConverter = AudioConverter()
             
-         
-            print("変換完了")
+            let extConverter:ExtAudioConverter = ExtAudioConverter()
             
-
+            
+            converter.convert(from: exportSession.outputURL, to: saveUrlforCAF as URL!)
+            
+            extConverter.convert(from: saveUrlforCAF as URL!, to: saveUrlforAAC as URL!)
+            
             
             
         })
-        return exportSession.outputURL! as URL! as NSURL
+        return saveUrlforAAC
         
         
         
