@@ -31,7 +31,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var streamingPlayer:StreamingPlayer!
     
-   
+    
     @IBOutlet weak var titlelabel: UILabel!
 
     @IBOutlet weak var titleArt: UIImageView!
@@ -40,25 +40,26 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         // Do any additional setup after loading the view, typically from a nib.
         session.delegate = self
         recvData = Data()
-        let audiosession = AVAudioSession.sharedInstance()
         streamingPlayer = StreamingPlayer()
         streamingPlayer.start()
-        do {
-            try audiosession.setCategory(AVAudioSessionCategoryPlayback)
-        } catch  {
-            // エラー処理
-            fatalError("カテゴリ設定失敗")
-        }
-        
-        // sessionのアクティブ化
-        do {
-            try audiosession.setActive(true)
-        } catch {
-            // audio session有効化失敗時の処理
-            // (ここではエラーとして停止している）
-            fatalError("session有効化失敗")
-        }
-       
+        let nc:NotificationCenter = NotificationCenter.default
+        nc.addObserver(self, selector:#selector(SecondViewController.finishedConvert(notification:)), name: NSNotification.Name(rawValue: "finishConvert"), object: nil)
+//                do {
+//            try audiosession.setCategory(AVAudioSessionCategoryPlayback)
+//        } catch  {
+//            // エラー処理
+//            fatalError("カテゴリ設定失敗")
+//        }
+//        
+//        // sessionのアクティブ化
+//        do {
+//            try audiosession.setActive(true)
+//        } catch {
+//            // audio session有効化失敗時の処理
+//            // (ここではエラーとして停止している）
+//            fatalError("session有効化失敗")
+//        }
+//       
     }
     
     override func didReceiveMemoryWarning() {
@@ -67,6 +68,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
     
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
+       
+
         let picker = MPMediaPickerController()
         picker.delegate = self
         picker.allowsPickingMultipleItems = false
@@ -74,7 +77,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
     @IBAction func playBtnTapped(_ sender: AnyObject) {
         print(playerUrl!)
-       
+        
         if playerUrl != nil{
 
                     if let data = NSData(contentsOf: self.playerUrl! as URL) {
@@ -111,26 +114,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         streamingPlayer.recvAudio(data)
-//        if (NSString(data: data, encoding: String.Encoding.utf8.rawValue) == "end"){
-//            print("受信完了")
-////             let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
-////            let path = docDir + "/test.m4a"
-////            print(path)
-////            let manager = FileManager.default
-////            
-////            manager.createFile(atPath: path, contents: recvData, attributes: nil)
-////            recvData = Data()
-//         
-//        }else{
-//            
-//               // recvData.append(data)
-//
-//            
-//            
-//        }
     }
-    
-    
     // ピアからストリームを受信したとき.
     
     public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
@@ -198,20 +182,31 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         self.titlelabel.text =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String
         let artwork:MPMediaItemArtwork  = (self.toPlayItem.value(forProperty: MPMediaItemPropertyArtwork) as? MPMediaItemArtwork)!
         self.titleArt.image = artwork.image(at: artwork.bounds.size)
-        self.playerUrl = prepareAudioStreaming(item: self.toPlayItem)
-        mediaPicker .dismiss(animated: true, completion: nil)
+                mediaPicker .dismiss(animated: true, completion: nil)
+         DispatchQueue.main.async(execute: {() -> Void in
+            SVProgressHUD.show(withStatus: "準備中")})
+            self.playerUrl = self.prepareAudioStreaming(item: self.toPlayItem)
+      
+
+        
         
     }
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
         mediaPicker.dismiss(animated: true, completion: nil)
     }
     func prepareAudioStreaming(item :MPMediaItem) -> NSURL {
-       let exporter:AudioExporter = AudioExporter()
-    let url = exporter.convertItemtoAAC(item: item)
+        
+        let exporter:AudioExporter = AudioExporter()
+        let url = exporter.convertItemtoAAC(item: item)
+      
               return url as NSURL
     }
     
-  
+  //MARK : notification
+    func finishedConvert(notification:Notification?){
+        DispatchQueue.main.async(execute: {() -> Void in SVProgressHUD.dismiss()})
+
+    }
 
 }
 

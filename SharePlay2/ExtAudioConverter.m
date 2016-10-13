@@ -111,5 +111,8 @@ static void checkError(OSStatus err,const char *message){
     ExtAudioFileDispose(infile);
     ExtAudioFileDispose(outfile);
     free(buffer);
+    
+    NSNotification *finishn = [NSNotification notificationWithName:@"finishConvert" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:finishn];
 }
 @end

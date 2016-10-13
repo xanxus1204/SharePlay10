@@ -28,6 +28,7 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     
     
     
+    
     @IBOutlet weak var startBtn: UIButton!
     
     
@@ -37,6 +38,8 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     override func viewDidLoad() {
         super.viewDidLoad()
         //textfieldの終了イベント用delegate
+        
+
         textField.delegate = self
         
         peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
