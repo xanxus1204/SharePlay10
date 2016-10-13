@@ -4,7 +4,7 @@
 //
 //  Created by 椛島優 on 2016/09/29.
 //  Copyright © 2016年 椛島優. All rights reserved.
-//
+//コメント
 
 import UIKit
 import MultipeerConnectivity
