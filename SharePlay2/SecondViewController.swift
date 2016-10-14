@@ -44,6 +44,24 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         streamingPlayer.start()
         let nc:NotificationCenter = NotificationCenter.default
         nc.addObserver(self, selector:#selector(SecondViewController.finishedConvert(notification:)), name: NSNotification.Name(rawValue: "finishConvert"), object: nil)
+        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear)
+        let audiosession = AVAudioSession.sharedInstance()
+        do {
+            try audiosession.setCategory(AVAudioSessionCategoryPlayback)//バックグラウンド再生を許可
+        } catch  {
+            // エラー処理
+            fatalError("カテゴリ設定失敗")
+        }
+        
+        // sessionのアクティブ化
+        do {
+            try audiosession.setActive(true)
+        } catch {
+            // audio session有効化失敗時の処理
+            // (ここではエラーとして停止している）
+            fatalError("session有効化失敗")
+        }
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -168,7 +186,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         self.titleArt.image = artwork.image(at: artwork.bounds.size)
                 mediaPicker .dismiss(animated: true, completion: nil)
          DispatchQueue.main.async(execute: {() -> Void in
-            SVProgressHUD.show(withStatus: "準備中")})
+                       SVProgressHUD.show(withStatus: "準備中")})
             self.playerUrl = self.prepareAudioStreaming(item: self.toPlayItem)
       
 

@@ -9,7 +9,7 @@
 import UIKit
 import MultipeerConnectivity
 
-class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,MCSessionDelegate,MCNearbyServiceBrowserDelegate,MCNearbyServiceAdvertiserDelegate{
+class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDelegate,MCSessionDelegate,MCNearbyServiceBrowserDelegate,MCNearbyServiceAdvertiserDelegate{
     
     private var peerID: MCPeerID! //セッション作成時に使うID
     
@@ -22,9 +22,11 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     
     private var  buttonState:Bool = false //開始ボタンの表示・非表示デフォルトで非表示
     
-    private var roomName:String = "abcdefg"
+    private let roomName:String = "abcdefg"
     
-    private var roomNum:Decimal = 0
+    private var roomNum:Int = 0
+    
+    
     
     
     
@@ -32,7 +34,7 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
     @IBOutlet weak var startBtn: UIButton!
     
     
-    @IBOutlet weak var textField: UITextField!
+    
 
     @IBOutlet weak var peerTable: UITableView!
     override func viewDidLoad() {
@@ -40,7 +42,7 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
         //textfieldの終了イベント用delegate
         
 
-        textField.delegate = self
+        
         
         peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
         session = MCSession(peer: peerID)//↑で作ったIDを利用してセッションを作成
@@ -60,31 +62,38 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
         if roomNum == 0 {
             roomNum = createRandomNum() //部屋作成時の４けたの鍵
         }
-        let roomNumStr = String(describing: roomNum)
-        roomName = roomName + roomNumStr
-        let alert = UIAlertController(title: roomNumStr, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
+        let roomNumName = String(describing: roomNum)
+        
+        let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in})
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
         
         
-                startServerWithName(name: roomName)
+                startServerWithName(name: roomName + roomNumName)
         
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
         
-            startClientWithName(name: roomName + self.textField.text!)
+        let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+            let textFields:Array<UITextField>? = alert.textFields as Array<UITextField>?
+            if textFields != nil{
+                let roomNumName = textFields?[0].text
+                self.startClientWithName(name: self.roomName + roomNumName!)
+            }
+        })
+        alert.addAction(okAction)
+        alert.addTextField(configurationHandler: {(text:UITextField!) -> Void in    text.keyboardType = UIKeyboardType.decimalPad})
+        present(alert, animated: true, completion: nil)
 
         
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             segueFirstToSecond()
     }
-       override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //画面がタッチされたときの呼ばれるメソッド　ボタンなどは対象外
-        textField.endEditing(true)
-    }
+      
     
     //MARK: tableview delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -213,15 +222,17 @@ class FirstViewController: UIViewController,UITextFieldDelegate,UITableViewDataS
             
         }
     }
-    func createRandomNum() -> Decimal {
+    func createRandomNum() -> Int {
         var random = 0
-        var returnNum:Decimal = 0
-        for num in 0..<4 {
-            random = Int(arc4random()) % 10
-            let deciran = Decimal(random)
-            
-            returnNum = returnNum + deciran * pow(10, num)
-            
+        var returnNum = 0
+        var cardinal = 1
+        for _ in 0..<4 {
+            random = Int(arc4random_uniform(10))
+            if random == 0 {
+                random = random + 1
+            }
+            returnNum = returnNum + random * cardinal
+            cardinal = cardinal * 10
         }
         return returnNum
     }

@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,21 +17,14 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="部屋番号" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="h0J-BO-gEq">
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hbB-U4-HVa">
-                                <state key="normal" title="部屋を作る"/>
-                                <connections>
-                                    <action selector="createBtnTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LA7-dC-Lmk"/>
-                                </connections>
-                            </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hzk-y9-hct">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="52" id="GXq-7U-UJ0"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="開始"/>
                                 <connections>
                                     <action selector="startBtnTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Xg2-EZ-dlu"/>
@@ -39,10 +34,10 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="peerCell" id="vfC-mT-N6m">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vfC-mT-N6m" id="wiP-RI-O4i">
-                                            <frame key="frameInset" width="375" height="44"/>
+                                            <frame key="frameInset" width="414" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -53,39 +48,53 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4lz-GH-gxd">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="LmE-Pn-6Us"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="部屋を探す"/>
                                 <connections>
                                     <action selector="searchBtnTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="UbH-y8-I5j"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hbB-U4-HVa">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="eEM-b2-rpd"/>
+                                    <constraint firstAttribute="height" constant="100" id="mWa-Bv-zs6"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                <state key="normal" title="部屋を作る"/>
+                                <connections>
+                                    <action selector="createBtnTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LA7-dC-Lmk"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="h0J-BO-gEq" firstAttribute="trailing" secondItem="4lz-GH-gxd" secondAttribute="trailing" id="1Y2-mp-0g3"/>
-                            <constraint firstItem="h0J-BO-gEq" firstAttribute="centerX" secondItem="hzk-y9-hct" secondAttribute="centerX" id="6uF-c2-COk"/>
-                            <constraint firstItem="h0J-BO-gEq" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="JcG-DR-NLd"/>
-                            <constraint firstItem="hzk-y9-hct" firstAttribute="centerX" secondItem="jWh-su-X1t" secondAttribute="centerX" id="LnW-Oy-l19"/>
-                            <constraint firstItem="hbB-U4-HVa" firstAttribute="top" secondItem="h0J-BO-gEq" secondAttribute="bottom" constant="64" id="MTo-ZZ-qDJ"/>
-                            <constraint firstItem="hzk-y9-hct" firstAttribute="baseline" secondItem="4lz-GH-gxd" secondAttribute="baseline" id="Qcr-vh-O5J"/>
-                            <constraint firstItem="h0J-BO-gEq" firstAttribute="leading" secondItem="hbB-U4-HVa" secondAttribute="leading" id="Svy-1N-VO1"/>
-                            <constraint firstItem="h0J-BO-gEq" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="19" id="XKy-AH-GzU"/>
-                            <constraint firstItem="hbB-U4-HVa" firstAttribute="baseline" secondItem="hzk-y9-hct" secondAttribute="baseline" id="Y8g-hM-t3V"/>
-                            <constraint firstItem="jWh-su-X1t" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="ZUh-UN-xUz"/>
-                            <constraint firstItem="jWh-su-X1t" firstAttribute="top" secondItem="hbB-U4-HVa" secondAttribute="bottom" constant="73" id="iWD-hg-hGn"/>
-                            <constraint firstItem="jWh-su-X1t" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="qgb-iK-0lt"/>
-                            <constraint firstAttribute="trailing" secondItem="jWh-su-X1t" secondAttribute="trailing" id="v7m-Hf-hoZ"/>
+                            <constraint firstItem="hbB-U4-HVa" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="9HF-nI-diN"/>
+                            <constraint firstItem="jWh-su-X1t" firstAttribute="top" secondItem="hbB-U4-HVa" secondAttribute="bottom" constant="3" id="9iL-dk-TA4"/>
+                            <constraint firstItem="jWh-su-X1t" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="Fhu-cA-PPp"/>
+                            <constraint firstItem="hzk-y9-hct" firstAttribute="centerX" secondItem="jWh-su-X1t" secondAttribute="centerX" id="W9P-JZ-fvI"/>
+                            <constraint firstItem="jWh-su-X1t" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Zwa-OW-sUl"/>
+                            <constraint firstItem="4lz-GH-gxd" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="ghS-Un-Z6e"/>
+                            <constraint firstItem="hbB-U4-HVa" firstAttribute="top" secondItem="4lz-GH-gxd" secondAttribute="top" id="jBn-Wu-HGs"/>
+                            <constraint firstItem="hbB-U4-HVa" firstAttribute="baseline" secondItem="4lz-GH-gxd" secondAttribute="firstBaseline" id="mxh-Tl-FPV"/>
+                            <constraint firstItem="hzk-y9-hct" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="47" id="nCG-uA-fMz"/>
+                            <constraint firstItem="hbB-U4-HVa" firstAttribute="top" secondItem="hzk-y9-hct" secondAttribute="bottom" constant="14" id="oV6-3b-SKJ"/>
+                            <constraint firstItem="hzk-y9-hct" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="65" id="ozg-iG-vfG"/>
+                            <constraint firstItem="4lz-GH-gxd" firstAttribute="baseline" secondItem="hbB-U4-HVa" secondAttribute="firstBaseline" id="pND-fq-JgO"/>
+                            <constraint firstAttribute="trailing" secondItem="jWh-su-X1t" secondAttribute="trailing" id="xe9-9Y-mZ7"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="peerTable" destination="jWh-su-X1t" id="eOV-ra-JOh"/>
                         <outlet property="startBtn" destination="hzk-y9-hct" id="lpO-Rb-bQ4"/>
-                        <outlet property="textField" destination="h0J-BO-gEq" id="pnV-UC-boq"/>
                         <segue destination="VyZ-mK-Ub2" kind="presentation" identifier="1to2" id="ehk-vf-HeP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="64.799999999999997" y="141.67916041979012"/>
+            <point key="canvasLocation" x="63.75" y="141.5492957746479"/>
         </scene>
         <!--Second View Controller-->
         <scene sceneID="pjO-V5-Or4">
@@ -96,7 +105,7 @@
                         <viewControllerLayoutGuide type="bottom" id="8j5-LL-SC4"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Thh-6z-3Lt">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ここに曲のタイトルを表示" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="144-CI-nf5">
