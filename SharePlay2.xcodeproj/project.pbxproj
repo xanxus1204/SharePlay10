@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		430D43041DA349F80090465A /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430D42FD1DA349F80090465A /* AudioExporter.swift */; };
+		432348431DB0A775006B13FE /* no_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 432348421DB0A775006B13FE /* no_image.png */; };
 		4354A6991DAE04F700D003D0 /* AudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6941DAE04F700D003D0 /* AudioConverter.m */; };
 		4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */; };
 		4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6981DAE04F700D003D0 /* StreamingPlayer.m */; };
@@ -26,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		430D42FD1DA349F80090465A /* AudioExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
+		432348421DB0A775006B13FE /* no_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = no_image.png; sourceTree = "<group>"; };
 		4354A6931DAE04F700D003D0 /* AudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioConverter.h; sourceTree = "<group>"; };
 		4354A6941DAE04F700D003D0 /* AudioConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioConverter.m; sourceTree = "<group>"; };
 		4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtAudioConverter.h; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 				4354A6941DAE04F700D003D0 /* AudioConverter.m */,
 				4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */,
 				4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */,
+				432348421DB0A775006B13FE /* no_image.png */,
 				4354A6971DAE04F700D003D0 /* StreamingPlayer.h */,
 				4354A6981DAE04F700D003D0 /* StreamingPlayer.m */,
 				43D4E2501D9CBADB005631E5 /* Main.storyboard */,
@@ -190,6 +193,7 @@
 				43D4E2541D9CBADB005631E5 /* Assets.xcassets in Resources */,
 				43D4E2521D9CBADB005631E5 /* Main.storyboard in Resources */,
 				438E5E151DAF570F00E9EE65 /* SVProgressHUD.bundle in Resources */,
+				432348431DB0A775006B13FE /* no_image.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,7 +338,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 69LS254W7V;
 				INFOPLIST_FILE = SharePlay2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kurumecs.SharePlay2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -352,7 +356,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 69LS254W7V;
 				INFOPLIST_FILE = SharePlay2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kurumecs.SharePlay2;
 				PRODUCT_NAME = "$(TARGET_NAME)";

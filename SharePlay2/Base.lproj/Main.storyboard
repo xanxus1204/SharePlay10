@@ -113,11 +113,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="SvE-vO-IuD">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="239" id="L8l-uz-Awy"/>
-                                </constraints>
-                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j6E-dw-lRX">
                                 <state key="normal" title="曲を選択"/>
                                 <connections>
@@ -130,6 +125,17 @@
                                     <action selector="playBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="acm-g2-sS1"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jP0-aC-mB1">
+                                <state key="normal" title="戻る"/>
+                                <connections>
+                                    <segue destination="x64-in-pbC" kind="unwind" unwindAction="backtoFirstWithSegue:" id="D9V-sK-Naf"/>
+                                </connections>
+                            </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no_image.png" translatesAutoresizingMaskIntoConstraints="NO" id="SvE-vO-IuD">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="239" id="L8l-uz-Awy"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -141,7 +147,9 @@
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="centerY" secondItem="Thh-6z-3Lt" secondAttribute="centerY" id="Hy7-lP-9CA"/>
                             <constraint firstItem="j6E-dw-lRX" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="38" id="TOD-XX-Hkw"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="144-CI-nf5" secondAttribute="bottom" constant="64" id="UdS-k3-awd"/>
+                            <constraint firstItem="jP0-aC-mB1" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="8" id="WPW-VD-sKI"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="7y8-l1-fFN" secondAttribute="centerX" id="ZMO-1h-aoc"/>
+                            <constraint firstItem="jP0-aC-mB1" firstAttribute="baseline" secondItem="j6E-dw-lRX" secondAttribute="baseline" id="cef-8L-qWc"/>
                         </constraints>
                     </view>
                     <connections>
@@ -150,8 +158,12 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qlm-J5-tSb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="x64-in-pbC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="783" y="142"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="no_image.png" width="600" height="600"/>
+    </resources>
 </document>

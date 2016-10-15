@@ -93,6 +93,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             segueFirstToSecond()
     }
+   
       
     
     //MARK: tableview delegate
@@ -139,6 +140,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 num = num + 1
             }
             print("接続解除")
+            reConnect()
         }
     }
     
@@ -189,12 +191,14 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
         print("招待された")
         let alert:UIAlertController = UIAlertController(title: "接続要求", message:"接続する", preferredStyle: .alert)
+
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {action in invitationHandler(false,self.session)})
         let okAction = UIAlertAction(title: "OK", style: .default, handler: {action in invitationHandler(true,self.session)})
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {action in invitationHandler(false,self.session)})
-        
-        alert.addAction(okAction)
         alert.addAction(cancelAction)
+        alert.addAction(okAction)
+
         self.present(alert, animated: true, completion: nil)
         
 
@@ -236,6 +240,18 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }
         return returnNum
     }
+    func reConnect(){
+        if nearbyAd != nil{
+            nearbyAd.stopAdvertisingPeer()
+            nearbyAd = nil
+        }
+        if browser != nil {
+            browser.stopBrowsingForPeers()
+            browser = nil
+        }
+        roomNum = 0
+        
+    }
     
     //MARK : segue
     
@@ -253,7 +269,9 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             
         }
     }
-
+    @IBAction func backtoFirst(segue:UIStoryboardSegue){
+        
+    }
 }
 
 
