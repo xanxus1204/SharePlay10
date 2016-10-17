@@ -12,7 +12,8 @@ static int delaycount;
 @end
 @implementation StreamingPlayer
 -(void)start{
-  
+    if (streamInfo.isPlaying)return;
+    
     
     OSStatus err = AudioFileStreamOpen(&streamInfo,
                                        propertyListenerProc,//プロパティを取得した時に呼ばれるコールバック関数
@@ -22,9 +23,20 @@ static int delaycount;
                                        &streamInfo.audioFileStream);
     checkError(err, "AudioFileStreamOpen");
     streamInfo.started=NO;
+    streamInfo.isPlaying = YES;
     
     
    }
+-(void)stop{
+    if (!streamInfo.isPlaying)return;
+    if (streamInfo.started && !streamInfo.isDone) {
+        streamInfo.isDone = YES;
+        OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
+        checkError(err, "AudioQueueStop");
+    }
+        
+    
+}
 void propertyListenerProc(
                           void *							inClientData,
                           AudioFileStreamID				inAudioFileStream,
@@ -112,38 +124,8 @@ static void checkError(OSStatus err,const char *message){
         exit(1);
     }
 }
-static void enqueueBuffer(StreamInfo* streamInfo){//消すとストリームできない？
-       OSStatus err = noErr;
-    
-    //バッファに充填済みフラグを立てる
-    streamInfo->inuse[streamInfo->fillBufferIndex] = YES;
-    
-    AudioQueueBufferRef fillBuf
-    = streamInfo->audioQueueBuffer[streamInfo->fillBufferIndex];
-    fillBuf->mAudioDataByteSize = streamInfo->bytesFilled;
-    
-    err = AudioQueueEnqueueBuffer(streamInfo->audioQueueObject,
-                                  fillBuf,
-                                  streamInfo->packetsFilled,
-                                  streamInfo->packetDescs);
-    checkError(err, "AudioQueueEnqueueBuffer");
-    
-    if (!streamInfo->started){
-        err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
-        checkError(err, "AudioQueueStart");
-        streamInfo->started = YES;
-    }
-    
-    //インデックスを次に進める 0 -> 1, 1 -> 2, 2 -> 0
-    if (++streamInfo->fillBufferIndex >= kNumberOfBuffers){
-        streamInfo->fillBufferIndex = 0;
-    }
-    
-    streamInfo->bytesFilled = 0;
-    streamInfo->packetsFilled = 0;
-    
-   
-}
+
+
 void outputCallback( void                 *inClientData,
                     AudioQueueRef        inAQ,
                     AudioQueueBufferRef  inBuffer ){

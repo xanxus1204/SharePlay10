@@ -20,20 +20,21 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var peerNameArray:[String] = []
     
-    private var  buttonState:Bool = false //開始ボタンの表示・非表示デフォルトで非表示
     
     private let roomName:String = "abcdefg"
     
     private var roomNum:Int = 0
     
+    private var isParent:Bool = false
     
     
     
     
-    
+    @IBOutlet weak var searchBtn: UIButton!
     @IBOutlet weak var startBtn: UIButton!
+    @IBOutlet weak var createBtn: UIButton!
     
-    
+    @IBOutlet weak var roomLabel: UILabel!
     
 
     @IBOutlet weak var peerTable: UITableView!
@@ -45,7 +46,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         
         
         peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
-        session = MCSession(peer: peerID)//↑で作ったIDを利用してセッションを作成
+        session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
         
         session.delegate = self //MCSessiondelegateを設定
         
@@ -59,11 +60,13 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
+        isParent = true
+        searchBtn.isHidden = true
         if roomNum == 0 {
             roomNum = createRandomNum() //部屋作成時の４けたの鍵
         }
         let roomNumName = String(describing: roomNum)
-        
+        roomLabel.text = roomNumName
         let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in})
         alert.addAction(okAction)
@@ -75,7 +78,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-        
+        isParent = false
+        createBtn.isHidden = true
         let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
             let textFields:Array<UITextField>? = alert.textFields as Array<UITextField>?

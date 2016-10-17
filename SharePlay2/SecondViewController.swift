@@ -15,7 +15,7 @@ import MediaPlayer
 
 class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerControllerDelegate {
     
-   private let bufferSize = 32768
+   private let bufferSize = 3000000
     
     var session:MCSession!
     
@@ -35,9 +35,12 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var recvDataArray:NSMutableArray!
     
+    private var artImage:UIImage!
+    
+    private var musicName:String?
     enum dataType:Int {
-        case isOperation = 1
-        case isProperty = 2
+        case isString = 1
+        case isImage = 2
         case isAudio = 3
     }
     @IBOutlet weak var titlelabel: UILabel!
@@ -52,8 +55,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     func initialize(){
         session.delegate = self //MCSessionデリゲートの設定
         recvData = Data()  // 受信データオブジェクトの初期化
-        streamingPlayer = StreamingPlayer() //ストリーミングオブジェクトの初期化
-        streamingPlayer.start() // ストリーミングをスタート
+        self.streamingPlayer = StreamingPlayer()
+
         let nc:NotificationCenter = NotificationCenter.default
         nc.addObserver(self, selector:#selector(SecondViewController.finishedConvert(notification:)), name: NSNotification.Name(rawValue: "finishConvert"), object: nil)//変換完了の通知を受け取る準備
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
@@ -83,6 +86,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func stopBtnTapped(_ sender: AnyObject) {
+     let orderData = "stop".data(using: String.Encoding.utf8)
+        sendData(data: orderData! as NSData, option: dataType.isString)
+    }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
        
         let picker = MPMediaPickerController()
@@ -133,10 +140,34 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         recvDataArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
         if recvDataArray != nil{
             let type = recvDataArray[0] as! Int
-            if type  == dataType.isAudio.rawValue{
+            let contents = recvDataArray[1] as! Data
+            if type  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
                 
-                streamingPlayer.recvAudio(recvDataArray[1] as! Data)
-            }
+                streamingPlayer.recvAudio(contents)
+            }else if type == dataType.isString.rawValue{//中身が文字列のとき
+                let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
+                if str == "stop"{
+                    
+                DispatchQueue.main.async(execute: {() -> Void in
+               
+                    self.streamingPlayer.stop()
+                    self.streamingPlayer = StreamingPlayer()
+                    self.streamingPlayer.start()
+                })
+                }else{
+                    DispatchQueue.main.async(execute: {() -> Void in
+                        self.titlelabel.text = str
+                        self.streamingPlayer.stop()
+                        self.streamingPlayer = StreamingPlayer()
+                        self.streamingPlayer.start()
+
+                    })
+
+                }
+            }else if type == dataType.isImage.rawValue{//中身が画像のとき
+                DispatchQueue.main.async(execute: {() -> Void in  self.titleArt.image = UIImage(data: contents)
+                })
+                            }
         }
        
         
@@ -211,11 +242,13 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         
         self.toPlayItem = mediaItemCollection.items[0]
-        self.titlelabel.text =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String
+        self.musicName =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String
+        self.titlelabel.text = self.musicName
         if toPlayItem.value(forProperty: MPMediaItemPropertyArtwork) != nil{
             let artwork:MPMediaItemArtwork  = (self.toPlayItem.value(forProperty: MPMediaItemPropertyArtwork) as? MPMediaItemArtwork)!
             
-            self.titleArt.image = artwork.image(at: artwork.bounds.size)
+            self.artImage = artwork.image(at: artwork.bounds.size)
+            self.titleArt.image = self.artImage
 
         }
        
@@ -244,7 +277,19 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     func finishedConvert(notification:Notification?){
         DispatchQueue.main.async(execute: {() -> Void in
             SVProgressHUD.dismiss()
-           
+            let imageData = UIImagePNGRepresentation(self.artImage)
+            let image = UIImage(data: imageData!)
+
+            self.titleArt.image = image
+            if imageData != nil{
+                self.sendData(data: imageData! as NSData , option: dataType.isImage)
+
+            }
+            let musicNameData = self.musicName?.data(using:String.Encoding.utf8)
+            if musicNameData != nil{
+                self.sendData(data: musicNameData! as NSData, option: dataType.isString)
+            }
+            
             
         })
 

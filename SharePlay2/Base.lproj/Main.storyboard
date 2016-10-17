@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -17,7 +18,7 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hzk-y9-hct">
@@ -34,10 +35,10 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="peerCell" id="vfC-mT-N6m">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vfC-mT-N6m" id="wiP-RI-O4i">
-                                            <frame key="frameInset" width="414" height="43.666666666666664"/>
+                                            <frame key="frameInset" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -68,9 +69,15 @@
                                     <action selector="createBtnTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LA7-dC-Lmk"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="91B-AD-fit">
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="91B-AD-fit" firstAttribute="top" secondItem="hzk-y9-hct" secondAttribute="bottom" constant="14" id="1e6-ko-X5e"/>
                             <constraint firstItem="hbB-U4-HVa" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="9HF-nI-diN"/>
                             <constraint firstItem="jWh-su-X1t" firstAttribute="top" secondItem="hbB-U4-HVa" secondAttribute="bottom" constant="3" id="9iL-dk-TA4"/>
                             <constraint firstItem="jWh-su-X1t" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="Fhu-cA-PPp"/>
@@ -83,18 +90,22 @@
                             <constraint firstItem="hbB-U4-HVa" firstAttribute="top" secondItem="hzk-y9-hct" secondAttribute="bottom" constant="14" id="oV6-3b-SKJ"/>
                             <constraint firstItem="hzk-y9-hct" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="65" id="ozg-iG-vfG"/>
                             <constraint firstItem="4lz-GH-gxd" firstAttribute="baseline" secondItem="hbB-U4-HVa" secondAttribute="firstBaseline" id="pND-fq-JgO"/>
+                            <constraint firstItem="91B-AD-fit" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="sa0-sU-BUD"/>
                             <constraint firstAttribute="trailing" secondItem="jWh-su-X1t" secondAttribute="trailing" id="xe9-9Y-mZ7"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="createBtn" destination="hbB-U4-HVa" id="jBS-oi-Rzo"/>
                         <outlet property="peerTable" destination="jWh-su-X1t" id="eOV-ra-JOh"/>
+                        <outlet property="roomLabel" destination="91B-AD-fit" id="FuI-R0-ETu"/>
+                        <outlet property="searchBtn" destination="4lz-GH-gxd" id="4I5-rL-0GU"/>
                         <outlet property="startBtn" destination="hzk-y9-hct" id="lpO-Rb-bQ4"/>
                         <segue destination="VyZ-mK-Ub2" kind="presentation" identifier="1to2" id="ehk-vf-HeP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="63.75" y="141.5492957746479"/>
+            <point key="canvasLocation" x="-133" y="142"/>
         </scene>
         <!--Second View Controller-->
         <scene sceneID="pjO-V5-Or4">
@@ -105,7 +116,7 @@
                         <viewControllerLayoutGuide type="bottom" id="8j5-LL-SC4"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Thh-6z-3Lt">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ここに曲のタイトルを表示" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="144-CI-nf5">
@@ -136,10 +147,16 @@
                                     <constraint firstAttribute="height" constant="239" id="L8l-uz-Awy"/>
                                 </constraints>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5BZ-AV-vXD">
+                                <state key="normal" title="停止"/>
+                                <connections>
+                                    <action selector="stopBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="w69-hE-BxY"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="7y8-l1-fFN" firstAttribute="top" secondItem="SvE-vO-IuD" secondAttribute="bottom" constant="62" id="2h2-Hv-yGn"/>
+                            <constraint firstItem="7y8-l1-fFN" firstAttribute="top" secondItem="SvE-vO-IuD" secondAttribute="bottom" constant="33" id="2h2-Hv-yGn"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="144-CI-nf5" secondAttribute="centerX" id="2pY-j3-CiL"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="3cG-hv-rvT"/>
                             <constraint firstItem="j6E-dw-lRX" firstAttribute="trailing" secondItem="Thh-6z-3Lt" secondAttribute="trailingMargin" id="CLa-By-sON"/>
@@ -149,7 +166,9 @@
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="144-CI-nf5" secondAttribute="bottom" constant="64" id="UdS-k3-awd"/>
                             <constraint firstItem="jP0-aC-mB1" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="8" id="WPW-VD-sKI"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="7y8-l1-fFN" secondAttribute="centerX" id="ZMO-1h-aoc"/>
+                            <constraint firstItem="5BZ-AV-vXD" firstAttribute="top" secondItem="7y8-l1-fFN" secondAttribute="bottom" constant="26" id="ZQG-Pg-8tC"/>
                             <constraint firstItem="jP0-aC-mB1" firstAttribute="baseline" secondItem="j6E-dw-lRX" secondAttribute="baseline" id="cef-8L-qWc"/>
+                            <constraint firstItem="5BZ-AV-vXD" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="xW8-29-EaT"/>
                         </constraints>
                     </view>
                     <connections>
@@ -160,7 +179,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qlm-J5-tSb" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="x64-in-pbC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="783" y="142"/>
+            <point key="canvasLocation" x="809" y="142"/>
         </scene>
     </scenes>
     <resources>
