@@ -269,7 +269,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
             secondViewController.session = self.session
             secondViewController.peerNameArray = self.peerNameArray
-            
+                        
             
         }
     }

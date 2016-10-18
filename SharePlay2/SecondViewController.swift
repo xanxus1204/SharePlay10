@@ -15,7 +15,7 @@ import MediaPlayer
 
 class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerControllerDelegate {
     
-   private let bufferSize = 3000000
+   private let bufferSize = 6000000
     
     var session:MCSession!
     
@@ -27,7 +27,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
    private var player:AVAudioPlayer!
   
-    private var playerUrl:NSURL?
+    private var streamPlayerUrl:NSURL?
     
     private var streamingPlayer:StreamingPlayer!
     
@@ -36,6 +36,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     private var recvDataArray:NSMutableArray!
     
     private var artImage:UIImage!
+    
+    private var ownPlayerUrl:NSURL?
     
     private var musicName:String?
     enum dataType:Int {
@@ -56,7 +58,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         session.delegate = self //MCSessionデリゲートの設定
         recvData = Data()  // 受信データオブジェクトの初期化
         self.streamingPlayer = StreamingPlayer()
-
+        player = AVAudioPlayer()
         let nc:NotificationCenter = NotificationCenter.default
         nc.addObserver(self, selector:#selector(SecondViewController.finishedConvert(notification:)), name: NSNotification.Name(rawValue: "finishConvert"), object: nil)//変換完了の通知を受け取る準備
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
@@ -85,9 +87,15 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    @IBAction func restart(_ sender: AnyObject) {
+       let orderData = "restart".data(using: String.Encoding.utf8)
+        sendData(data: orderData! as NSData, option: dataType.isString)
+        
+
+    }
     
     @IBAction func stopBtnTapped(_ sender: AnyObject) {
-     let orderData = "stop".data(using: String.Encoding.utf8)
+     let orderData = "pause".data(using: String.Encoding.utf8)
         sendData(data: orderData! as NSData, option: dataType.isString)
     }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
@@ -98,16 +106,29 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         present(picker,animated: true,completion: nil)
     }
     @IBAction func playBtnTapped(_ sender: AnyObject) {
-        print(playerUrl!)
         
-        if playerUrl != nil{
-
-                    if let data = NSData(contentsOf: self.playerUrl! as URL) {
-                        sendData(data: data, option: dataType.isAudio)
-                    }
+        if streamPlayerUrl != nil{
+           
+            if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
+                        OperationQueue().addOperation({ () -> Void in
+                            self.sendData(data: data, option: dataType.isAudio)
+                })
+            }
+            
             
             
         }
+        let audiosession = AVAudioSession.sharedInstance()
+        
+        do{
+            Thread.sleep(forTimeInterval: 0.8)
+            try audiosession.setCategory(AVAudioSessionCategoryPlayback)
+            self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
+            self.player.play()
+        }catch{
+            print("あんまりだあ")
+        }
+
     }
    
     //MARK : MCSessiondelegate
@@ -146,14 +167,19 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 streamingPlayer.recvAudio(contents)
             }else if type == dataType.isString.rawValue{//中身が文字列のとき
                 let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
-                if str == "stop"{
+                if str == "pause"{
                     
                 DispatchQueue.main.async(execute: {() -> Void in
                
-                    self.streamingPlayer.stop()
-                    self.streamingPlayer = StreamingPlayer()
-                    self.streamingPlayer.start()
+                    self.streamingPlayer.pause()
+                    
                 })
+                }else if str == "restart"{
+                    DispatchQueue.main.async(execute: {() -> Void in
+                        
+                        self.streamingPlayer.restart()
+                        
+                    })
                 }else{
                     DispatchQueue.main.async(execute: {() -> Void in
                         self.titlelabel.text = str
@@ -256,7 +282,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                         mediaPicker .dismiss(animated: true, completion: nil)
          DispatchQueue.main.async(execute: {() -> Void in
                        SVProgressHUD.show(withStatus: "準備中")})
-            self.playerUrl = self.prepareAudioStreaming(item: self.toPlayItem)
+            self.streamPlayerUrl = self.prepareAudioStreaming(item: self.toPlayItem)
       
 
         
@@ -269,15 +295,20 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         
         let exporter:AudioExporter = AudioExporter()
         let url = exporter.convertItemtoAAC(item: item)
-      
-              return url as NSURL
+        
+        self.ownPlayerUrl = url[1]
+       
+
+        
+              return url[0] as NSURL
     }
     
   //MARK : notification
     func finishedConvert(notification:Notification?){
+        
         DispatchQueue.main.async(execute: {() -> Void in
             SVProgressHUD.dismiss()
-            let imageData = UIImagePNGRepresentation(self.artImage)
+                        let imageData = UIImagePNGRepresentation(self.artImage)
             let image = UIImage(data: imageData!)
 
             self.titleArt.image = image
@@ -285,7 +316,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 self.sendData(data: imageData! as NSData , option: dataType.isImage)
 
             }
-            let musicNameData = self.musicName?.data(using:String.Encoding.utf8)
+            let musicNameData = self.musicName?.data (using:String.Encoding.utf8)
             if musicNameData != nil{
                 self.sendData(data: musicNameData! as NSData, option: dataType.isString)
             }

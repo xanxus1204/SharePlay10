@@ -10,7 +10,7 @@ import Foundation
 import MediaPlayer
 class AudioExporter: NSObject {
     
-    func convertItemtoAAC(item:MPMediaItem) -> NSURL {
+    func convertItemtoAAC(item:MPMediaItem) -> [NSURL] {
         
         let url:NSURL = item.value(forProperty: MPMediaItemPropertyAssetURL) as! NSURL
         let urlAsset:AVURLAsset = AVURLAsset(url: url as URL)
@@ -56,7 +56,7 @@ class AudioExporter: NSObject {
             
             
         })
-        return saveUrlforAAC
+        return [saveUrlforAAC,exportSession.outputURL! as NSURL]
         
         
         

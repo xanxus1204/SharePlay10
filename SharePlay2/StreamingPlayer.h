@@ -32,6 +32,8 @@ typedef struct StreamInfo{
      StreamInfo streamInfo;
 }
 -(void)start;
+-(void)pause;
 -(void)stop;
+-(void)restart;
 -(void)recvAudio:(NSData *)data;
 @end

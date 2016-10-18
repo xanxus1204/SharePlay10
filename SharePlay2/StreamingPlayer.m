@@ -27,16 +27,34 @@ static int delaycount;
     
     
    }
+-(void)pause{
+    if (!streamInfo.isPlaying)return;
+    if (streamInfo.started && !streamInfo.isDone) {
+        
+        OSStatus err = AudioQueuePause(streamInfo.audioQueueObject);
+        checkError(err, "AudioQueuePause");
+        streamInfo.isPlaying = NO;
+    }
+    
+}
 -(void)stop{
     if (!streamInfo.isPlaying)return;
     if (streamInfo.started && !streamInfo.isDone) {
         streamInfo.isDone = YES;
         OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
         checkError(err, "AudioQueueStop");
+        streamInfo.isPlaying = NO;
     }
-        
     
 }
+
+-(void)restart{
+    if(streamInfo.isPlaying)return;
+    OSStatus err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
+    checkError(err, "AudioQueuestart");
+    streamInfo.isPlaying = YES;
+}
+
 void propertyListenerProc(
                           void *							inClientData,
                           AudioFileStreamID				inAudioFileStream,
@@ -87,7 +105,7 @@ void packetsProc( void *inClientData,
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     
     OSStatus err;
-    if(!streamInfo->started && delaycount>15){
+    if(!streamInfo->started && delaycount>15){//ちょっと待ってからストリーミングを始める
         streamInfo->started = YES;
         printf("AudioQueueStart%d\n",delaycount);
         err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
