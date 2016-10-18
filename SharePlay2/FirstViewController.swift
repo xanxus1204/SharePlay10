@@ -40,17 +40,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBOutlet weak var peerTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        //textfieldの終了イベント用delegate
-        
-
-        
         
         peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
         session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
         
         session.delegate = self //MCSessiondelegateを設定
-        
-        
         
     }
 
@@ -71,21 +65,27 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in})
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
-        
-        
-                startServerWithName(name: roomName + roomNumName)
+        startServerWithName(name: roomName + roomNumName)
         
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
         isParent = false
         createBtn.isHidden = true
+        stopClient()
         let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
             let textFields:Array<UITextField>? = alert.textFields as Array<UITextField>?
             if textFields != nil{
-                let roomNumName = textFields?[0].text
-                self.startClientWithName(name: self.roomName + roomNumName!)
+                    
+                    let roomNumName = textFields?[0].text
+                    let predicate = NSPredicate(format: "SELF MATCHES '\\\\d+'")//0-9の数字のみ採用
+                if predicate.evaluate(with: roomNumName){
+                    if self.roomNum != Int(roomNumName!)!{
+                        self.startClientWithName(name: self.roomName + roomNumName!)
+                        self.roomNum = Int(roomNumName!)!
+                    }
+                }
             }
         })
         alert.addAction(okAction)
@@ -95,6 +95,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
+            stopServer()
             segueFirstToSecond()
     }
    
@@ -143,38 +144,13 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 }
                 num = num + 1
             }
-            print("接続解除")
+            print("接続解除,あるいはキャンセルされたか")
             reConnect()
         }
     }
     
     
-    // ピアからデータを受信したとき.
     
-    public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        
-    }
-    
-    
-    // ピアからストリームを受信したとき.
-   
-    public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
-        
-    }
-    
-    
-    // リソースからとってくるとき（URL指定とか？).
-    
-    public func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress){
-        
-    }
-    
-    
-    // そのとってくるやつが↑終わったとき
-    
-    public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?){
-        
-    }
     //MARK: MCNearbyservicebrowserdelegate
     
     //相手を見つけたとき
@@ -184,11 +160,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     
-    // A nearby peer has stopped advertising.
     
-    public func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID){
-        
-    }
 
     //MARK: MCNearbyserviceadvitiserdelegate
     //招待されたとき
@@ -221,13 +193,25 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     func startClientWithName(name:String?) -> Swift.Void {
         if name != nil{
-            if browser == nil{
                 browser = MCNearbyServiceBrowser(peer: peerID, serviceType: name!) //探索用オブジェクトの生成
                 browser.delegate = self //delegateの設定
                 browser.startBrowsingForPeers()//探索の開始
-            }
-           
+        }
+    }
+    func stopClient(){
+        if browser != nil{
+            browser.stopBrowsingForPeers()
+            browser.delegate = nil
+            browser = nil
             
+            
+        }
+    }
+    func stopServer(){
+        if nearbyAd != nil{
+            nearbyAd.stopAdvertisingPeer()
+            nearbyAd.delegate = nil
+            nearbyAd = nil
         }
     }
     func createRandomNum() -> Int {
@@ -257,7 +241,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         
     }
     
-    //MARK : segue
+    //MARK: segue
     
     func segueFirstToSecond(){
         performSegue(withIdentifier: "1to2", sender: nil)
@@ -269,11 +253,43 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
             secondViewController.session = self.session
             secondViewController.peerNameArray = self.peerNameArray
-                        
+            secondViewController.isParent = self.isParent
             
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){
+        
+    }
+    //MARK: MCSession使わないやつ
+    // ピアからデータを受信したとき.
+    
+    public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
+        
+    }
+    
+    
+    // ピアからストリームを受信したとき.
+    
+    public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
+        
+    }
+    
+    
+    // リソースからとってくるとき（URL指定とか？).
+    
+    public func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress){
+        
+    }
+    
+    
+    // そのとってくるやつが↑終わったとき
+    
+    public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?){
+        
+    }
+    // A nearby peer has stopped advertising.
+    
+    public func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID){
         
     }
 }

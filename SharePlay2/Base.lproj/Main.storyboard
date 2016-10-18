@@ -38,7 +38,7 @@
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vfC-mT-N6m" id="wiP-RI-O4i">
-                                            <frame key="frameInset" width="414" height="43"/>
+                                            <frame key="frameInset" width="414" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -180,6 +180,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="selectBtn" destination="j6E-dw-lRX" id="fS2-8b-fhC"/>
+                        <outlet property="startBtn" destination="7y8-l1-fFN" id="SeU-85-aTD"/>
                         <outlet property="titleArt" destination="SvE-vO-IuD" id="GH0-wb-B20"/>
                         <outlet property="titlelabel" destination="144-CI-nf5" id="x6P-AK-JdL"/>
                     </connections>

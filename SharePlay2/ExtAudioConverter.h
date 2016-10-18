@@ -2,7 +2,7 @@
 //  ExtAudioConverter.h
 //  ExtAudio
 //
-//  Created by Norihisa Nagano
+//  
 //
 
 #import <Foundation/Foundation.h>

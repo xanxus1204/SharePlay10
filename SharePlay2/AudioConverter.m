@@ -2,7 +2,7 @@
 //  AudioConverter.m
 //  ConvertLossless
 //
-//  Created by Norihisa Nagano
+//  
 //
 
 #import "AudioConverter.h"

@@ -15,11 +15,13 @@ import MediaPlayer
 
 class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerControllerDelegate {
     
-   private let bufferSize = 6000000
+   private let bufferSize = 32768
     
     var session:MCSession!
     
     var peerNameArray:[String] = []
+    
+    var isParent:Bool?
     
     private var recvData:Data!
     
@@ -40,6 +42,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     private var ownPlayerUrl:NSURL?
     
     private var musicName:String?
+    
+    
     enum dataType:Int {
         case isString = 1
         case isImage = 2
@@ -48,6 +52,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     @IBOutlet weak var titlelabel: UILabel!
 
     @IBOutlet weak var titleArt: UIImageView!
+    
+    @IBOutlet weak var selectBtn: UIButton!
+    
+    @IBOutlet weak var startBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
@@ -80,6 +88,11 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         }
         sendDataArray = NSMutableArray()
         recvDataArray = NSMutableArray()
+        self.startBtn.isHidden = true
+        if !isParent!{//部屋を作成した側の場合
+            
+            self.selectBtn.isHidden = true
+        }
 
     }
     
@@ -104,9 +117,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         picker.delegate = self
         picker.allowsPickingMultipleItems = false
         present(picker,animated: true,completion: nil)
+        
     }
     @IBAction func playBtnTapped(_ sender: AnyObject) {
-        
+        startBtn.isHidden = true
         if streamPlayerUrl != nil{
            
             if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
@@ -199,26 +213,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         
        
     }
-    // ピアからストリームを受信したとき.
-    
-    public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
-        
-    }
-    
-    
-    // リソースからとってくるとき（URL指定とか？).
-    
-    public func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress){
-        
-    }
-    
-    
-    // そのとってくるやつが↑終わったとき
-    
-    public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?){
-        
-    }
-    // MARK : 自作関数　データ送信
+       // MARK : 自作関数　データ送信
     func sendData(data:NSData,option:dataType) -> () {
         var splitDataSize = bufferSize
         //var indexofData = 0
@@ -308,23 +303,48 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         
         DispatchQueue.main.async(execute: {() -> Void in
             SVProgressHUD.dismiss()
-                        let imageData = UIImagePNGRepresentation(self.artImage)
-            let image = UIImage(data: imageData!)
-
-            self.titleArt.image = image
-            if imageData != nil{
-                self.sendData(data: imageData! as NSData , option: dataType.isImage)
+            if self.artImage != nil{
+                
+                let imageData = UIImagePNGRepresentation(self.artImage)
+                let image = UIImage(data: imageData!)
+                
+                self.titleArt.image = image
+                if imageData != nil{
+                    self.sendData(data: imageData! as NSData , option: dataType.isImage)
+                    
+                }
 
             }
             let musicNameData = self.musicName?.data (using:String.Encoding.utf8)
             if musicNameData != nil{
                 self.sendData(data: musicNameData! as NSData, option: dataType.isString)
             }
-            
+            self.startBtn.isHidden = false
             
         })
 
     }
+    // MARK: 使わんやつ
+    // ピアからストリームを受信したとき.
+    
+    public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
+        
+    }
+    
+    
+    // リソースからとってくるとき（URL指定とか？).
+    
+    public func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress){
+        
+    }
+    
+    
+    // そのとってくるやつが↑終わったとき
+    
+    public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?){
+        
+    }
+
 
 }
 
