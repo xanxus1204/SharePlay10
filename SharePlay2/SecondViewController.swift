@@ -43,8 +43,9 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var musicName:String?
     
+    private var tempData:NSMutableData!//ファイルの容量が大きいものを受信する時用
     
-    enum dataType:Int {
+    enum dataType:Int {//送信するデータのタイプ
         case isString = 1
         case isImage = 2
         case isAudio = 3
@@ -55,7 +56,9 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     @IBOutlet weak var selectBtn: UIButton!
     
+    @IBOutlet weak var pauseBtn: UIButton!
     @IBOutlet weak var startBtn: UIButton!
+    @IBOutlet weak var restartBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
@@ -88,10 +91,13 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         }
         sendDataArray = NSMutableArray()
         recvDataArray = NSMutableArray()
-        self.startBtn.isHidden = true
+        tempData = NSMutableData()
+        startBtn.isHidden = true
+        pauseBtn.isHidden = true
+        restartBtn.isHidden = true
         if !isParent!{//部屋を作成した側の場合
             
-            self.selectBtn.isHidden = true
+            selectBtn.isHidden = true
         }
 
     }
@@ -101,15 +107,19 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         // Dispose of any resources that can be recreated.
     }
     @IBAction func restart(_ sender: AnyObject) {
-       let orderData = "restart".data(using: String.Encoding.utf8)
-        sendData(data: orderData! as NSData, option: dataType.isString)
+       sendStr(str: "restart")
+        if player != nil{
+            player.play()
+        }
         
 
     }
     
     @IBAction func stopBtnTapped(_ sender: AnyObject) {
-     let orderData = "pause".data(using: String.Encoding.utf8)
-        sendData(data: orderData! as NSData, option: dataType.isString)
+     sendStr(str: "pause")
+        if player != nil{
+            player.pause()
+        }
     }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
        
@@ -121,6 +131,19 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
     @IBAction func playBtnTapped(_ sender: AnyObject) {
         startBtn.isHidden = true
+        restartBtn.isHidden = false
+        pauseBtn.isHidden = false
+        let audiosession = AVAudioSession.sharedInstance()
+        
+        do{
+            //Thread.sleep(forTimeInterval: 0.6)
+            try audiosession.setCategory(AVAudioSessionCategoryPlayback)
+            self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
+            self.player.play()
+        }catch{
+            print("あんまりだあ")
+        }
+
         if streamPlayerUrl != nil{
            
             if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
@@ -132,27 +155,20 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             
             
         }
-        let audiosession = AVAudioSession.sharedInstance()
-        
-        do{
-            Thread.sleep(forTimeInterval: 0.8)
-            try audiosession.setCategory(AVAudioSessionCategoryPlayback)
-            self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
-            self.player.play()
-        }catch{
-            print("あんまりだあ")
-        }
-
+       
     }
    
+    @IBAction func returnBtn(_ sender: AnyObject) {
+        streamingPlayer.stop()
+        session.disconnect()
+        session.delegate = nil
+        session = nil
+    }
     //MARK : MCSessiondelegate
     
     public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
         
-        if state == MCSessionState.connected{
-            print("接続完了")
-            peerNameArray.append(peerID.displayName)
-        }else if state == MCSessionState.notConnected{
+       if state == MCSessionState.notConnected{
             var num = 0
             for name in peerNameArray {
                 
@@ -175,7 +191,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         recvDataArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
         if recvDataArray != nil{
             let type = recvDataArray[0] as! Int
-            let contents = recvDataArray[1] as! Data
+            let contents = recvDataArray[2] as! Data
             if type  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
                 
                 streamingPlayer.recvAudio(contents)
@@ -205,15 +221,28 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
 
                 }
             }else if type == dataType.isImage.rawValue{//中身が画像のとき
-                DispatchQueue.main.async(execute: {() -> Void in  self.titleArt.image = UIImage(data: contents)
-                })
+                let isFin = recvDataArray[1] as! Int
+                if isFin == 0 {
+                    tempData.append(contents)
+                    DispatchQueue.main.async(execute: {() -> Void in  self.titleArt.image = UIImage(data: self.tempData as Data)
+                        self.tempData = NSMutableData()
+                    })
+                }else{
+                    tempData.append(contents)
+                    
+                }
+                
                             }
         }
        
         
        
     }
-       // MARK : 自作関数　データ送信
+       // MARK: 自作関数　データ送信
+    func sendStr(str:String) -> Void {
+        let orderData = str.data(using: String.Encoding.utf8)
+        sendData(data: orderData! as NSData, option: dataType.isString)
+    }
     func sendData(data:NSData,option:dataType) -> () {
         var splitDataSize = bufferSize
         //var indexofData = 0
@@ -222,6 +251,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         var tempData = NSMutableData()
         var index = 0
         sendDataArray[0] = option.rawValue
+        sendDataArray[1] = 1
         while index < data.length {
             
             if (index >= data.length-bufferSize) || (data.length < bufferSize) {
@@ -230,14 +260,11 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 
                 data.getBytes(&buf, range: NSMakeRange(index,splitDataSize))
                 tempData = NSMutableData(bytes: buf, length: splitDataSize)
-                sendDataArray[1] = tempData
+                sendDataArray[2] = tempData
+                sendDataArray[1] = 0
                 let sendingData = NSKeyedArchiver.archivedData(withRootObject: sendDataArray)
                 do {
                     try session.send(sendingData as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
-                    let finish = "end"
-                    let finData = finish.data(using: String.Encoding.utf8)
-                    try session.send(finData! as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
-                    
                 }catch{
                     
                     print("Send Failed")
@@ -246,7 +273,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             }else{
                 data.getBytes(&buf, range: NSMakeRange(index,splitDataSize))
                 tempData = NSMutableData(bytes: buf,length:splitDataSize)
-                sendDataArray[1] = tempData
+                sendDataArray[2] = tempData
                 let sendingData = NSKeyedArchiver.archivedData(withRootObject: sendDataArray)
                 do{
                     try session.send(sendingData as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
@@ -259,7 +286,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         }
         
     }
-    //MARK : - MPMediapicker
+    //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         
         self.toPlayItem = mediaItemCollection.items[0]
@@ -292,9 +319,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         let url = exporter.convertItemtoAAC(item: item)
         
         self.ownPlayerUrl = url[1]
-       
-
-        
               return url[0] as NSURL
     }
     

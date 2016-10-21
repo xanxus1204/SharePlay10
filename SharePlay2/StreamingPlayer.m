@@ -14,7 +14,6 @@ static int delaycount;
 -(void)start{
     if (streamInfo.isPlaying)return;
     
-    
     OSStatus err = AudioFileStreamOpen(&streamInfo,
                                        propertyListenerProc,//プロパティを取得した時に呼ばれるコールバック関数
                                        //パケットデータを解析した時に呼ばれるコールバック関数
@@ -103,7 +102,6 @@ void packetsProc( void *inClientData,
                  AudioStreamPacketDescription  *inPacketDescriptions ){
     delaycount++;
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
-    
     OSStatus err;
     if(!streamInfo->started && delaycount>15){//ちょっと待ってからストリーミングを始める
         streamInfo->started = YES;
@@ -158,6 +156,7 @@ void outputCallback( void                 *inClientData,
     }
 }
 -(void)recvAudio:(NSData *)data{
+    NSLog(@"%lu",(unsigned long)data.length);
            AudioFileStreamParseBytes(streamInfo.audioFileStream,
                                   (int)data.length,
                                   data.bytes,

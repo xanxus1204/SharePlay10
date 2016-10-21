@@ -40,17 +40,26 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBOutlet weak var peerTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
-        session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
-        
-        session.delegate = self //MCSessiondelegateを設定
+        initialize()
+       
         
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    func initialize(){
+        peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
+        session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
+        
+        session.delegate = self //MCSessiondelegateを設定
+        searchBtn.isHidden = false
+        createBtn.isHidden = false
+        startBtn.isHidden = true
+        roomLabel.text = nil
+        peerNameArray.removeAll()
+        peerTable.reloadData()
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
@@ -62,10 +71,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         let roomNumName = String(describing: roomNum)
         roomLabel.text = roomNumName
         let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in})
+        let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+         self.startServerWithName(name: self.roomName + roomNumName)
+        })
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
-        startServerWithName(name: roomName + roomNumName)
+       
         
     }
     
@@ -138,6 +149,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             for name in peerNameArray {
                 
                 if name == peerID.displayName{
+                    print(name)
                     peerNameArray.remove(at: num)
                     DispatchQueue.main.async(execute: {() -> Void in
                         self.peerTable.reloadData()})
@@ -203,8 +215,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             browser.stopBrowsingForPeers()
             browser.delegate = nil
             browser = nil
-            
-            
         }
     }
     func stopServer(){
@@ -257,8 +267,9 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             
         }
     }
-    @IBAction func backtoFirst(segue:UIStoryboardSegue){
-        
+    @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
+        print("戻ってきた")
+        initialize()
     }
     //MARK: MCSession使わないやつ
     // ピアからデータを受信したとき.

@@ -5,6 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -38,7 +39,7 @@
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vfC-mT-N6m" id="wiP-RI-O4i">
-                                            <frame key="frameInset" width="414" height="44"/>
+                                            <frame key="frameInset" width="414" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -139,12 +140,14 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jP0-aC-mB1">
                                 <state key="normal" title="戻る"/>
                                 <connections>
+                                    <action selector="returnBtn:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="2Io-TQ-8bs"/>
                                     <segue destination="x64-in-pbC" kind="unwind" unwindAction="backtoFirstWithSegue:" id="D9V-sK-Naf"/>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no_image.png" translatesAutoresizingMaskIntoConstraints="NO" id="SvE-vO-IuD">
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="239" id="L8l-uz-Awy"/>
+                                    <constraint firstAttribute="height" constant="220" id="L8l-uz-Awy"/>
+                                    <constraint firstAttribute="width" secondItem="SvE-vO-IuD" secondAttribute="height" multiplier="239:239" id="Xid-Ie-by8"/>
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pFg-cl-IN5">
@@ -164,13 +167,12 @@
                         <constraints>
                             <constraint firstItem="7y8-l1-fFN" firstAttribute="top" secondItem="SvE-vO-IuD" secondAttribute="bottom" constant="33" id="2h2-Hv-yGn"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="144-CI-nf5" secondAttribute="centerX" id="2pY-j3-CiL"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="3cG-hv-rvT"/>
+                            <constraint firstItem="144-CI-nf5" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="68" id="8p5-Oo-i8L"/>
                             <constraint firstItem="j6E-dw-lRX" firstAttribute="trailing" secondItem="Thh-6z-3Lt" secondAttribute="trailingMargin" id="CLa-By-sON"/>
                             <constraint firstAttribute="trailingMargin" secondItem="5BZ-AV-vXD" secondAttribute="trailing" constant="68" id="EL0-sx-9Kg"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="48" id="HBb-iV-xRb"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerY" secondItem="Thh-6z-3Lt" secondAttribute="centerY" id="Hy7-lP-9CA"/>
-                            <constraint firstItem="j6E-dw-lRX" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="38" id="TOD-XX-Hkw"/>
-                            <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="144-CI-nf5" secondAttribute="bottom" constant="64" id="UdS-k3-awd"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="L2q-o4-eoQ"/>
+                            <constraint firstItem="j6E-dw-lRX" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="26" id="TOD-XX-Hkw"/>
+                            <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="144-CI-nf5" secondAttribute="bottom" constant="29" id="UdS-k3-awd"/>
                             <constraint firstItem="jP0-aC-mB1" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="8" id="WPW-VD-sKI"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="centerX" secondItem="7y8-l1-fFN" secondAttribute="centerX" id="ZMO-1h-aoc"/>
                             <constraint firstItem="jP0-aC-mB1" firstAttribute="baseline" secondItem="j6E-dw-lRX" secondAttribute="baseline" id="cef-8L-qWc"/>
@@ -180,6 +182,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="pauseBtn" destination="5BZ-AV-vXD" id="wYE-50-8MA"/>
+                        <outlet property="restartBtn" destination="pFg-cl-IN5" id="f4Z-8d-S24"/>
                         <outlet property="selectBtn" destination="j6E-dw-lRX" id="fS2-8b-fhC"/>
                         <outlet property="startBtn" destination="7y8-l1-fFN" id="SeU-85-aTD"/>
                         <outlet property="titleArt" destination="SvE-vO-IuD" id="GH0-wb-B20"/>
