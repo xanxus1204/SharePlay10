@@ -20,7 +20,7 @@ static void checkError(OSStatus err,const char *message){
     }
 }
 
--(void)convertFrom:(NSURL*)fromURL 
+-(void)convertFrom:(NSURL*)fromURL
              toURL:(NSURL*)toURL{
     ExtAudioFileRef infile,outfile;
     OSStatus err;
@@ -34,38 +34,76 @@ static void checkError(OSStatus err,const char *message){
     
     [audiosession setActive:YES error:nil];
     [audiosession setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
-
+    
     //変換するフォーマット(AAC)
     memset(&outputFormat, 0, sizeof(AudioStreamBasicDescription));
     outputFormat.mSampleRate       = 44100.0;
     outputFormat.mFormatID         = kAudioFormatMPEG4AAC;//AAC
     outputFormat.mChannelsPerFrame = 1;
-    
+//    outputFormat.mSampleRate         = 44100.0;
+//    outputFormat.mFormatID			= kAudioFormatLinearPCM;
+//    outputFormat.mFormatFlags		= kAudioFormatFlagIsBigEndian
+//    | kLinearPCMFormatFlagIsSignedInteger
+//    | kLinearPCMFormatFlagIsPacked;
+//    outputFormat.mFramesPerPacket	= 1;
+//    outputFormat.mChannelsPerFrame	= 2;
+//    outputFormat.mBitsPerChannel    = 16;
+//    outputFormat.mBytesPerPacket    = 4;
+//    outputFormat.mBytesPerFrame		= 4;
+//    outputFormat.mReserved			= 0;
+//    
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
                            0, NULL,
                            &size,
-                           &outputFormat);
-
-  
-    err = ExtAudioFileGetProperty(infile,
+                           &outputFormat);//変換後のフォーマット
+    
+    
+    err = ExtAudioFileGetProperty(infile,//変換前のファイルのプロパティを取得
                                   kExtAudioFileProperty_FileDataFormat,
                                   &size,
                                   &inputFormat);
-    checkError(err,"ExtAudioFileGetProperty");	
+    checkError(err,"ExtAudioFileGetProperty");
+    
+    //リニアPCM以外からの変換であれば、リニアPCMとして読み込む
+    if(inputFormat.mFormatID != kAudioFormatLinearPCM){
+        //一旦変換するフォーマット(リニアPCM Little Endian)
+        AudioStreamBasicDescription linearPCMFormat;
+        linearPCMFormat.mSampleRate         = outputFormat.mSampleRate;
+        linearPCMFormat.mFormatID			= kAudioFormatLinearPCM;
+        linearPCMFormat.mFormatFlags		=  kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+        linearPCMFormat.mFramesPerPacket	= 1;
+        linearPCMFormat.mChannelsPerFrame	= outputFormat.mChannelsPerFrame;
+        linearPCMFormat.mBitsPerChannel     = 16;
+        linearPCMFormat.mBytesPerPacket     = 2 * outputFormat.mChannelsPerFrame;
+        linearPCMFormat.mBytesPerFrame      = 2 * outputFormat.mChannelsPerFrame;
+        linearPCMFormat.mReserved			= 0;
+        
+        //読み出すフォーマットをリニアPCMにする(中間フォーマット)
+        inputFormat = linearPCMFormat;
+    }
+    //読み込むフォーマットを設定
+    //必ずlinearPCMで読み出される
+    err = ExtAudioFileSetProperty(infile,
+                                  kExtAudioFileProperty_ClientDataFormat,
+                                  sizeof(AudioStreamBasicDescription),
+                                  &inputFormat);
+    checkError(err,"ExtAudioFileSetProperty");
+    
+    
     
     err = ExtAudioFileCreateWithURL((__bridge CFURLRef)toURL,
                                     kAudioFileM4AType, //AAC
-                                    &outputFormat, 
-                                    NULL, 
-                                    kAudioFileFlags_EraseFile, 
+                                    &outputFormat,
+                                    NULL,
+                                    kAudioFileFlags_EraseFile,
                                     &outfile);
     checkError(err,"ExtAudioFileCreateWithURL");
     
     //書き込むファイルに、入力がリニアPCMであることを設定
     err = ExtAudioFileSetProperty(outfile,
-                                  kExtAudioFileProperty_ClientDataFormat, 
-                                  sizeof(AudioStreamBasicDescription), 
+                                  kExtAudioFileProperty_ClientDataFormat,
+                                  sizeof(AudioStreamBasicDescription),
                                   &inputFormat);
     checkError(err,"kExtAudioFileProperty_ClientDataFormat");
     
@@ -96,9 +134,9 @@ static void checkError(OSStatus err,const char *message){
         if(numPacketToRead == 0){
             NSLog(@"変換完了");
             break;
-
+            
         }
-        err = ExtAudioFileWrite(outfile, 
+        err = ExtAudioFileWrite(outfile,
                                 numPacketToRead,
                                 &audioBufferList);
         checkError(err,"ExtAudioFileWrite");

@@ -201,13 +201,13 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                     
                 DispatchQueue.main.async(execute: {() -> Void in
                
-                    self.streamingPlayer.pause()
+                    //self.streamingPlayer.pause()
                     
                 })
                 }else if str == "restart"{
                     DispatchQueue.main.async(execute: {() -> Void in
                         
-                        self.streamingPlayer.restart()
+                   //     self.streamingPlayer.restart()
                         
                     })
                 }else{
