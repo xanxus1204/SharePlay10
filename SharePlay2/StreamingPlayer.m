@@ -7,7 +7,7 @@
 //
 
 #import "StreamingPlayer.h"
-static int delaycount;
+
 static void checkError(OSStatus err,const char *message){
     if(err){
         char property[5];
@@ -22,48 +22,7 @@ static void checkError(OSStatus err,const char *message){
 
 @end
 @implementation StreamingPlayer
-//-(void)start{
-//    if (streamInfo.isPlaying)return;
-//    
-//    OSStatus err = AudioFileStreamOpen(&streamInfo,
-//                                       propertyListenerProc,//プロパティを取得した時に呼ばれるコールバック関数
-//                                       //パケットデータを解析した時に呼ばれるコールバック関数
-//                                       packetsProc,
-//                                       kAudioFormatMPEG4AAC,   //AAC
-//                                       &streamInfo.audioFileStream);
-//    checkError(err, "AudioFileStreamOpen");
-//    streamInfo.started=NO;
-//    streamInfo.isPlaying = YES;
-//    
-//    
-//   }
-//-(void)pause{
-//    if (!streamInfo.isPlaying)return;
-//    if (streamInfo.started && !streamInfo.isDone) {
-//        
-//        OSStatus err = AudioQueuePause(streamInfo.audioQueueObject);
-//        checkError(err, "AudioQueuePause");
-//        streamInfo.isPlaying = NO;
-//    }
-//    
-//}
-//-(void)stop{
-//    if (!streamInfo.isPlaying)return;
-//    if (streamInfo.started && !streamInfo.isDone) {
-//        streamInfo.isDone = YES;
-//        OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
-//        checkError(err, "AudioQueueStop");
-//        streamInfo.isPlaying = NO;
-//    }
-//    
-//}
-//
-//-(void)restart{
-//    if(streamInfo.isPlaying)return;
-//    OSStatus err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
-//    checkError(err, "AudioQueuestart");
-//    streamInfo.isPlaying = YES;
-//}
+
 - (void)start {
     if (_streamInfo.isPlaying) return;
     //スレッドを作成
@@ -125,12 +84,7 @@ static void checkError(OSStatus err,const char *message){
     
     NSLog(@"*********Thread Did End");
     
-    //CFReadStreamの後始末
-    if (_streamInfo.stream) {
-        CFReadStreamClose(_streamInfo.stream);
-        CFRelease(_streamInfo.stream);
-        _streamInfo.stream = nil;
-    }
+    
 }
 void audioQueuePropertyListenerProc( void                  *inUserData,
                                     AudioQueueRef         inAQ,
@@ -286,49 +240,10 @@ void packetsProc( void *inClientData,
                  UInt32                        inNumberPackets,
                  const void                    *inInputData,
                  AudioStreamPacketDescription  *inPacketDescriptions ){
-    NSLog(@"%s",__PRETTY_FUNCTION__);
+    
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     
-    if(inPacketDescriptions){
-        for (int i = 0; i < inNumberPackets; i++) {
-            SInt64 packetOffset = inPacketDescriptions[i].mStartOffset;
-            SInt64 packetSize   = inPacketDescriptions[i].mDataByteSize;
-            
-            //209分のスペースがない == これ以上バッファを埋められない ->エンキューする
-            UInt32 bufSpaceRemaining = kBufferSize - streamInfo->bytesFilled;
-            if(bufSpaceRemaining < packetSize){
-                enqueueBuffer(streamInfo);
-            }
-            
-            //fillBufferIndexは他のスレッドで書き換えられる可能性があるのでロックする
-            pthread_mutex_lock(&streamInfo->mutex2);{
-                //QueueBufferにコピー
-                AudioQueueBufferRef fillBuf
-                = streamInfo->audioQueueBuffer[streamInfo->fillBufferIndex];
-                memcpy((char*)fillBuf->mAudioData + streamInfo->bytesFilled,
-                       (const char*)inInputData + packetOffset,
-                       packetSize);
-            }pthread_mutex_unlock(&streamInfo->mutex2);
-            
-            streamInfo->packetDescs[streamInfo->packetsFilled]
-            = inPacketDescriptions[i];
-            
-            //オフセットを設定
-            streamInfo->packetDescs[streamInfo->packetsFilled].mStartOffset
-            = streamInfo->bytesFilled;
-            
-            streamInfo->bytesFilled += packetSize; //209
-            streamInfo->packetsFilled++;           //処理したパケット数
-            
-            UInt32 packetsDescsRemaining
-            = kMaxPacketDescs - streamInfo->packetsFilled;
-            
-            //もしくは512パケット埋めたらこれ以上バッファを埋められないのでエンキュー
-            if (packetsDescsRemaining == 0){
-                enqueueBuffer(streamInfo);
-            }
-        }
-    }else{//固定ビットレート
+    //固定ビットレート
         UInt32 offset = 0;
         UInt32 bufferByteSize = inNumberBytes;
         
@@ -365,136 +280,10 @@ void packetsProc( void *inClientData,
             bufferByteSize -= copySize;
             offset += copySize;
         }
-    }
+    
 }
 
 
-//void propertyListenerProc(
-//                          void *							inClientData,
-//                          AudioFileStreamID				inAudioFileStream,
-//                          AudioFileStreamPropertyID		inPropertyID,
-//                          UInt32 *						ioFlags
-//                          ){
-//    delaycount=0;
-//    StreamInfo* streamInfo = (StreamInfo*)inClientData;
-//    OSStatus err;
-//    
-//    //オーディオデータパケットを解析する準備が完了
-//    NSLog(@"property%u",(unsigned int)inPropertyID);
-//    if(inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets){
-//        
-//        //ASBDを取得する
-//        AudioStreamBasicDescription audioFormat;
-//        UInt32 size = sizeof(AudioStreamBasicDescription);
-//        err = AudioFileStreamGetProperty(inAudioFileStream,
-//                                         kAudioFileStreamProperty_DataFormat,
-//                                         &size,
-//                                         &audioFormat);
-//        checkError(err, "kAudioFileStreamProperty_DataFormat");
-//        
-//        //AudioQueueオブジェクトの作成
-//        err = AudioQueueNewOutput(&audioFormat,
-//                                  outputCallback,
-//                                  streamInfo,
-//                                  NULL, NULL, 0,
-//                                  &streamInfo->audioQueueObject);
-//        checkError(err, "AudioQueueNewOutput");
-//        
-//        //キューバッファを用意する
-//        for (int i = 0; i < kNumberOfBuffers; ++i) {
-//            err = AudioQueueAllocateBuffer( streamInfo->audioQueueObject,
-//                                           kBufferSize,
-//                                           &streamInfo->audioQueueBuffer[i]);
-//            checkError(err, "AudioQueueAllocateBuffer");
-//        }
-//        UInt32 propertySize;
-//        
-//        //マジッククッキーのデータサイズを取得
-//        err = AudioFileStreamGetPropertyInfo( inAudioFileStream,
-//                                             kAudioFileStreamProperty_MagicCookieData,
-//                                             &propertySize,
-//                                             NULL );
-//        if (!err && propertySize) {
-//            char *cookie =(char*)malloc(propertySize);
-//            
-//            //マジッククッキーを取得
-//            err = AudioFileStreamGetProperty( inAudioFileStream,
-//                                             kAudioFileStreamProperty_MagicCookieData,
-//                                             &propertySize,
-//                                             cookie);
-//            checkError(err, "AudioQueueNewOutput");
-//            
-//            //キューにセット
-//            err = AudioQueueSetProperty( streamInfo->audioQueueObject, 
-//                                        kAudioQueueProperty_MagicCookie, 
-//                                        cookie, 
-//                                        propertySize );
-//            checkError(err, "kAudioQueueProperty_MagicCookie");
-//            free(cookie);
-//        }
-//
-//    }
-//}
-//
-//void packetsProc( void *inClientData,
-//                 UInt32                        inNumberBytes,
-//                 UInt32                        inNumberPackets,
-//                 const void                    *inInputData,
-//                 AudioStreamPacketDescription  *inPacketDescriptions ){
-//    delaycount++;
-//    StreamInfo* streamInfo = (StreamInfo*)inClientData;
-//    OSStatus err;
-//    if(!streamInfo->started && delaycount>15){//ちょっと待ってからストリーミングを始める
-//        streamInfo->started = YES;
-//        printf("AudioQueueStart%d\n",delaycount);
-//        err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
-//        checkError(err, "AudioQueueStart");
-//    }
-//    
-//    //キューバッファを作成し、エンキューする
-//    AudioQueueBufferRef queueBuffer;
-//    err = AudioQueueAllocateBuffer(streamInfo->audioQueueObject,
-//                                   inNumberBytes,
-//                                   &queueBuffer);
-//    if(err)NSLog(@"AudioQueueAllocateBuffer err = %d",(int)err);
-//    memcpy(queueBuffer->mAudioData, inInputData, inNumberBytes);
-//    
-//    queueBuffer->mAudioDataByteSize = inNumberBytes;
-//    queueBuffer->mPacketDescriptionCount = inNumberPackets;
-//    
-//    err = AudioQueueEnqueueBuffer(streamInfo->audioQueueObject,
-//                                  queueBuffer,
-//                                  inNumberPackets,
-//                                  inPacketDescriptions);
-//
-//    if(err)NSLog(@"AudioQueueEnqueueBuffer err = %d",(int)err);
-//
-//
-//}
-//static void checkError(OSStatus err,const char *message){
-//    if(err){
-//        char property[5];
-//        *(UInt32 *)property = CFSwapInt32HostToBig(err);
-//        property[4] = '\0';
-//        NSLog(@"%s = %-4.4s,%d",message, property,(int)err);
-//        exit(1);
-//    }
-//}
-//
-//
-//void outputCallback( void                 *inClientData,
-//                    AudioQueueRef        inAQ,
-//                    AudioQueueBufferRef  inBuffer ){
-//    StreamInfo* streamInfo = (StreamInfo*)inClientData;
-//    //㈰inBufferがstreamInfo->audioQueueBuffer[ ]のどれかを探す
-//    UInt32 bufIndex = 0;
-//    for (int i = 0; i < kNumberOfBuffers; ++i){
-//        if (inBuffer == streamInfo->audioQueueBuffer[i]){
-//            bufIndex = i;
-//            break;
-//        }
-//    }
-//}
 -(void)recvAudio:(NSData *)data{
    
            AudioFileStreamParseBytes(_streamInfo.audioFileStream,

@@ -13,7 +13,7 @@
 #define kBufferSize 32768      //バッファサイズ
 #define kMaxPacketDescs 512    //最大ASPD数
 typedef struct StreamInfo{
-    CFReadStreamRef   stream;
+   
     AudioFileStreamID audioFileStream;
     AudioQueueRef     audioQueueObject;
     BOOL              started;
@@ -35,7 +35,7 @@ typedef struct StreamInfo{
 }StreamInfo;
 
 @interface StreamingPlayer: NSObject{
-    NSURL *url;
+    
 }
 
 @property StreamInfo streamInfo;
