@@ -37,12 +37,31 @@ static void checkError(OSStatus err,const char *message){
     
     //変換するフォーマット(AAC)
     memset(&outputFormat, 0, sizeof(AudioStreamBasicDescription));
+    
+    
+    
+
     outputFormat.mSampleRate       = 44100.0;
-    outputFormat.mFormatID         = kAudioFormatMPEG4AAC;//AAC
-    outputFormat.mChannelsPerFrame = 1;
+    outputFormat.mFormatID         = kAudioFormatAppleIMA4;//IMA4
+    outputFormat.mChannelsPerFrame = 2;
+    
+
+    
+    
+//    outputFormat.mSampleRate       = 44100.0;
+//    outputFormat.mFormatID         = kAudioFormatMPEG4AAC;//AAC
+//    outputFormat.mChannelsPerFrame = 2;
+//    outputFormat.mFormatFlags = 0;
+//    outputFormat.mFramesPerPacket = 1024;
+//    outputFormat.mBitsPerChannel = 0;
+//    outputFormat.mReserved = 0;
+//    outputFormat.mBytesPerPacket = 0;
+//    outputFormat.mBytesPerFrame = 0;
+    
+    
 //    outputFormat.mSampleRate         = 44100.0;
 //    outputFormat.mFormatID			= kAudioFormatLinearPCM;
-//    outputFormat.mFormatFlags		= kAudioFormatFlagIsBigEndian
+//    outputFormat.mFormatFlags		= kAudioFormatFlagIsBigEndian//AIFFバージョン
 //    | kLinearPCMFormatFlagIsSignedInteger
 //    | kLinearPCMFormatFlagIsPacked;
 //    outputFormat.mFramesPerPacket	= 1;
@@ -51,7 +70,9 @@ static void checkError(OSStatus err,const char *message){
 //    outputFormat.mBytesPerPacket    = 4;
 //    outputFormat.mBytesPerFrame		= 4;
 //    outputFormat.mReserved			= 0;
-//    
+//
+    
+    
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
                            0, NULL,
@@ -93,7 +114,7 @@ static void checkError(OSStatus err,const char *message){
     
     
     err = ExtAudioFileCreateWithURL((__bridge CFURLRef)toURL,
-                                    kAudioFileM4AType, //AAC
+                                    kAudioFileAIFCType, //AAC
                                     &outputFormat,
                                     NULL,
                                     kAudioFileFlags_EraseFile,

@@ -496,7 +496,7 @@ void packetsProc( void *inClientData,
 //    }
 //}
 -(void)recvAudio:(NSData *)data{
-    NSLog(@"%lu",(unsigned long)data.length);
+   
            AudioFileStreamParseBytes(_streamInfo.audioFileStream,
                                   (int)data.length,
                                   data.bytes,
