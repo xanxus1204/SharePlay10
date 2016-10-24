@@ -27,7 +27,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
    private var toPlayItem:MPMediaItem!
     
-   private var player:AVAudioPlayer!
+   private var player:AVAudioPlayer? = nil
   
     private var streamPlayerUrl:NSURL?
     
@@ -93,8 +93,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         recvDataArray = NSMutableArray()
         tempData = NSMutableData()
         startBtn.isHidden = true
-        pauseBtn.isHidden = true
-        restartBtn.isHidden = true
+        //pauseBtn.isHidden = true
+        //restartBtn.isHidden = true
         if !isParent!{//部屋を作成した側の場合
             
             selectBtn.isHidden = true
@@ -107,19 +107,24 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         // Dispose of any resources that can be recreated.
     }
     @IBAction func restart(_ sender: AnyObject) {
-       sendStr(str: "restart")
-        if player != nil{
-            player.play()
+        if isParent!{
+            player?.play()
+        }else{
+            streamingPlayer.restart()
         }
-        
-
+       
     }
     
     @IBAction func stopBtnTapped(_ sender: AnyObject) {
-     sendStr(str: "pause")
-        if player != nil{
-            player.pause()
+     
+        if isParent!{
+            player?.pause()
+        }else{
+            streamingPlayer.pause()
+
         }
+        
+       
     }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
        
@@ -136,10 +141,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         let audiosession = AVAudioSession.sharedInstance()
         
         do{
-            //Thread.sleep(forTimeInterval: 0.6)
+            
             try audiosession.setCategory(AVAudioSessionCategoryPlayback)
             self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
-            self.player.play()
+            self.player?.play()
         }catch{
             print("あんまりだあ")
         }
@@ -147,9 +152,11 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if streamPlayerUrl != nil{
            
             if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
-                        OperationQueue().addOperation({ () -> Void in
-                            self.sendData(data: data, option: dataType.isAudio)
-                })
+                DispatchQueue.global().async {
+                    self.sendData(data: data, option: dataType.isAudio)
+
+                }
+                
             }
             
             
@@ -194,22 +201,23 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             let contents = recvDataArray[2] as! Data
             if type  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
                 
-                streamingPlayer.recvAudio(contents)
+                    self.streamingPlayer.recvAudio(contents)
+                
+                
             }else if type == dataType.isString.rawValue{//中身が文字列のとき
                 let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
                 if str == "pause"{
                     
-                DispatchQueue.main.async(execute: {() -> Void in
                
-                    //self.streamingPlayer.pause()
+                self.streamingPlayer.pause()
                     
-                })
+                
                 }else if str == "restart"{
-                    DispatchQueue.main.async(execute: {() -> Void in
+                   
                         
-                   //     self.streamingPlayer.restart()
+                       self.streamingPlayer.restart()
                         
-                    })
+                    
                 }else{
                     DispatchQueue.main.async(execute: {() -> Void in
                         self.titlelabel.text = str
@@ -244,6 +252,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         sendData(data: orderData! as NSData, option: dataType.isString)
     }
     func sendData(data:NSData,option:dataType) -> () {
+        
         var splitDataSize = bufferSize
         //var indexofData = 0
         var buf = Array<Int8>(repeating: 0, count: bufferSize)
@@ -261,7 +270,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 data.getBytes(&buf, range: NSMakeRange(index,splitDataSize))
                 tempData = NSMutableData(bytes: buf, length: splitDataSize)
                 sendDataArray[2] = tempData
-                sendDataArray[1] = 0
+                sendDataArray[1] = 0//ファイルの終了をお知らせ
                 let sendingData = NSKeyedArchiver.archivedData(withRootObject: sendDataArray)
                 do {
                     try session.send(sendingData as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
@@ -276,7 +285,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 sendDataArray[2] = tempData
                 let sendingData = NSKeyedArchiver.archivedData(withRootObject: sendDataArray)
                 do{
-                    try session.send(sendingData as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                    try session.send(sendingData as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.unreliable)
+                    
+                    
+                    
                 }catch{
                     print("Failed")
                     

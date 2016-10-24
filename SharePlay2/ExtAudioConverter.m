@@ -35,7 +35,7 @@ static void checkError(OSStatus err,const char *message){
     [audiosession setActive:YES error:nil];
     [audiosession setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
     
-    //変換するフォーマット(AAC)
+    //変換するフォーマット(IMA4)
     memset(&outputFormat, 0, sizeof(AudioStreamBasicDescription));
     
     
@@ -59,18 +59,7 @@ static void checkError(OSStatus err,const char *message){
 //    outputFormat.mBytesPerFrame = 0;
     
     
-//    outputFormat.mSampleRate         = 44100.0;
-//    outputFormat.mFormatID			= kAudioFormatLinearPCM;
-//    outputFormat.mFormatFlags		= kAudioFormatFlagIsBigEndian//AIFFバージョン
-//    | kLinearPCMFormatFlagIsSignedInteger
-//    | kLinearPCMFormatFlagIsPacked;
-//    outputFormat.mFramesPerPacket	= 1;
-//    outputFormat.mChannelsPerFrame	= 2;
-//    outputFormat.mBitsPerChannel    = 16;
-//    outputFormat.mBytesPerPacket    = 4;
-//    outputFormat.mBytesPerFrame		= 4;
-//    outputFormat.mReserved			= 0;
-//
+
     
     
     UInt32 size = sizeof(AudioStreamBasicDescription);
@@ -114,7 +103,7 @@ static void checkError(OSStatus err,const char *message){
     
     
     err = ExtAudioFileCreateWithURL((__bridge CFURLRef)toURL,
-                                    kAudioFileAIFCType, //AAC
+                                    kAudioFileAIFCType, //IMA4
                                     &outputFormat,
                                     NULL,
                                     kAudioFileFlags_EraseFile,
