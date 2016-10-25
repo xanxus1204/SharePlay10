@@ -27,9 +27,7 @@ class AudioExporter: NSObject {
         
         exportSession.outputURL = NSURL(fileURLWithPath: filePath) as URL
         let fileManager:FileManager = FileManager()
-                //ファイルの消去作業　べつの場所でやろう
-        //        fileManager.removeItemAtPath(filePath)
-        //        fileManager.removeItemAtPath(savePath)
+             
         do{
             try fileManager.createDirectory(atPath: docDir, withIntermediateDirectories: true, attributes: nil)
             
@@ -49,8 +47,7 @@ class AudioExporter: NSObject {
             
             
             extConverter.convert(from:exportSession.outputURL, to: saveUrlforAAC as URL!)
-            
-            
+           
             
         })
         return [saveUrlforAAC,exportSession.outputURL! as NSURL]

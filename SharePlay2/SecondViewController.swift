@@ -99,9 +99,26 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             
             selectBtn.isHidden = true
         }
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(SecondViewController.deleteFile),
+            name:NSNotification.Name.UIApplicationWillTerminate,
+            object: nil)    }
+    
+    func deleteFile(){
+        print("終了するみたいなのでファイルを消す")
+        let manager = FileManager()
+        do {
+            try manager.removeItem(at: streamPlayerUrl as! URL)
+            try manager.removeItem(at: ownPlayerUrl as! URL)
+        } catch  {
+            print("削除できず")
+        }
+        
+
 
     }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

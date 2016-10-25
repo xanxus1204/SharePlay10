@@ -82,6 +82,8 @@ void propertyListenerProc(
                                   NULL, NULL, 0,
                                   &streamInfo->audioQueueObject);
         checkError(err, "AudioQueueNewOutput");
+        err = AudioQueueSetParameter(streamInfo->audioQueueObject, kAudioQueueParam_Volume, 0.05);//音量の調整
+        checkError(err, "AudioQueuesetParamater");
         
         //キューバッファを用意する
         for (int i = 0; i < kNumberOfBuffers; ++i) {
