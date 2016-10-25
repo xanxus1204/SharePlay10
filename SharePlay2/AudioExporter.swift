@@ -27,7 +27,7 @@ class AudioExporter: NSObject {
         
         exportSession.outputURL = NSURL(fileURLWithPath: filePath) as URL
         let fileManager:FileManager = FileManager()
-             
+        
         do{
             try fileManager.createDirectory(atPath: docDir, withIntermediateDirectories: true, attributes: nil)
             

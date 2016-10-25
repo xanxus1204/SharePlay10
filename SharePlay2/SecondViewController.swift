@@ -103,22 +103,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         notificationCenter.addObserver(
             self,
             selector: #selector(SecondViewController.deleteFile),
-            name:NSNotification.Name.UIApplicationWillTerminate,
+            name:NSNotification.Name.UIApplicationWillTerminate,//アプリケーション終了時に実行するメソッドを指定
             object: nil)    }
     
-    func deleteFile(){
-        print("終了するみたいなのでファイルを消す")
-        let manager = FileManager()
-        do {
-            try manager.removeItem(at: streamPlayerUrl as! URL)
-            try manager.removeItem(at: ownPlayerUrl as! URL)
-        } catch  {
-            print("削除できず")
-        }
-        
-
-
-    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -161,6 +149,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             
             try audiosession.setCategory(AVAudioSessionCategoryPlayback)
             self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
+            self.player?.volume = 0.5
             self.player?.play()
         }catch{
             print("あんまりだあ")
@@ -201,6 +190,11 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                     num = num + 1
                 }
             }
+        if peerNameArray.count == 0{
+            print("誰も居ないのでもどる")
+            segueSecondtofirst()
+            
+        }
 
             print("接続解除")
         }
@@ -315,9 +309,29 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         }
         
     }
+    func deleteFile(){
+        
+        let manager = FileManager()
+        do {
+            if streamPlayerUrl != nil && ownPlayerUrl != nil{
+                try manager.removeItem(at: streamPlayerUrl as! URL)
+                try manager.removeItem(at: ownPlayerUrl as! URL)
+            }
+           
+        } catch  {
+            print("削除できず")
+        }
+        
+        
+        
+    }
+    func segueSecondtofirst(){
+        performSegue(withIdentifier: "2to1", sender: nil)
+        self.streamingPlayer.stop()
+    }
     //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
-        
+        self.deleteFile()
         self.toPlayItem = mediaItemCollection.items[0]
         self.musicName =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String
         self.titlelabel.text = self.musicName
@@ -379,26 +393,14 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
     // MARK: 使わんやつ
     // ピアからストリームを受信したとき.
-    
     public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
-        
     }
-    
-    
     // リソースからとってくるとき（URL指定とか？).
-    
     public func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress){
-        
     }
-    
-    
     // そのとってくるやつが↑終わったとき
-    
     public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?){
-        
     }
-
-
 }
 
 

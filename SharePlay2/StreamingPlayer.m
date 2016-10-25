@@ -7,7 +7,7 @@
 //
 
 #import "StreamingPlayer.h"
-static int delaycount;
+
 @interface StreamingPlayer()
 @end
 @implementation StreamingPlayer
@@ -58,7 +58,7 @@ void propertyListenerProc(
                           AudioFileStreamPropertyID		inPropertyID,
                           UInt32 *						ioFlags
                           ){
-    delaycount=0;
+   
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
     
@@ -126,12 +126,12 @@ void packetsProc( void *inClientData,
                  UInt32                        inNumberPackets,
                  const void                    *inInputData,
                  AudioStreamPacketDescription  *inPacketDescriptions ){
-    delaycount++;
+    
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
-    if(!streamInfo->started && delaycount>5){//ちょっと待ってからストリーミングを始める
+    if(!streamInfo->started){//ちょっと待ってからストリーミングを始める
         streamInfo->started = YES;
-        printf("AudioQueueStart%d\n",delaycount);
+       
         err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
         checkError(err, "AudioQueueStart");
     }

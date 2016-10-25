@@ -96,10 +96,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="createBtn" destination="hbB-U4-HVa" id="jBS-oi-Rzo"/>
                         <outlet property="peerTable" destination="jWh-su-X1t" id="eOV-ra-JOh"/>
                         <outlet property="roomLabel" destination="91B-AD-fit" id="FuI-R0-ETu"/>
-                        <outlet property="searchBtn" destination="4lz-GH-gxd" id="4I5-rL-0GU"/>
                         <outlet property="startBtn" destination="hzk-y9-hct" id="lpO-Rb-bQ4"/>
                         <segue destination="VyZ-mK-Ub2" kind="presentation" identifier="1to2" id="ehk-vf-HeP"/>
                     </connections>
@@ -141,7 +139,7 @@
                                 <state key="normal" title="戻る"/>
                                 <connections>
                                     <action selector="returnBtn:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="2Io-TQ-8bs"/>
-                                    <segue destination="x64-in-pbC" kind="unwind" unwindAction="backtoFirstWithSegue:" id="D9V-sK-Naf"/>
+                                    <segue destination="x64-in-pbC" kind="unwind" identifier="2to1" unwindAction="backtoFirstWithSegue:" id="D9V-sK-Naf"/>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no_image.png" translatesAutoresizingMaskIntoConstraints="NO" id="SvE-vO-IuD">
