@@ -23,6 +23,14 @@
     checkError(err, "AudioFileStreamOpen");
     streamInfo.started = NO;
     streamInfo.isPlaying = YES;
+    streamInfo.readyToPlay = NO;
+}
+-(void)play{
+        if(!streamInfo.started || streamInfo.readyToPlay){
+            streamInfo.started = YES;
+          OSStatus  err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
+            checkError(err, "AudioQueueStart");
+        }
 }
 -(void)pause{
     if (!streamInfo.isPlaying)return;
@@ -65,6 +73,7 @@ void propertyListenerProc(
     //オーディオデータパケットを解析する準備が完了
     NSLog(@"property%u",(unsigned int)inPropertyID);
     if(inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets){
+        
         
         //ASBDを取得する
         AudioStreamBasicDescription audioFormat;
@@ -117,6 +126,7 @@ void propertyListenerProc(
             checkError(err, "kAudioQueueProperty_MagicCookie");
             free(cookie);
         }
+        streamInfo->readyToPlay = YES;
 
     }
 }
@@ -129,12 +139,13 @@ void packetsProc( void *inClientData,
     
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
-    if(!streamInfo->started){
-        streamInfo->started = YES;
-       
-        err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
-        checkError(err, "AudioQueueStart");
-    }
+    
+//    if(!streamInfo->started){
+//        streamInfo->started = YES;
+//       
+//        err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
+//        checkError(err, "AudioQueueStart");
+//    }
     
     //キューバッファを作成し、エンキューする
     AudioQueueBufferRef queueBuffer;
