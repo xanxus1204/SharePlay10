@@ -129,7 +129,7 @@ void packetsProc( void *inClientData,
     
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
-    if(!streamInfo->started){//ちょっと待ってからストリーミングを始める
+    if(!streamInfo->started){
         streamInfo->started = YES;
        
         err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
@@ -181,7 +181,7 @@ void outputCallback( void                 *inClientData,
     }
 }
 -(void)recvAudio:(NSData *)data{
-    NSLog(@"%lu",(unsigned long)data.length);
+    
     AudioFileStreamParseBytes(streamInfo.audioFileStream,
                               (int)data.length,
                               data.bytes,
