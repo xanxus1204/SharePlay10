@@ -173,16 +173,17 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     //招待されたとき
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
         print("招待された")
-        let alert:UIAlertController = UIAlertController(title: "接続要求", message:"接続する", preferredStyle: .alert)
-
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {action in invitationHandler(false,self.session)})
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: {action in invitationHandler(true,self.session)})
-        
-        alert.addAction(cancelAction)
-        alert.addAction(okAction)
-
-        self.present(alert, animated: true, completion: nil)
+        invitationHandler(true,self.session)
+//        let alert:UIAlertController = UIAlertController(title: "接続要求", message:"接続する", preferredStyle: .alert)
+//
+//        
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {action in invitationHandler(false,self.session)})
+//        let okAction = UIAlertAction(title: "OK", style: .default, handler: {action in invitationHandler(true,self.session)})
+//        
+//        alert.addAction(cancelAction)
+//        alert.addAction(okAction)
+//
+//        self.present(alert, animated: true, completion: nil)
         
 
              

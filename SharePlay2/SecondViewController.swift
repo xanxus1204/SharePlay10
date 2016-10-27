@@ -45,8 +45,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var tempData:NSMutableData!//ファイルの容量が大きいものを受信する時用
     
-    private var audioDataBuffer:[NSData] = []
-    
     private var timer:Timer!
     
     enum dataType:Int {//送信するデータのタイプ
@@ -144,16 +142,9 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         restartBtn.isHidden = false
         pauseBtn.isHidden = false
         sendStr(str: "play")
-        let audiosession = AVAudioSession.sharedInstance()
-        do{
-            try audiosession.setCategory(AVAudioSessionCategoryPlayback)
-            self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
-            self.player?.volume = 0.5
-            self.player?.play()
-        }catch{
-            print("あんまりだあ")
-        }
-    }
+        Thread.sleep(forTimeInterval: Double(peerNameArray.count) * 0.15)
+        self.player?.play()
+}
     @IBAction func returnBtn(_ sender: AnyObject) {
         streamingPlayer.stop()
         if timer != nil {
@@ -193,8 +184,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             let type = recvDataArray[0] as! Int
             let contents = recvDataArray[2] as! Data
             if type  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
-                    self.audioDataBuffer.append(contents as NSData)
-                    print("audio")
+                   self.streamingPlayer.recvAudio(contents)
                   
             }else if type == dataType.isString.rawValue{//中身が文字列のとき
                 let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
@@ -214,12 +204,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                         self.streamingPlayer.stop()
                         self.streamingPlayer = StreamingPlayer()
                         self.streamingPlayer.start()
-                        self.audioDataBuffer.removeAll()
-                        if self.timer != nil{
-                            self.timer.invalidate()
-                        }
-                        self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.doAudioStream), userInfo: nil, repeats: true)
-                        self.timer.fire()
+                        
+                        
                     })
 
                 }
@@ -315,18 +301,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         }
         
     }
-    func doAudioStream(tm: Timer){
-        
-            if (self.audioDataBuffer.count>0){
-                for _ in 0..<self.audioDataBuffer.count {
-                    self.streamingPlayer.recvAudio(self.audioDataBuffer[0] as Data!)
-                    self.audioDataBuffer.remove(at: 0)
-                }
-                
-            }
-        
-        
-    }
     func deleteFile(){
         
         let manager = FileManager()
@@ -343,6 +317,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             print("削除できず")
         }
     }
+    //MARK: -Segue
     func segueSecondtofirst(){
         performSegue(withIdentifier: "2to1", sender: nil)
         self.streamingPlayer.stop()
@@ -364,14 +339,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
 
         }
        
-        
                         mediaPicker .dismiss(animated: true, completion: nil)
          DispatchQueue.main.async(execute: {() -> Void in
                        SVProgressHUD.show(withStatus: "準備中")})
             self.streamPlayerUrl = self.prepareAudioStreaming(item: self.toPlayItem)
-      
-
-        
         
     }
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
@@ -407,18 +378,36 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             }
             self.sendQueue.removeAll()
             self.startBtn.isHidden = false//この辺はオーディオデータの送信に関わる部分
-            if self.timer != nil{
-                self.timer.invalidate()
-            }
-            self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.sendDataInterval), userInfo: nil, repeats: true)
-            self.timer.fire()
+           
             if self.streamPlayerUrl != nil{
                 if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
                     
                     self.sendData(data: data, option: dataType.isAudio)
                 }
             }
-            SVProgressHUD.dismiss()
+            for _ in 0..<3{
+                self.sendDataInterval()//３パケットだけさっと送る
+            }
+            if self.timer != nil{
+                self.timer.invalidate()
+            }
+            self.timer = Timer.scheduledTimer(timeInterval: 0.6 - Double(self.peerNameArray.count) * 0.08, target: self, selector: #selector(self.sendDataInterval), userInfo: nil, repeats: true)//データを送り始めるよーん
+            self.timer.fire()
+            
+            if self.isParent!{
+                let audiosession = AVAudioSession.sharedInstance()
+                do{
+                    try audiosession.setCategory(AVAudioSessionCategoryPlayback)
+                    self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
+                    self.player?.prepareToPlay()
+                    self.player?.volume = 0.5
+                    
+                }catch{
+                    print("あんまりだあ")
+                }
+                
+            }
+            SVProgressHUD.dismiss(withDelay: Double(self.peerNameArray.count) * 1.0)
             
         })
 

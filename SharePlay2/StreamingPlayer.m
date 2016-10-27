@@ -7,7 +7,7 @@
 //
 
 #import "StreamingPlayer.h"
-
+int count;
 @interface StreamingPlayer()
 @end
 @implementation StreamingPlayer
@@ -26,10 +26,12 @@
     streamInfo.readyToPlay = NO;
 }
 -(void)play{
-        if(!streamInfo.started || streamInfo.readyToPlay){
+        if(!streamInfo.started && streamInfo.readyToPlay){
             streamInfo.started = YES;
           OSStatus  err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
             checkError(err, "AudioQueueStart");
+        }else{
+            NSLog(@"I'm not ready");
         }
 }
 -(void)pause{
@@ -74,7 +76,7 @@ void propertyListenerProc(
     NSLog(@"property%u",(unsigned int)inPropertyID);
     if(inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets){
         
-        
+        count = 0;
         //ASBDを取得する
         AudioStreamBasicDescription audioFormat;
         UInt32 size = sizeof(AudioStreamBasicDescription);
@@ -120,7 +122,7 @@ void propertyListenerProc(
             
             //キューにセット
             err = AudioQueueSetProperty( streamInfo->audioQueueObject, 
-                                        kAudioQueueProperty_MagicCookie, 
+                                        kAudioQueueProperty_MagicCookie,
                                         cookie, 
                                         propertySize );
             checkError(err, "kAudioQueueProperty_MagicCookie");
@@ -139,14 +141,10 @@ void packetsProc( void *inClientData,
     
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
-    
-//    if(!streamInfo->started){
-//        streamInfo->started = YES;
-//       
-//        err = AudioQueueStart(streamInfo->audioQueueObject, NULL);
-//        checkError(err, "AudioQueueStart");
-//    }
-    
+    count ++;
+    if ( count == 5) {
+        AudioQueuePrime(streamInfo->audioQueueObject, 0, 0);
+    }
     //キューバッファを作成し、エンキューする
     AudioQueueBufferRef queueBuffer;
     err = AudioQueueAllocateBuffer(streamInfo->audioQueueObject,
