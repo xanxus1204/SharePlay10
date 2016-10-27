@@ -30,6 +30,10 @@ int count;
             streamInfo.started = YES;
           OSStatus  err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
             checkError(err, "AudioQueueStart");
+            streamInfo.isPlaying = YES;
+            
+
+
         }else{
             NSLog(@"I'm not ready");
         }
@@ -41,6 +45,8 @@ int count;
         OSStatus err = AudioQueuePause(streamInfo.audioQueueObject);
         checkError(err, "AudioQueuePause");
         streamInfo.isPlaying = NO;
+        streamInfo.started = NO;
+
     }
     
 }
@@ -51,17 +57,18 @@ int count;
         OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
         checkError(err, "AudioQueueStop");
         streamInfo.isPlaying = NO;
+       
+
     }
     
 }
-
--(void)restart{
-    if(streamInfo.isPlaying)return;
-    OSStatus err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
-    checkError(err, "AudioQueuestart");
-    streamInfo.isPlaying = YES;
+-(void)changeVolume:(float)value{
+    if (streamInfo.started){
+        OSStatus  err = AudioQueueSetParameter(streamInfo.audioQueueObject, kAudioQueueParam_Volume, value);//音量の調整
+        checkError(err, "AudioQueuesetParamater");
+    }
+ 
 }
-
 void propertyListenerProc(
                           void *							inClientData,
                           AudioFileStreamID				inAudioFileStream,
@@ -93,9 +100,8 @@ void propertyListenerProc(
                                   NULL, NULL, 0,
                                   &streamInfo->audioQueueObject);
         checkError(err, "AudioQueueNewOutput");
-        err = AudioQueueSetParameter(streamInfo->audioQueueObject, kAudioQueueParam_Volume, 0.05);//音量の調整
-        checkError(err, "AudioQueuesetParamater");
-        
+       
+       
         //キューバッファを用意する
         for (int i = 0; i < kNumberOfBuffers; ++i) {
             err = AudioQueueAllocateBuffer( streamInfo->audioQueueObject,

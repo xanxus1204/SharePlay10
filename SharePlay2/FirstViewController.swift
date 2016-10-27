@@ -34,11 +34,10 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
 
     @IBOutlet weak var peerTable: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
-       
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -48,7 +47,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     func initialize(){
         peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
         session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
-        
         session.delegate = self //MCSessiondelegateを設定
         roomNum = 0
         startBtn.isHidden = true
@@ -80,7 +78,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         roomLabel.text = nil
             stopClient()
         let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+        let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler:
+            {(action:UIAlertAction!)-> Void in
             let textFields:Array<UITextField>? = alert.textFields as Array<UITextField>?
             if textFields != nil{
                     
@@ -97,16 +96,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         alert.addAction(okAction)
         alert.addTextField(configurationHandler: {(text:UITextField!) -> Void in    text.keyboardType = UIKeyboardType.decimalPad})
         present(alert, animated: true, completion: nil)
-
-        
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             stopServer()
             segueFirstToSecond()
     }
-   
-      
-    
     //MARK: tableview delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return  peerNameArray.count
@@ -126,6 +120,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
         
         if state == MCSessionState.connected{
+            print(peerID.displayName)
             peerNameArray.append(peerID.displayName)
           
         print("接続完了")
@@ -155,9 +150,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             reConnect()
         }
     }
-    
-    
-    
     //MARK: MCNearbyservicebrowserdelegate
     
     //相手を見つけたとき
@@ -165,28 +157,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         print("見つけた")
         browser.invitePeer(peerID, to: session, withContext: nil, timeout: 0)
     }
-    
-    
-    
-
     //MARK: MCNearbyserviceadvitiserdelegate
     //招待されたとき
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
         print("招待された")
         invitationHandler(true,self.session)
-//        let alert:UIAlertController = UIAlertController(title: "接続要求", message:"接続する", preferredStyle: .alert)
-//
-//        
-//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {action in invitationHandler(false,self.session)})
-//        let okAction = UIAlertAction(title: "OK", style: .default, handler: {action in invitationHandler(true,self.session)})
-//        
-//        alert.addAction(cancelAction)
-//        alert.addAction(okAction)
-//
-//        self.present(alert, animated: true, completion: nil)
-        
-
-             
     }
     //MARK: 自作関数　主にデータ送受信系
     func startServerWithName(name:String?) -> Swift.Void {
@@ -267,8 +242,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
         print("戻ってきた")
-        reConnect()
-        initialize()
+        DispatchQueue.main.async {
+            self.reConnect()
+            self.initialize()
+        }
+        
     }
     //MARK: MCSession使わないやつ
     // ピアからデータを受信したとき.
