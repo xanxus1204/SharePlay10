@@ -44,6 +44,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var timer:Timer!
     
+    private var delayTime:Double!
+    
     enum dataType:Int {//送信するデータのタイプ
         case isString = 1
         case isImage = 2
@@ -96,7 +98,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if !isParent!{//部屋を作成した側の場合
             selectBtn.isHidden = true
         }
-        
+        delayTime = 0.3
         
     }
     override func didReceiveMemoryWarning() {
@@ -423,7 +425,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             if self.timer != nil{
                 self.timer.invalidate()
             }
-            self.timer = Timer.scheduledTimer(timeInterval: 0.3 - Double(self.peerNameArray.count) * 0.03, target: self, selector: #selector(self.sendDataInterval), userInfo: nil, repeats: true)//データを送り始めるよーん
+            if self.peerNameArray.count > 2{
+                self.delayTime = 0.00001
+            }
+            self.timer = Timer.scheduledTimer(timeInterval: self.delayTime, target: self, selector: #selector(self.sendDataInterval), userInfo: nil, repeats: true)//データを送り始めるよーん
             self.timer.fire()
             
             if self.isParent!{
