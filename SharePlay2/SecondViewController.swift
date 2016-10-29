@@ -72,6 +72,11 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         recvData = Data()  // 受信データオブジェクトの初期化
         let nc:NotificationCenter = NotificationCenter.default
         nc.addObserver(self, selector:#selector(SecondViewController.finishedConvert(notification:)), name: NSNotification.Name(rawValue: "finishConvert"), object: nil)//変換完了の通知を受け取る準備
+        nc.addObserver(
+            self,
+            selector: #selector(SecondViewController.deleteFile),
+            name:NSNotification.Name.UIApplicationWillTerminate,//アプリケーション終了時に実行するメソッドを指定
+            object: nil)
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
         let audiosession = AVAudioSession.sharedInstance()
         do {
@@ -94,12 +99,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if !isParent!{//部屋を作成した側の場合
             selectBtn.isHidden = true
         }
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(SecondViewController.deleteFile),
-            name:NSNotification.Name.UIApplicationWillTerminate,//アプリケーション終了時に実行するメソッドを指定
-            object: nil)
+        
         
     }
     override func didReceiveMemoryWarning() {
@@ -110,13 +110,14 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
        playAudio()
         if isParent!{
             sendStr(str: "play")
-
+            
         }
 }
     @IBAction func stopBtnTapped(_ sender: AnyObject){
        pauseAudio()
         if isParent!{
             sendStr(str: "pause")
+           
         }
         
         
@@ -183,13 +184,19 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
                 if str == "pause"{
                          pauseAudio()
+                    
                 }else if str == "play"{
                     
                     playAudio()
-                }else{
+                }else if str == "noimage"{
+                    DispatchQueue.main.async {
+                        self.titleArt.image = UIImage(named: "no_image.png")
+                    }
+                }else{//曲のタイトルだと考えて設定
                     DispatchQueue.main.async(execute: {() -> Void in
                         self.titlelabel.text = str
-                        
+                        self.stopAudioStream()
+                        self.resetStream()
 
                     })
 
@@ -201,8 +208,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                     print("画像のデータサイズ",tempData.length)
                     DispatchQueue.main.async(execute: {() -> Void in  self.titleArt.image = UIImage(data: self.tempData as Data)
                         self.tempData = NSMutableData()
-                        self.stopAudioStream()
-                        self.resetStream()
+                        
                     })
                 }else{
                     tempData.append(contents)
@@ -363,6 +369,9 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             self.artImage = artwork.image(at: artwork.bounds.size)
             self.titleArt.image = self.artImage
 
+        }else{
+            self.titleArt.image = UIImage(named: "no_image.png")
+
         }
        
                         mediaPicker .dismiss(animated: true, completion: nil)
@@ -396,6 +405,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 self.titleArt.image = image
                 if imageData != nil{
                     self.sendData(data: imageData! as NSData , option: dataType.isImage)
+                }else{
+                    self.sendStr(str: "noimage")
                 }
             }
             let musicNameData = self.musicName?.data (using:String.Encoding.utf8)
