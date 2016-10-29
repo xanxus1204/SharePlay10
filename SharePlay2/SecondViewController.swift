@@ -10,9 +10,6 @@ import UIKit
 import MultipeerConnectivity
 import MediaPlayer
 
-// first commit
-
-
 class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerControllerDelegate {
     
    private let bufferSize = 32768
@@ -110,17 +107,13 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
        playAudio()
         if isParent!{
             sendStr(str: "play")
-            
         }
 }
     @IBAction func stopBtnTapped(_ sender: AnyObject){
        pauseAudio()
         if isParent!{
             sendStr(str: "pause")
-           
         }
-        
-        
     }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
        
@@ -132,8 +125,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
    
     @IBAction func returnBtn(_ sender: AnyObject) {
-        resetStream()
-        
+        stopAudioStream()
         if timer != nil {
             timer.invalidate()
         }
@@ -179,14 +171,12 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             let contents = recvDataArray[2] as! Data
             if type  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
                    self.streamingPlayer.recvAudio(contents)
-                  
+                
             }else if type == dataType.isString.rawValue{//中身が文字列のとき
                 let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
                 if str == "pause"{
                          pauseAudio()
-                    
                 }else if str == "play"{
-                    
                     playAudio()
                 }else if str == "noimage"{
                     DispatchQueue.main.async {
@@ -217,9 +207,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 
                             }
         }
-       
-        
-       
     }
        // MARK: 自作関数　データ送信
     func sendDataInterval(){
@@ -273,7 +260,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                         print("Send Failed")
                     }
                 }
-                
             }else{
                 data.getBytes(&buf, range: NSMakeRange(index,splitDataSize))
                 tempData = NSMutableData(bytes: buf,length:splitDataSize)
@@ -331,7 +317,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     func resetStream(){
         streamingPlayer = StreamingPlayer()
         streamingPlayer.start()
-        streamingPlayer.changeVolume(volumeSlider.value * volumeSlider.value)
+        
     }
     func stopAudioStream(){
         if streamingPlayer != nil{
@@ -354,11 +340,17 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if self.timer != nil{
             self.timer.invalidate()
         }
+        deleteFile()
         performSegue(withIdentifier: "2to1", sender: nil)
         
     }
     //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
+        if self.timer != nil{
+            timer.invalidate()
+            self.sendQueue.removeAll()
+            
+        }
         self.deleteFile()
         self.toPlayItem = mediaItemCollection.items[0]
         self.musicName =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String
@@ -370,9 +362,28 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             self.titleArt.image = self.artImage
 
         }else{
+            self.artImage = nil
             self.titleArt.image = UIImage(named: "no_image.png")
-
+            print("Noimaage")
         }
+        if self.artImage != nil{
+            
+            let imageData = UIImagePNGRepresentation(self.artImage)
+            let image = UIImage(data: imageData!)
+            
+            self.titleArt.image = image
+            if imageData != nil{
+                self.sendData(data: imageData! as NSData , option: dataType.isImage)
+            }
+        }else{
+            self.sendStr(str: "noimage")
+            
+        }
+        let musicNameData = self.musicName?.data (using:String.Encoding.utf8)
+        if musicNameData != nil{
+            self.sendData(data: musicNameData! as NSData, option: dataType.isString)
+        }
+
        
                         mediaPicker .dismiss(animated: true, completion: nil)
          DispatchQueue.main.async(execute: {() -> Void in
@@ -397,22 +408,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         
         DispatchQueue.main.async(execute: {() -> Void in
             
-            if self.artImage != nil{
-                
-                let imageData = UIImagePNGRepresentation(self.artImage)
-                let image = UIImage(data: imageData!)
-                
-                self.titleArt.image = image
-                if imageData != nil{
-                    self.sendData(data: imageData! as NSData , option: dataType.isImage)
-                }else{
-                    self.sendStr(str: "noimage")
-                }
-            }
-            let musicNameData = self.musicName?.data (using:String.Encoding.utf8)
-            if musicNameData != nil{
-                self.sendData(data: musicNameData! as NSData, option: dataType.isString)
-            }
             self.sendQueue.removeAll()
             //この辺はオーディオデータの送信に関わる部分
            

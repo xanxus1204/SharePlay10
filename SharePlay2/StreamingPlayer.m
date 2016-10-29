@@ -8,6 +8,8 @@
 
 #import "StreamingPlayer.h"
 int count;
+double lastVolume;
+
 @interface StreamingPlayer()
 @end
 @implementation StreamingPlayer
@@ -57,17 +59,14 @@ int count;
         OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
         checkError(err, "AudioQueueStop");
         streamInfo.isPlaying = NO;
-       
-
     }
-    
 }
 -(void)changeVolume:(float)value{
+    lastVolume = value;
     if (streamInfo.started){
         OSStatus  err = AudioQueueSetParameter(streamInfo.audioQueueObject, kAudioQueueParam_Volume, value);//音量の調整
         checkError(err, "AudioQueuesetParamater");
     }
- 
 }
 void propertyListenerProc(
                           void *							inClientData,
@@ -82,7 +81,7 @@ void propertyListenerProc(
     //オーディオデータパケットを解析する準備が完了
     NSLog(@"property%u",(unsigned int)inPropertyID);
     if(inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets){
-        
+       
         count = 0;
         //ASBDを取得する
         AudioStreamBasicDescription audioFormat;
@@ -100,6 +99,12 @@ void propertyListenerProc(
                                   NULL, NULL, 0,
                                   &streamInfo->audioQueueObject);
         checkError(err, "AudioQueueNewOutput");
+       
+        if (lastVolume != 0.000000){
+            OSStatus  err = AudioQueueSetParameter(streamInfo->audioQueueObject, kAudioQueueParam_Volume, lastVolume);//音量の調整
+            checkError(err, "AudioQueuesetParamater");
+
+        }
        
        
         //キューバッファを用意する
@@ -135,7 +140,7 @@ void propertyListenerProc(
             free(cookie);
         }
         streamInfo->readyToPlay = YES;
-
+         NSLog(@"Im ready");
     }
 }
 
