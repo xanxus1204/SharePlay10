@@ -46,6 +46,7 @@ double lastVolume;
         
         OSStatus err = AudioQueuePause(streamInfo.audioQueueObject);
         checkError(err, "AudioQueuePause");
+        NSLog(@"Dopause");
         streamInfo.isPlaying = NO;
         streamInfo.started = NO;
 
@@ -59,6 +60,8 @@ double lastVolume;
         OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
         checkError(err, "AudioQueueStop");
         streamInfo.isPlaying = NO;
+        AudioQueueDispose(streamInfo.audioQueueObject, YES);
+        streamInfo.audioQueueObject = NULL;
     }
 }
 -(void)changeVolume:(float)value{

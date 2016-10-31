@@ -20,8 +20,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     var isParent:Bool?
     
-    private var recvData:Data!
-    
    private var toPlayItem:MPMediaItem!
     
    private var player:AVAudioPlayer? = nil
@@ -68,7 +66,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
     func initialize(){
         session.delegate = self //MCSessionデリゲートの設定
-        recvData = Data()  // 受信データオブジェクトの初期化
         let nc:NotificationCenter = NotificationCenter.default
         nc.addObserver(self, selector:#selector(SecondViewController.finishedConvert(notification:)), name: NSNotification.Name(rawValue: "finishConvert"), object: nil)//変換完了の通知を受け取る準備
         nc.addObserver(
@@ -134,6 +131,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         session.disconnect()
         session.delegate = nil
         session = nil
+        deleteFile()
+
     }
     
     @IBAction func volumeSliderChanged(_ sender: UISlider) {
@@ -177,7 +176,9 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             }else if type == dataType.isString.rawValue{//中身が文字列のとき
                 let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
                 if str == "pause"{
+                    print("recvpause")
                          pauseAudio()
+                    
                 }else if str == "play"{
                     playAudio()
                 }else if str == "noimage"{
@@ -191,7 +192,6 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                         self.resetStream()
 
                     })
-
                 }
             }else if type == dataType.isImage.rawValue{//中身が画像のとき
                 let isFin = recvDataArray[1] as! Int

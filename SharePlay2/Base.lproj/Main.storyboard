@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -44,7 +43,7 @@
                                         <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vfC-mT-N6m" id="wiP-RI-O4i">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -133,14 +132,16 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j6E-dw-lRX">
-                                <rect key="frame" x="222" y="40" width="62" height="30"/>
+                                <rect key="frame" x="206" y="40" width="78" height="35"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="曲を選択"/>
                                 <connections>
                                     <action selector="selectBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="t1I-bZ-8Jk"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jP0-aC-mB1">
-                                <rect key="frame" x="36" y="40" width="31" height="30"/>
+                                <rect key="frame" x="36" y="40" width="39" height="35"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="戻る"/>
                                 <connections>
                                     <action selector="returnBtn:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="2Io-TQ-8bs"/>
@@ -148,8 +149,8 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5BZ-AV-vXD">
-                                <rect key="frame" x="36" y="426" width="37" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <rect key="frame" x="36" y="420" width="47" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
                                 <state key="normal" title="停止"/>
                                 <connections>
                                     <action selector="stopBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="w69-hE-BxY"/>
@@ -162,15 +163,15 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pFg-cl-IN5">
-                                <rect key="frame" x="247" y="426" width="37" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <rect key="frame" x="237" y="420" width="47" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
                                 <state key="normal" title="再生"/>
                                 <connections>
                                     <action selector="restart:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="cic-NJ-Xtr"/>
                                 </connections>
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Zr6-2f-Dcq">
-                                <rect key="frame" x="40" y="385" width="240" height="31"/>
+                                <rect key="frame" x="40" y="379" width="240" height="31"/>
                                 <connections>
                                     <action selector="volumeSliderChanged:" destination="VyZ-mK-Ub2" eventType="valueChanged" id="1aW-kg-ZSD"/>
                                 </connections>
