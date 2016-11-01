@@ -53,7 +53,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         roomLabel.text = nil
         peerNameArray.removeAll()
         peerTable.reloadData()
-        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear)
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
@@ -68,7 +67,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
          self.startServerWithName(name: self.roomName + roomNumName)
             SVProgressHUD.show(withStatus:"公開中...")
-            SVProgressHUD.dismiss(withDelay: 30)
+            
         })
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
@@ -93,7 +92,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                         self.startClientWithName(name: self.roomName + roomNumName!)
                         self.roomNum = Int(roomNumName!)!
                         SVProgressHUD.show(withStatus:"検索中...")
-                        SVProgressHUD.dismiss(withDelay: 30)
+                        
                     }
                 }
             }

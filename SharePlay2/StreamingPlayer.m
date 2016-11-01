@@ -199,6 +199,7 @@ void outputCallback( void                 *inClientData,
     for (int i = 0; i < kNumberOfBuffers; ++i){
         if (inBuffer == streamInfo->audioQueueBuffer[i]){
             bufIndex = i;
+            AudioQueueFreeBuffer(streamInfo->audioQueueObject, streamInfo->audioQueueBuffer[bufIndex]);
             break;
         }
     }

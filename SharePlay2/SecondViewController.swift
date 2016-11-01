@@ -128,6 +128,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if timer != nil {
             timer.invalidate()
         }
+       
         session.disconnect()
         session.delegate = nil
         session = nil
@@ -317,6 +318,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
 
     }
     func resetStream(){
+        streamingPlayer = nil
         streamingPlayer = StreamingPlayer()
         streamingPlayer.start()
         
@@ -335,9 +337,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
     //MARK: -Segue
     func segueSecondtofirst(){
-        if self.streamingPlayer != nil{
-            self.streamingPlayer.stop()
-        }
+        stopAudioStream()
         
         if self.timer != nil{
             self.timer.invalidate()
