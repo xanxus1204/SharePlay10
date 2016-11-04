@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		430D43041DA349F80090465A /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430D42FD1DA349F80090465A /* AudioExporter.swift */; };
 		432348431DB0A775006B13FE /* no_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 432348421DB0A775006B13FE /* no_image.png */; };
+		4332E52B1DCC54CC00C7144D /* ThirdTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4332E52A1DCC54CC00C7144D /* ThirdTableViewController.swift */; };
 		4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */; };
 		4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6981DAE04F700D003D0 /* StreamingPlayer.m */; };
 		438E5E131DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E0A1DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m */; };
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		430D42FD1DA349F80090465A /* AudioExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
 		432348421DB0A775006B13FE /* no_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = no_image.png; sourceTree = "<group>"; };
+		4332E52A1DCC54CC00C7144D /* ThirdTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThirdTableViewController.swift; sourceTree = "<group>"; };
 		4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtAudioConverter.h; sourceTree = "<group>"; };
 		4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtAudioConverter.m; sourceTree = "<group>"; };
 		4354A6971DAE04F700D003D0 /* StreamingPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingPlayer.h; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				43D4E24C1D9CBADB005631E5 /* AppDelegate.swift */,
 				43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */,
 				43D4E25E1D9CF387005631E5 /* SecondViewController.swift */,
+				4332E52A1DCC54CC00C7144D /* ThirdTableViewController.swift */,
 				430D42FD1DA349F80090465A /* AudioExporter.swift */,
 				4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */,
 				4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */,
@@ -201,6 +204,7 @@
 			files = (
 				43D4E25F1D9CF387005631E5 /* SecondViewController.swift in Sources */,
 				430D43041DA349F80090465A /* AudioExporter.swift in Sources */,
+				4332E52B1DCC54CC00C7144D /* ThirdTableViewController.swift in Sources */,
 				438E5E131DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m in Sources */,
 				43D4E24F1D9CBADB005631E5 /* FirstViewController.swift in Sources */,
 				438E5E141DAF570F00E9EE65 /* SVProgressAnimatedView.m in Sources */,

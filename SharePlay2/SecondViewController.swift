@@ -44,10 +44,16 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var delayTime:Double!
     
+    var filePath:String?
+    
+    private var fileName:String!
+    
+    var documentInteraction:UIDocumentInteractionController!
     enum dataType:Int {//送信するデータのタイプ
         case isString = 1
         case isImage = 2
         case isAudio = 3
+        case isFile = 4
     }
     @IBOutlet weak var titlelabel: UILabel!
 
@@ -136,6 +142,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
 
     }
     
+    @IBAction func fileSelectTapped(_ sender: Any) {
+       
+}
+    
     @IBAction func volumeSliderChanged(_ sender: UISlider) {
         changeVolume(value: sender.value * sender.value)
     }
@@ -188,6 +198,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                     }
                 }else{//曲のタイトルだと考えて設定
                     DispatchQueue.main.async(execute: {() -> Void in
+                        self.fileName = str
                         self.titlelabel.text = str
                         self.stopAudioStream()
                         self.resetStream()
@@ -208,7 +219,35 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                   
                 }
                 
-                            }
+            }else if type == dataType.isFile.rawValue{
+                let isFin = recvDataArray[1] as! Int
+                if isFin == 0 {
+                    tempData.append(contents)
+                    let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
+                    let manager = FileManager.default
+                    let path = docDir + "/" + fileName
+                    manager.createFile(atPath: path, contents: tempData as Data?, attributes: nil)
+                    DispatchQueue.main.async {
+                        self.documentInteraction = UIDocumentInteractionController(url: URL(fileURLWithPath:path))
+                        
+                        if !self.documentInteraction.presentOpenInMenu(from: self.view.frame, in: self.view, animated: true) {
+                            // 送信できるアプリが見つからなかった時の処理
+                            let alert = UIAlertController(title: "送信失敗", message: "ファイルを送れるアプリが見つかりません", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
+                            
+                        }
+
+                    }
+                                         self.tempData = NSMutableData()
+                        
+                    
+                }else{
+                    tempData.append(contents)
+                    
+                }
+
+            }
         }
     }
        // MARK: 自作関数　データ送信
@@ -345,6 +384,14 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         deleteFile()
         performSegue(withIdentifier: "2to1", sender: nil)
         
+    }
+    @IBAction func backtoSecond(segue:UIStoryboardSegue){//3から2に戻ってきたとき
+        print("戻ってきた3から２へ")
+        sendStr(str: filePath!)//この時点ではファイルの名前のみ
+        let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
+        let data = NSData(contentsOfFile: docDir + "/" + filePath!)
+        sendData(data: data!, option: dataType.isFile)
+       
     }
     //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
