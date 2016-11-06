@@ -256,35 +256,19 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     //MARK: MCSession使わないやつ
     // ピアからデータを受信したとき.
-    
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        
     }
-    
-    
     // ピアからストリームを受信したとき.
-    
     public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
-        
     }
-    
-    
     // リソースからとってくるとき（URL指定とか？).
-    
     public func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress){
-        
     }
-    
-    
     // そのとってくるやつが↑終わったとき
-    
     public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?){
-        
     }
     // A nearby peer has stopped advertising.
-    
     public func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID){
-        
     }
 }
 

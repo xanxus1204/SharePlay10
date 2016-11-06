@@ -16,25 +16,23 @@ class AudioExporter: NSObject {
         let urlAsset:AVURLAsset = AVURLAsset(url: url as URL)
         let exportSession:AVAssetExportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetAppleM4A)!
         exportSession.outputFileType = exportSession.supportedFileTypes[0]
-        
-        //Documentsフォルダに保存していく
-        let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
+        let cacheDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.cachesDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
         
         let itemTitleString:String = item.value(forProperty: MPMediaItemPropertyTitle) as! String
         
-        let filePath:String = docDir + "/" + itemTitleString + ".m4a"
+        let filePath:String = cacheDir + "/" + itemTitleString + ".m4a"
         
         
         exportSession.outputURL = NSURL(fileURLWithPath: filePath) as URL
         let fileManager:FileManager = FileManager()
         
         do{
-            try fileManager.createDirectory(atPath: docDir, withIntermediateDirectories: true, attributes: nil)
+            try fileManager.createDirectory(atPath: cacheDir, withIntermediateDirectories: true, attributes: nil)
             
         }catch{
             print("Cannnot make a direc†ory")
         }
-        let savePathforAAC:String = docDir + "/" + itemTitleString + ".aac"
+        let savePathforAAC:String = cacheDir + "/" + itemTitleString + ".aac"
         let saveUrlforAAC = NSURL(fileURLWithPath: savePathforAAC)
         
         //ここまで準備

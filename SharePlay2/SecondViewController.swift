@@ -48,6 +48,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var fileName:String!
     
+    var fileOpenFlag:Bool!
+    
     var documentInteraction:UIDocumentInteractionController!
     enum dataType:Int {//送信するデータのタイプ
         case isString = 1
@@ -101,7 +103,8 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if !isParent!{//部屋を作成した側の場合
             selectBtn.isHidden = true
         }
-        delayTime = 0.3
+        delayTime = 0.00001
+    
         
     }
     override func didReceiveMemoryWarning() {
@@ -387,10 +390,29 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     }
     @IBAction func backtoSecond(segue:UIStoryboardSegue){//3から2に戻ってきたとき
         print("戻ってきた3から２へ")
-        sendStr(str: filePath!)//この時点ではファイルの名前のみ
         let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
-        let data = NSData(contentsOfFile: docDir + "/" + filePath!)
-        sendData(data: data!, option: dataType.isFile)
+        if fileOpenFlag != nil{
+            if fileOpenFlag!{
+                DispatchQueue.main.async {
+                    self.documentInteraction = UIDocumentInteractionController(url: URL(fileURLWithPath:docDir + "/" + self.filePath!))
+                    if !self.documentInteraction.presentOpenInMenu(from: self.view.frame, in: self.view, animated: true)
+                    {
+                        // 送信できるアプリが見つからなかった時の処理
+                        let alert = UIAlertController(title: "送信失敗", message: "ファイルを送れるアプリが見つかりません", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+            }else{
+                sendStr(str: filePath!)//この時点ではファイルの名前のみ
+                let data = NSData(contentsOfFile: docDir + "/" + filePath!)
+                sendData(data: data!, option: dataType.isFile)
+            }
+            fileOpenFlag = nil
+        }
+        
+      
+       
        
     }
     //MARK: - MPMediapicker
@@ -472,9 +494,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             if self.timer != nil{
                 self.timer.invalidate()
             }
-            if self.peerNameArray.count > 2{
-                self.delayTime = 0.00001
-            }
+           
             self.timer = Timer.scheduledTimer(timeInterval: self.delayTime, target: self, selector: #selector(self.sendDataInterval), userInfo: nil, repeats: true)//データを送り始めるよーん
             self.timer.fire()
             

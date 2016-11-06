@@ -12,6 +12,7 @@ import UIKit
 class ThirdTableViewController: UIViewController,UITableViewDataSource,UITableViewDelegate{
     var fileList:[String] = []
     var filePath:String?
+    var fileOpenFlag:Bool!
     @IBOutlet weak var fileTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +42,19 @@ class ThirdTableViewController: UIViewController,UITableViewDataSource,UITableVi
      func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
          
         self.filePath =  fileList[indexPath.row]
-        performSegue(withIdentifier: "3to2", sender: nil)
+        let alert = UIAlertController(title: "ファイルを", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: "開く", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+            self.fileOpenFlag = true
+            self.performSegue(withIdentifier: "3to2", sender: nil)
+                   })
+        let cancelAction = UIAlertAction(title: "送る", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+            self.fileOpenFlag = false
+            self.performSegue(withIdentifier: "3to2", sender: nil)
+        })
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    
     }
 
      func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -70,6 +83,7 @@ class ThirdTableViewController: UIViewController,UITableViewDataSource,UITableVi
             // インスタンスの引き継ぎ
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
             secondViewController.filePath = self.filePath
+            secondViewController.fileOpenFlag = self.fileOpenFlag
         }
     }
     
