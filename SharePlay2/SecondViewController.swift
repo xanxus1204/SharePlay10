@@ -104,7 +104,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if !isParent!{//部屋を作成した側の場合
             selectBtn.isHidden = true
         }
-        delayTime = 0.00001
+        delayTime = 0.6
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -204,6 +204,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                         self.titlelabel.text = str
                         self.stopAudioStream()
                         self.resetStream()
+                        self.changeVolume(value: self.volumeSlider.value*self.volumeSlider.value)
                     })
                 }
             }else if type == dataType.isImage.rawValue{//中身が画像のとき
