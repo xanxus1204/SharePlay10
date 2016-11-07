@@ -42,16 +42,20 @@ class ThirdTableViewController: UIViewController,UITableViewDataSource,UITableVi
      func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
          
         self.filePath =  fileList[indexPath.row]
-        let alert = UIAlertController(title: "ファイルを", message: "", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "開く", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+        let alert = UIAlertController(title: "ファイルを", message: "", preferredStyle: UIAlertControllerStyle.actionSheet)
+        let openAction = UIAlertAction(title: "開く", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
             self.fileOpenFlag = true
             self.performSegue(withIdentifier: "3to2", sender: nil)
                    })
-        let cancelAction = UIAlertAction(title: "送る", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+        let sendAction = UIAlertAction(title: "送る", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
             self.fileOpenFlag = false
             self.performSegue(withIdentifier: "3to2", sender: nil)
         })
-        alert.addAction(okAction)
+        let cancelAction = UIAlertAction(title: "やめる", style: UIAlertActionStyle.cancel, handler: {(action:UIAlertAction!)-> Void in
+            self.fileOpenFlag = false
+            })
+        alert.addAction(openAction)
+        alert.addAction(sendAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
     

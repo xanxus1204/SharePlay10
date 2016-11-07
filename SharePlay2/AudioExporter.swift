@@ -16,7 +16,7 @@ class AudioExporter: NSObject {
         let urlAsset:AVURLAsset = AVURLAsset(url: url as URL)
         let exportSession:AVAssetExportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetAppleM4A)!
         exportSession.outputFileType = exportSession.supportedFileTypes[0]
-        let cacheDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.cachesDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
+        let cacheDir = NSTemporaryDirectory()
         
         let itemTitleString:String = item.value(forProperty: MPMediaItemPropertyTitle) as! String
         

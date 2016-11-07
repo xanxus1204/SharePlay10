@@ -34,13 +34,8 @@ static void checkError(OSStatus err,const char *message){
     
     [audiosession setActive:YES error:nil];
     [audiosession setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
-    
     //変換するフォーマット(IMA4)
     memset(&outputFormat, 0, sizeof(AudioStreamBasicDescription));
-    
-    
-    
-
     outputFormat.mSampleRate       = 44100.0;
     outputFormat.mFormatID         = kAudioFormatAppleIMA4;//IMA4
     outputFormat.mChannelsPerFrame = 2;
@@ -57,11 +52,6 @@ static void checkError(OSStatus err,const char *message){
 //    outputFormat.mReserved = 0;
 //    outputFormat.mBytesPerPacket = 0;
 //    outputFormat.mBytesPerFrame = 0;
-    
-    
-
-    
-    
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
                            0, NULL,
@@ -151,7 +141,6 @@ static void checkError(OSStatus err,const char *message){
                                 &audioBufferList);
         checkError(err,"ExtAudioFileWrite");
     }
-    
     ExtAudioFileDispose(infile);
     ExtAudioFileDispose(outfile);
     free(buffer);

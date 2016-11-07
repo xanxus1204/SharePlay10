@@ -43,7 +43,7 @@
                                         <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vfC-mT-N6m" id="wiP-RI-O4i">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -237,14 +237,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="vda-qw-sOY">
-                                <rect key="frame" x="16" y="70" width="288" height="410"/>
+                                <rect key="frame" x="16" y="73" width="288" height="407"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="peerCell2" id="Hwu-Sk-hs4">
                                         <rect key="frame" x="0.0" y="28" width="288" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Hwu-Sk-hs4" id="k6Y-Pd-KfN">
-                                            <rect key="frame" x="0.0" y="0.0" width="288" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="288" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -255,7 +255,7 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y9K-Cy-3mW">
-                                <rect key="frame" x="16" y="20" width="77" height="30"/>
+                                <rect key="frame" x="31" y="28" width="77" height="30"/>
                                 <state key="normal" title="キャンセル"/>
                                 <connections>
                                     <segue destination="3wz-4s-OW9" kind="unwind" unwindAction="backtoSecondWithSegue:" id="P2h-hW-cVu"/>
@@ -265,11 +265,11 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="V77-dn-MUV" firstAttribute="top" secondItem="vda-qw-sOY" secondAttribute="bottom" id="GaB-p4-hgS"/>
-                            <constraint firstItem="Y9K-Cy-3mW" firstAttribute="top" secondItem="Mfk-NH-RFb" secondAttribute="bottom" id="KWZ-ZP-Yuh"/>
+                            <constraint firstItem="Y9K-Cy-3mW" firstAttribute="top" secondItem="Mfk-NH-RFb" secondAttribute="bottom" constant="8" id="KWZ-ZP-Yuh"/>
                             <constraint firstItem="vda-qw-sOY" firstAttribute="leading" secondItem="EXj-Ma-L5F" secondAttribute="leadingMargin" id="N4w-zc-PEE"/>
-                            <constraint firstAttribute="leadingMargin" secondItem="Y9K-Cy-3mW" secondAttribute="leading" id="ZTK-oG-Lmk"/>
+                            <constraint firstAttribute="leadingMargin" secondItem="Y9K-Cy-3mW" secondAttribute="leading" constant="-15" id="ZTK-oG-Lmk"/>
                             <constraint firstAttribute="trailingMargin" secondItem="vda-qw-sOY" secondAttribute="trailing" id="bBF-gx-INI"/>
-                            <constraint firstItem="vda-qw-sOY" firstAttribute="top" secondItem="Mfk-NH-RFb" secondAttribute="bottom" constant="50" id="cmf-jF-KpZ"/>
+                            <constraint firstItem="vda-qw-sOY" firstAttribute="top" secondItem="Y9K-Cy-3mW" secondAttribute="bottom" constant="15" id="gke-wR-lct"/>
                         </constraints>
                     </view>
                     <connections>
