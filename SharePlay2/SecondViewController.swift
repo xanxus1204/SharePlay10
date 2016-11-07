@@ -51,6 +51,10 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     var fileOpenFlag:Bool!
     
     var documentInteraction:UIDocumentInteractionController!
+    
+    private var recvType:Int!
+    
+    private var recvContents:Data!
     enum dataType:Int {//送信するデータのタイプ
         case isString = 1
         case isImage = 2
@@ -104,7 +108,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if !isParent!{//部屋を作成した側の場合
             selectBtn.isHidden = true
         }
-        delayTime = 0.6
+        delayTime = 0.1
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -160,7 +164,9 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             for name in peerNameArray {
                 
                 if name == peerID.displayName{
+                    print(peerNameArray[num])
                     peerNameArray.remove(at: num)
+                    
                     num = num + 1
                 }
             }
@@ -181,13 +187,14 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         
         recvDataArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
         if recvDataArray != nil{
-            let type = recvDataArray[0] as! Int
-            let contents = recvDataArray[2] as! Data
-            if type  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
-                   self.streamingPlayer.recvAudio(contents)
+             recvType = recvDataArray[0] as! Int
+             recvContents =  recvDataArray[2] as! Data
+            
+            if recvType  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
+                   self.streamingPlayer.recvAudio(recvContents)
                 
-            }else if type == dataType.isString.rawValue{//中身が文字列のとき
-                let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
+            }else if recvType == dataType.isString.rawValue{//中身が文字列のとき
+                let str = NSString(data: recvContents, encoding: String.Encoding.utf8.rawValue) as String?
                 if str == "pause"{
                     print("recvpause")
                          pauseAudio()
@@ -207,24 +214,24 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                         self.changeVolume(value: self.volumeSlider.value*self.volumeSlider.value)
                     })
                 }
-            }else if type == dataType.isImage.rawValue{//中身が画像のとき
+            }else if recvType == dataType.isImage.rawValue{//中身が画像のとき
                 let isFin = recvDataArray[1] as! Int
                 if isFin == 0 {
-                    tempData.append(contents)
+                    tempData.append(recvContents)
                     print("画像のデータサイズ",tempData.length)
                     DispatchQueue.main.async(execute: {() -> Void in  self.titleArt.image = UIImage(data: self.tempData as Data)
                         self.tempData = NSMutableData()
                         
                     })
                 }else{
-                    tempData.append(contents)
+                    tempData.append(recvContents)
                   
                 }
                 
-            }else if type == dataType.isFile.rawValue{
+            }else if recvType == dataType.isFile.rawValue{
                 let isFin = recvDataArray[1] as! Int
                 if isFin == 0 {
-                    tempData.append(contents)
+                    tempData.append(recvContents)
                     let docDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)[0]
                     let manager = FileManager.default
                     let path = docDir + "/" + fileName
@@ -237,12 +244,12 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                         
                     
                 }else{
-                    tempData.append(contents)
+                    tempData.append(recvContents)
                     
                 }
 
-            }else if type == dataType.isFileName.rawValue{
-                let str = NSString(data: contents, encoding: String.Encoding.utf8.rawValue) as String?
+            }else if recvType == dataType.isFileName.rawValue{
+                let str = NSString(data: recvContents, encoding: String.Encoding.utf8.rawValue) as String?
                 self.fileName = str
             }
         }

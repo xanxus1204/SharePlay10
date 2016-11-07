@@ -257,6 +257,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     //MARK: MCSession使わないやつ
     // ピアからデータを受信したとき.
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
+        print("あがが、そんなばかなああああ！！！")
     }
     // ピアからストリームを受信したとき.
     public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
