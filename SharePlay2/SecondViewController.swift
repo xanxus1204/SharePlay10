@@ -30,7 +30,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     private var sendQueue:[NSData] = []
     
-    private var recvDataArray:NSMutableArray!
+   
     
     private var artImage:UIImage!
     
@@ -52,9 +52,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     
     var documentInteraction:UIDocumentInteractionController!
     
-    private var recvType:Int!
     
-    private var recvContents:Data!
     enum dataType:Int {//送信するデータのタイプ
         case isString = 1
         case isImage = 2
@@ -102,7 +100,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
             // (ここではエラーとして停止している）
             fatalError("session有効化失敗")
         }
-        recvDataArray = NSMutableArray()
+        
         tempData = NSMutableData()
         
         if !isParent!{//部屋を作成した側の場合
@@ -185,14 +183,16 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
     // ピアからデータを受信したとき.
     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         
-        recvDataArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
+        let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
         if recvDataArray != nil{
-             recvType = recvDataArray[0] as! Int
-             recvContents =  recvDataArray[2] as! Data
+            let  recvType:Int = recvDataArray[0] as! Int
+            let recvContents:Data =  recvDataArray[2] as! Data
             
             if recvType  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
-                   self.streamingPlayer.recvAudio(recvContents)
-                
+                if self.streamingPlayer != nil{
+                    self.streamingPlayer.recvAudio(recvContents)
+
+                }
             }else if recvType == dataType.isString.rawValue{//中身が文字列のとき
                 let str = NSString(data: recvContents, encoding: String.Encoding.utf8.rawValue) as String?
                 if str == "pause"{
@@ -253,6 +253,7 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
                 self.fileName = str
             }
         }
+        recvDataArray.removeAllObjects()
     }
        // MARK: 自作関数　データ送信
     func sendDataInterval(){
