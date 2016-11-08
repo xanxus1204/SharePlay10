@@ -106,23 +106,24 @@ class SecondViewController: UIViewController,MCSessionDelegate,MPMediaPickerCont
         if !isParent!{//部屋を作成した側の場合
             selectBtn.isHidden = true
         }
-        delayTime = 0.1
+        delayTime = 0.6
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     @IBAction func restart(_ sender: AnyObject) {
-       playAudio()
+       
         if isParent!{
             sendStr(str: "play")
         }
+        playAudio()
 }
     @IBAction func stopBtnTapped(_ sender: AnyObject){
-       pauseAudio()
         if isParent!{
             sendStr(str: "pause")
         }
+        pauseAudio()
     }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
        
