@@ -40,17 +40,22 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         // Dispose of any resources that can be recreated.
     }
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        
-        peerTable.reloadData()
-        if networkCom.isParent{
-            
+       
+        DispatchQueue.main.async {
+            self.peerTable.reloadData()
+            if self.networkCom.isParent{
+                self.startBtn.isHidden = false
+            }else{
+                self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
+                self.segueFirstToSecond()
+            }
         }
+        
     }
     func initialize(){
         peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
         networkCom = NetworkCommunicater()
-        
-        networkCom.session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
+        networkCom.createSessionwithID(peerID: peerID)
         networkCom.prepare()
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
         roomNum = 0
@@ -214,10 +219,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
         print("戻ってきた")
-        DispatchQueue.main.async {
-            self.reConnect()
-            self.initialize()
-        }
+        
         
     }
     

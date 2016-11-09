@@ -205,11 +205,13 @@ void outputCallback( void                 *inClientData,
     }
 }
 -(void)recvAudio:(NSData *)data{
+    if (data != nil){
+        AudioFileStreamParseBytes(streamInfo.audioFileStream,
+                                  (int)data.length,
+                                  data.bytes,
+                                  0);
+    }
     
-    AudioFileStreamParseBytes(streamInfo.audioFileStream,
-                              (int)data.length,
-                              data.bytes,
-                              0);
     
 }
 

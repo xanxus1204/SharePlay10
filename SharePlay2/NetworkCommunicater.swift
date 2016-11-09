@@ -37,9 +37,15 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     dynamic var recvStr:String? = nil
     dynamic var audioData:NSData!
    func  prepare() {
-        session.delegate = self
+    
         isParent = false
         delayTime = 0.6
+        tempData = NSMutableData()
+
+    }
+    func createSessionwithID(peerID:MCPeerID){
+        session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
+        session.delegate = self
     }
     func sendDataInterval(){
         if sendQueue.count > 0{
@@ -61,6 +67,11 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     }
     func sendAudiodata(data:NSData){
         sendData(data: data, option: dataType.isAudio)
+        if self.timer != nil {
+            timer.invalidate()
+        }
+        timer = Timer.scheduledTimer(timeInterval:delayTime, target: self, selector: #selector(NetworkCommunicater.sendDataInterval), userInfo: nil, repeats: true)
+        timer.fire()
     }
     func sendImage(image:UIImage){
         let imageData:NSData = UIImagePNGRepresentation(image)! as NSData
@@ -142,13 +153,10 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
                 if isFin == 0 {
                     tempData.append(recvContents)
                     print("画像のデータサイズ",tempData.length)
-                    DispatchQueue.main.async(execute: {() -> Void in
+                        self.artImage = UIImage(data: tempData as Data)
                         //画像の変更を反映する処理
                         self.tempData = NSMutableData()
                         //ここでNSDataからUIimageに変換を入れて　artImageに設定
-                        
-                        
-                    })
                 }else{
                     tempData.append(recvContents)
                     

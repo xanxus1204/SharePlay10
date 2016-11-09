@@ -69,16 +69,47 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             // (ここではエラーとして停止している）
             fatalError("session有効化失敗")
         }
-        networkCom = NetworkCommunicater()
-        networkCom.prepare()
-       
+        networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "artImage", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "recvStr", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "audioData", options: [.new,.old], context: nil)
         
-        
+        streamingPlayer = StreamingPlayer()
 }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if let key = keyPath{
+            if key == "peerNameArray"{
+                
+        }else if key == "artImage"{
+                DispatchQueue.main.async {
+                    self.titleArt.image = self.networkCom.artImage
+                }
+                
+        }else if key == "recvStr"{
+            if networkCom.recvStr == "play"{
+                playAudio()
+            }else if networkCom.recvStr == "pause"{
+                    pauseAudio()
+            }else if networkCom.recvStr == "stop"{
+                stopAudioStream()
+                resetStream()
+            }else{
+                DispatchQueue.main.async {
+                    self.titlelabel.text = self.networkCom.recvStr
+                }
+                
+                resetStream()
+            }
+        }else if key == "audioData"{
+                
+                streamingPlayer.recvAudio(networkCom.audioData as Data!)
+        }
+    }
+}
     @IBAction func restart(_ sender: AnyObject) {
        
         if networkCom.isParent{
@@ -201,7 +232,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         
 
        
-                        mediaPicker .dismiss(animated: true, completion: nil)
+                        mediaPicker.dismiss(animated: true, completion: nil)
          DispatchQueue.main.async(execute: {() -> Void in
                        SVProgressHUD.show(withStatus: "準備中")})
             self.streamPlayerUrl = self.prepareAudioStreaming(item: self.toPlayItem)
@@ -236,9 +267,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             for _ in 0..<5{
                 self.networkCom.sendDataInterval()//３パケットだけさっと送る
             }
-           //timerを止める
            
-            //timer を動かす処理
             
             if self.networkCom.isParent{
                 let audiosession = AVAudioSession.sharedInstance()
