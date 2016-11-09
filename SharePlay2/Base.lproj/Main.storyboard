@@ -176,17 +176,6 @@
                                     <action selector="volumeSliderChanged:" destination="VyZ-mK-Ub2" eventType="valueChanged" id="1aW-kg-ZSD"/>
                                 </connections>
                             </slider>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Orf-2c-Pje">
-                                <rect key="frame" x="95.5" y="40" width="129" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="ファイルを選択"/>
-                                <connections>
-                                    <action selector="fileSelectTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="eWJ-Lv-9Zq"/>
-                                    <segue destination="qCn-sY-aBS" kind="popoverPresentation" popoverAnchorView="Orf-2c-Pje" id="9oC-Gc-ery">
-                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                    </segue>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -194,14 +183,12 @@
                             <constraint firstItem="8j5-LL-SC4" firstAttribute="top" secondItem="5BZ-AV-vXD" secondAttribute="bottom" constant="20" id="1QX-uk-Dfz"/>
                             <constraint firstItem="8j5-LL-SC4" firstAttribute="top" secondItem="pFg-cl-IN5" secondAttribute="bottom" constant="20" id="3Ic-8R-1wy"/>
                             <constraint firstAttribute="trailingMargin" secondItem="SvE-vO-IuD" secondAttribute="trailing" constant="26" id="6X3-Oy-vOL"/>
-                            <constraint firstItem="Orf-2c-Pje" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="EHd-3P-ny5"/>
                             <constraint firstItem="j6E-dw-lRX" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="20" id="GWo-SF-S0j"/>
                             <constraint firstItem="Zr6-2f-Dcq" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="26" id="ING-he-8Vq"/>
                             <constraint firstItem="144-CI-nf5" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="10" id="Jjz-js-axh"/>
                             <constraint firstAttribute="trailingMargin" secondItem="144-CI-nf5" secondAttribute="trailing" constant="10" id="MCD-0D-hIr"/>
                             <constraint firstItem="SvE-vO-IuD" firstAttribute="top" secondItem="144-CI-nf5" secondAttribute="bottom" constant="27.5" id="PBP-Lf-lDt"/>
                             <constraint firstItem="jP0-aC-mB1" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" id="UyW-CW-yQ8"/>
-                            <constraint firstItem="Orf-2c-Pje" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="20" id="Yov-ON-p3S"/>
                             <constraint firstItem="5BZ-AV-vXD" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="20" id="dVb-1W-3Ix"/>
                             <constraint firstItem="144-CI-nf5" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="62" id="j1T-ri-gk9"/>
                             <constraint firstAttribute="trailingMargin" secondItem="j6E-dw-lRX" secondAttribute="trailing" id="jSX-Ad-OHr"/>
@@ -223,64 +210,6 @@
                 <exit id="x64-in-pbC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="737" y="293"/>
-        </scene>
-        <!--Third Table View Controller-->
-        <scene sceneID="B63-pA-JYa">
-            <objects>
-                <viewController id="qCn-sY-aBS" customClass="ThirdTableViewController" customModule="SharePlay2" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Mfk-NH-RFb"/>
-                        <viewControllerLayoutGuide type="bottom" id="V77-dn-MUV"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="EXj-Ma-L5F">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="vda-qw-sOY">
-                                <rect key="frame" x="16" y="73" width="288" height="407"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="peerCell2" id="Hwu-Sk-hs4">
-                                        <rect key="frame" x="0.0" y="28" width="288" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Hwu-Sk-hs4" id="k6Y-Pd-KfN">
-                                            <rect key="frame" x="0.0" y="0.0" width="288" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                                <connections>
-                                    <outlet property="dataSource" destination="qCn-sY-aBS" id="agf-FD-eHL"/>
-                                    <outlet property="delegate" destination="qCn-sY-aBS" id="zrR-nb-pru"/>
-                                </connections>
-                            </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y9K-Cy-3mW">
-                                <rect key="frame" x="31" y="28" width="77" height="30"/>
-                                <state key="normal" title="キャンセル"/>
-                                <connections>
-                                    <segue destination="3wz-4s-OW9" kind="unwind" unwindAction="backtoSecondWithSegue:" id="P2h-hW-cVu"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="V77-dn-MUV" firstAttribute="top" secondItem="vda-qw-sOY" secondAttribute="bottom" id="GaB-p4-hgS"/>
-                            <constraint firstItem="Y9K-Cy-3mW" firstAttribute="top" secondItem="Mfk-NH-RFb" secondAttribute="bottom" constant="8" id="KWZ-ZP-Yuh"/>
-                            <constraint firstItem="vda-qw-sOY" firstAttribute="leading" secondItem="EXj-Ma-L5F" secondAttribute="leadingMargin" id="N4w-zc-PEE"/>
-                            <constraint firstAttribute="leadingMargin" secondItem="Y9K-Cy-3mW" secondAttribute="leading" constant="-15" id="ZTK-oG-Lmk"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="vda-qw-sOY" secondAttribute="trailing" id="bBF-gx-INI"/>
-                            <constraint firstItem="vda-qw-sOY" firstAttribute="top" secondItem="Y9K-Cy-3mW" secondAttribute="bottom" constant="15" id="gke-wR-lct"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="fileTable" destination="vda-qw-sOY" id="V0j-Rb-5VQ"/>
-                        <segue destination="3wz-4s-OW9" kind="unwind" identifier="3to2" unwindAction="backtoSecondWithSegue:" id="VkE-0O-yMa"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="GPa-6T-HMg" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="3wz-4s-OW9" userLabel="Exit" sceneMemberID="exit"/>
-            </objects>
-            <point key="canvasLocation" x="1530" y="292.5"/>
         </scene>
     </scenes>
     <resources>
