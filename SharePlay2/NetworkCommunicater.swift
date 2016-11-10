@@ -174,15 +174,11 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             peerNameArray.append(peerID.displayName)
             
             print("接続完了")
-            for peer in session.connectedPeers{
-                print("接続されてる人\(peer.displayName)")
-            }
+            
            
         }
         if state == MCSessionState.notConnected{
-            for peer in session.connectedPeers{
-                print("接断されてる人\(peer.displayName)")
-            }
+            
             var num = 0
             for name in peerNameArray {
                 

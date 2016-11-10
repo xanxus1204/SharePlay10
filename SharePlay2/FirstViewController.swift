@@ -42,14 +42,18 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         // Dispose of any resources that can be recreated.
     }
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-       
-        DispatchQueue.main.async {
-            self.peerTable.reloadData()
-            if self.isParent{
-                self.startBtn.isHidden = false
-            }else{
-                self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
-                self.segueFirstToSecond()
+        if let key = keyPath{
+            if key == "peerNameArray"{//変化したプロパティがPEERnamearryだった場合
+                DispatchQueue.main.async {
+                    self.peerTable.reloadData()
+                    if self.isParent{
+                        self.startBtn.isHidden = false
+                    }else{
+                        self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
+                        self.segueFirstToSecond()
+                    }
+                }
+
             }
         }
         
@@ -63,33 +67,30 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         roomNum = 0
         startBtn.isHidden = true
         roomLabel.text = nil
-       
         peerTable.reloadData()
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
-        isParent = true
+        isParent = true //親フラグを立てる
        
-        if roomNum == 0 {
-            roomNum = createRandomNum() //部屋作成時の４けたの鍵
+        if roomNum == 0 {//部屋作成時の番号が0の場合
+            roomNum = createRandomNum() //部屋作成時の４けたの鍵を新たに作成
         }
-        let roomNumName = String(describing: roomNum)
-        roomLabel.text = roomNumName
+        let roomNumName = String(describing: roomNum)//数字を文字に変換
+        roomLabel.text = roomNumName //番号を表示
         let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
-         self.startServerWithName(name: self.roomName + roomNumName)
+        let okAction = UIAlertAction(title: "公開", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+         self.startServerWithName(name: self.roomName + roomNumName)//公開ボタンを押すと公開される
             
         })
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
-       
-        
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-        isParent = false
-        roomLabel.text = nil
-            stopClient()
+        isParent = false //親フラグを建てない
+        roomLabel.text = nil//部屋番号を表す数字を消す
+        
         let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler:
             {(action:UIAlertAction!)-> Void in
@@ -146,7 +147,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     //MARK: 自作関数　主にデータ送受信系
     func startServerWithName(name:String?) -> Swift.Void {
-        stopClient()
+        stopClient()//サーバーとしての作業及びクライアントとしての作業をどちらもやめる
+        stopServer()
         if name != nil{
             if nearbyAd == nil{
                 nearbyAd = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: name!)//サービス用のアドバタイズオブジェクト生成
@@ -158,6 +160,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     func startClientWithName(name:String?) -> Swift.Void {
         stopServer()
+        stopClient()
         if name != nil{
                 browser = MCNearbyServiceBrowser(peer: peerID, serviceType: name!) //探索用オブジェクトの生成
                 browser.delegate = self //delegateの設定
