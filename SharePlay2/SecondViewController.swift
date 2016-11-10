@@ -90,7 +90,12 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let key = keyPath{
             if key == "peerNameArray"{
-                
+                if networkCom.peerNameArray.count == 0{
+                    DispatchQueue.main.async {
+                        self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る
+                        self.networkCom.stopsendingAudio()
+                    }
+                }
         }else if key == "artImage"{
                 DispatchQueue.main.async {
                     self.titleArt.image = self.networkCom.artImage
@@ -106,12 +111,15 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                 resetStream()
             }else{
                 DispatchQueue.main.async {
+                    
                     self.titlelabel.text = self.networkCom.recvStr
                     self.view.setNeedsDisplay()
+                    self.stopAudioStream()
+                    self.resetStream()
+                    self.changeVolume(value: self.volumeSlider.value * self.volumeSlider.value)
                 }
                 
-                resetStream()
-            }
+                            }
         }else if key == "audioData"{
                 
                 streamingPlayer.recvAudio(networkCom.audioData as Data!)
@@ -141,8 +149,11 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
    
     @IBAction func returnBtn(_ sender: AnyObject) {
+        if isParent!{
+            networkCom.stopsendingAudio()
+            stopAudioStream()
+        }
         removeOb()
-        stopAudioStream()
         deleteFile()
 
     }
@@ -207,14 +218,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     func segueSecondtofirst(){
         stopAudioStream()
         removeOb()
-        //timer止める
         deleteFile()
         performSegue(withIdentifier: "2to1", sender: nil)
         
     }
        //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
-       //タイマーを止める　キューをクリア
+        networkCom.stopsendingAudio()
         self.deleteFile()
         self.toPlayItem = mediaItemCollection.items[0]
         self.musicName =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String

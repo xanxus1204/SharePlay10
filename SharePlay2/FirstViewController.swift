@@ -33,7 +33,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        SVProgressHUD.setDefaultStyle(SVProgressHUDStyle.dark)
+        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.none)
         initialize()
     }
 
@@ -48,9 +49,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     self.peerTable.reloadData()
                     if self.isParent{
                         self.startBtn.isHidden = false
+                        SVProgressHUD.dismiss()
                     }else{
                         self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
                         self.segueFirstToSecond()
+                        SVProgressHUD.dismiss()
                     }
                 }
 
@@ -72,16 +75,15 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
         isParent = true //親フラグを立てる
-       
-        if roomNum == 0 {//部屋作成時の番号が0の場合
-            roomNum = createRandomNum() //部屋作成時の４けたの鍵を新たに作成
-        }
+       SVProgressHUD.dismiss()
+        roomNum = createRandomNum() //部屋作成時の４けたの鍵を新たに作成
+        
         let roomNumName = String(describing: roomNum)//数字を文字に変換
         roomLabel.text = roomNumName //番号を表示
         let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "公開", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
          self.startServerWithName(name: self.roomName + roomNumName)//公開ボタンを押すと公開される
-            
+            SVProgressHUD.show(withStatus: "公開中")
         })
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
@@ -90,7 +92,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
         isParent = false //親フラグを建てない
         roomLabel.text = nil//部屋番号を表す数字を消す
-        
+        SVProgressHUD.dismiss()
         let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler:
             {(action:UIAlertAction!)-> Void in
@@ -103,7 +105,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     if self.roomNum != Int(roomNumName!)!{
                         self.startClientWithName(name: self.roomName + roomNumName!)
                         self.roomNum = Int(roomNumName!)!
-                        
+                        SVProgressHUD.show(withStatus: "検索中")
                         
                     }
                 }
@@ -130,6 +132,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         return cell
 
     }
+    
+   
     
     //MARK: MCSessiondelegate
     // 接続状況が変化したとき.
@@ -225,9 +229,9 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-        initialize()
-        print("戻ってきた")
         
+        print("戻ってきた")
+        self.viewDidLoad()
         
     }
     

@@ -44,7 +44,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
         session.delegate = self
     }
-  @objc private  func sendDataInterval(){
+    @objc private  func sendDataInterval(){
         if sendQueue.count > 0{
             
             do {
@@ -57,6 +57,12 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             
         }
         
+    }
+    func stopsendingAudio(){
+        if timer != nil {
+            timer.invalidate()
+            sendQueue.removeAll()
+        }
     }
     func sendStr(str:String) -> Void {
         let orderData = str.data(using: String.Encoding.utf8)
@@ -131,13 +137,13 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         }
         
     }
-
+    
     // MARK: MCSessionDelegate
       func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
         if recvDataArray != nil{
             let  recvType:Int = recvDataArray[0] as! Int
-            let recvContents:Data =  recvDataArray[2] as! Data
+            let recvContents:NSMutableData =  recvDataArray[2] as! NSMutableData
             
             if recvType  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
                 
@@ -145,20 +151,20 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
                     
                 
             }else if recvType == dataType.isString.rawValue{//中身が文字列のとき
-                let str = NSString(data: recvContents, encoding: String.Encoding.utf8.rawValue) as String?
+                let str = NSString(data: recvContents as Data, encoding: String.Encoding.utf8.rawValue) as String?
                 recvStr = str
 
             }else if recvType == dataType.isImage.rawValue{//中身が画像のとき
                 let isFin = recvDataArray[1] as! Int
                 if isFin == 0 {
-                    tempData.append(recvContents)
+                    tempData.append(recvContents as Data)
                     print("画像のデータサイズ",tempData.length)
                         self.artImage = UIImage(data: tempData as Data)
                         //画像の変更を反映する処理
                         self.tempData = NSMutableData()
                         //ここでNSDataからUIimageに変換を入れて　artImageに設定
                 }else{
-                    tempData.append(recvContents)
+                    tempData.append(recvContents as Data)
                     
                 }
                 
