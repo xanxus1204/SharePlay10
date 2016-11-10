@@ -16,8 +16,6 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     dynamic var peerNameArray:[String] = []
     
-    var isParent:Bool = false
-    
     private var sendQueue:[NSData] = []
     
     dynamic var artImage:UIImage!
@@ -38,7 +36,6 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     dynamic var audioData:NSData!
    func  prepare() {
     
-        isParent = false
         delayTime = 0.6
         tempData = NSMutableData()
 
@@ -47,15 +44,15 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
         session.delegate = self
     }
-    func sendDataInterval(){
+  @objc private  func sendDataInterval(){
         if sendQueue.count > 0{
+            
             do {
-                try session.send(sendQueue[0] as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                 try session.send(sendQueue[0] as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                //以下は送信が上手くいった場合のみ実行される
                 sendQueue.remove(at: 0)
-                
-            }catch{
-                
-                print("Send Failed")
+                }catch let error as NSError {
+                print(error.localizedDescription)
             }
             
         }
@@ -72,12 +69,15 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         }
         timer = Timer.scheduledTimer(timeInterval:delayTime, target: self, selector: #selector(NetworkCommunicater.sendDataInterval), userInfo: nil, repeats: true)
         timer.fire()
+        for _ in 0..<5{
+            sendDataInterval()//5パケットだけさっと送る
+        }
     }
     func sendImage(image:UIImage){
         let imageData:NSData = UIImagePNGRepresentation(image)! as NSData
         sendData(data: imageData, option: dataType.isImage)
     }
-    func sendData(data:NSData,option:dataType) -> () {
+  private  func sendData(data:NSData,option:dataType) -> () {
         
         var splitDataSize = bufferSize
         //var indexofData = 0
@@ -133,7 +133,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     }
 
     // MARK: MCSessionDelegate
-     public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
+      func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
         if recvDataArray != nil{
             let  recvType:Int = recvDataArray[0] as! Int
@@ -174,9 +174,15 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             peerNameArray.append(peerID.displayName)
             
             print("接続完了")
+            for peer in session.connectedPeers{
+                print("接続されてる人\(peer.displayName)")
+            }
            
         }
         if state == MCSessionState.notConnected{
+            for peer in session.connectedPeers{
+                print("接断されてる人\(peer.displayName)")
+            }
             var num = 0
             for name in peerNameArray {
                 

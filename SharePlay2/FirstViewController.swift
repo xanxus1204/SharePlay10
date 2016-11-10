@@ -21,6 +21,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var roomNum:Int = 0
     
+    private var isParent:Bool = false
+    
     @IBOutlet weak var startBtn: UIButton!
     
     
@@ -43,7 +45,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
        
         DispatchQueue.main.async {
             self.peerTable.reloadData()
-            if self.networkCom.isParent{
+            if self.isParent{
                 self.startBtn.isHidden = false
             }else{
                 self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
@@ -66,7 +68,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
-        networkCom.isParent = true
+        isParent = true
        
         if roomNum == 0 {
             roomNum = createRandomNum() //部屋作成時の４けたの鍵
@@ -85,7 +87,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-        networkCom.isParent = false
+        isParent = false
         roomLabel.text = nil
             stopClient()
         let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
@@ -112,6 +114,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             stopServer()
+            networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
             segueFirstToSecond()
     }
     //MARK: tableview delegate
@@ -211,13 +214,15 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "1to2" {
             // インスタンスの引き継ぎ
+            
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
             secondViewController.networkCom = self.networkCom
-            
+            secondViewController.isParent = self.isParent
             
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
+        initialize()
         print("戻ってきた")
         
         

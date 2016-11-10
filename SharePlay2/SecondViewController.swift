@@ -12,9 +12,6 @@ import MediaPlayer
 
 class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     
-    
-    
-    
    private var toPlayItem:MPMediaItem!
     
    private var player:AVAudioPlayer? = nil
@@ -26,6 +23,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     private var ownPlayerUrl:NSURL?
     
     private var musicName:String?
+    
+     var isParent:Bool!
     
      var networkCom:NetworkCommunicater!
     
@@ -53,7 +52,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             selector: #selector(SecondViewController.deleteFile),
             name:NSNotification.Name.UIApplicationWillTerminate,//アプリケーション終了時に実行するメソッドを指定
             object: nil)
-        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
+        //SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
         let audiosession = AVAudioSession.sharedInstance()
         do {
             try audiosession.setCategory(AVAudioSessionCategoryPlayback)//バックグラウンド再生を許可
@@ -76,9 +75,17 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         
         streamingPlayer = StreamingPlayer()
 }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    private func removeOb(){
+        networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
+        networkCom.removeObserver(self as NSObject, forKeyPath: "artImage")
+        networkCom.removeObserver(self as NSObject, forKeyPath: "recvStr")
+        networkCom.removeObserver(self as NSObject, forKeyPath: "audioData")
+        
     }
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let key = keyPath{
@@ -100,6 +107,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             }else{
                 DispatchQueue.main.async {
                     self.titlelabel.text = self.networkCom.recvStr
+                    self.view.setNeedsDisplay()
                 }
                 
                 resetStream()
@@ -112,13 +120,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
 }
     @IBAction func restart(_ sender: AnyObject) {
        
-        if networkCom.isParent{
+        if isParent!{
            networkCom.sendStr(str: "play")
         }
         playAudio()
 }
     @IBAction func stopBtnTapped(_ sender: AnyObject){
-        if networkCom.isParent{
+        if isParent!{
             networkCom.sendStr(str: "pause")
         }
         pauseAudio()
@@ -133,6 +141,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
    
     @IBAction func returnBtn(_ sender: AnyObject) {
+        removeOb()
         stopAudioStream()
         deleteFile()
 
@@ -161,7 +170,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
     //再生、停止などの処理safe
     func playAudio(){
-        if networkCom.isParent && player != nil{
+        if isParent && player != nil{
             player?.play()
         }else if streamingPlayer != nil{
             streamingPlayer.play()
@@ -169,7 +178,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         
     }
     func pauseAudio(){
-        if networkCom.isParent && player != nil{
+        if isParent && player != nil{
             player?.pause()
         }else if streamingPlayer != nil{
             streamingPlayer.pause()
@@ -188,7 +197,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         }
     }
     func changeVolume(value:Float){
-        if player != nil && networkCom.isParent{
+        if player != nil && isParent{
             player?.volume = value
         }else if streamingPlayer != nil{
             streamingPlayer.changeVolume(value)
@@ -197,7 +206,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     //MARK: -Segue
     func segueSecondtofirst(){
         stopAudioStream()
-        
+        removeOb()
         //timer止める
         deleteFile()
         performSegue(withIdentifier: "2to1", sender: nil)
@@ -255,8 +264,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         
         DispatchQueue.main.async(execute: {() -> Void in
             
-           //送信キューの削除
-            //この辺はオーディオデータの送信に関わる部分
+           
            
             if self.streamPlayerUrl != nil{
                 if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
@@ -264,12 +272,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                    self.networkCom.sendAudiodata(data: data)
                 }
             }
-            for _ in 0..<5{
-                self.networkCom.sendDataInterval()//３パケットだけさっと送る
-            }
+           
            
             
-            if self.networkCom.isParent{
+            if self.isParent!{
                 let audiosession = AVAudioSession.sharedInstance()
                 do{
                     try audiosession.setCategory(AVAudioSessionCategoryPlayback)
