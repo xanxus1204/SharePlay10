@@ -25,10 +25,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     @IBOutlet weak var startBtn: UIButton!
     
-    
     @IBOutlet weak var roomLabel: UILabel!
     
-
     @IBOutlet weak var peerTable: UITableView!
     
     override func viewDidLoad() {
@@ -74,7 +72,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
-        isParent = true //親フラグを立てる
+       
        SVProgressHUD.dismiss()
         roomNum = createRandomNum() //部屋作成時の４けたの鍵を新たに作成
         
@@ -83,6 +81,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "公開", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
          self.startServerWithName(name: self.roomName + roomNumName)//公開ボタンを押すと公開される
+             self.isParent = true //親フラグを立てる
             SVProgressHUD.show(withStatus: "公開中")
         })
         alert.addAction(okAction)
@@ -90,7 +89,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-        isParent = false //親フラグを建てない
+       
         roomLabel.text = nil//部屋番号を表す数字を消す
         SVProgressHUD.dismiss()
         let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
@@ -105,7 +104,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     if self.roomNum != Int(roomNumName!)!{
                         self.startClientWithName(name: self.roomName + roomNumName!)
                         self.roomNum = Int(roomNumName!)!
-                        SVProgressHUD.show(withStatus: "検索中")
+                         self.isParent = false //親フラグを建てない
+                        SVProgressHUD.show(withStatus: "検索中\n\(roomNumName!)")
                         
                     }
                 }
@@ -229,7 +229,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-        
+        self.networkCom.disconnectPeer()
         print("戻ってきた")
         self.viewDidLoad()
         

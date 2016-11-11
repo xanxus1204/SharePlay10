@@ -44,6 +44,9 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
         session.delegate = self
     }
+    func disconnectPeer(){
+        session.disconnect()
+    }
     @objc private  func sendDataInterval(){
         if sendQueue.count > 0{
             
@@ -195,11 +198,6 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
                     num = num + 1
                 }
             }
-            if peerNameArray.count == 0{
-                print("誰も居ないのでもどる")
-                
-            }
-            
             print("接続解除")
         }
 

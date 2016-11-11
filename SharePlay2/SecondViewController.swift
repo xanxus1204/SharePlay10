@@ -48,13 +48,15 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     func initialize(){
         
         let nc:NotificationCenter = NotificationCenter.default
-        
+        let accesoryEvent:MPRemoteCommandCenter = MPRemoteCommandCenter.shared()
+        accesoryEvent.togglePlayPauseCommand.addTarget(self, action: #selector(SecondViewController.accesoryToggled(event:)))
+        UIApplication.shared.beginReceivingRemoteControlEvents()
         nc.addObserver(
             self,
             selector: #selector(SecondViewController.deleteFile),
             name:NSNotification.Name.UIApplicationWillTerminate,//アプリケーション終了時に実行するメソッドを指定
             object: nil)
-        //SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
+        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
         let audiosession = AVAudioSession.sharedInstance()
         do {
             try audiosession.setCategory(AVAudioSessionCategoryPlayback)//バックグラウンド再生を許可
@@ -82,6 +84,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    func accesoryToggled(event:MPRemoteCommandEvent){
+        print("させない")
     }
     private func removeOb(){
         networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
@@ -268,7 +273,11 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
 
         }else{
             networkCom.artImage = nil
-            self.titleArt.image = UIImage(named: "no_image.png")
+            DispatchQueue.main.async {
+                 self.titleArt.image = UIImage(named: "no_image.png")
+            }
+           
+            
             print("Noimaage")
         }
         if networkCom.artImage != nil{

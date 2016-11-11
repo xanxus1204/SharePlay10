@@ -36,6 +36,8 @@ static void checkError(OSStatus err,const char *message){
     [audiosession setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
     //変換するフォーマット(IMA4)
     memset(&outputFormat, 0, sizeof(AudioStreamBasicDescription));
+    
+    
     outputFormat.mSampleRate       = 44100.0;
     outputFormat.mFormatID         = kAudioFormatAppleIMA4;//IMA4
     outputFormat.mChannelsPerFrame = 2;
