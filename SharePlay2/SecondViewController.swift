@@ -24,6 +24,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     
     private var musicName:String?
     
+    private var exporter:AudioExporter!
+    
      var isParent:Bool!
     
      var networkCom:NetworkCommunicater!
@@ -46,7 +48,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     func initialize(){
         
         let nc:NotificationCenter = NotificationCenter.default
-        nc.addObserver(self, selector:#selector(SecondViewController.finishedConvert(notification:)), name: NSNotification.Name(rawValue: "finishConvert"), object: nil)//変換完了の通知を受け取る準備
+        
         nc.addObserver(
             self,
             selector: #selector(SecondViewController.deleteFile),
@@ -74,6 +76,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         networkCom.addObserver(self as NSObject, forKeyPath: "audioData", options: [.new,.old], context: nil)
         
         streamingPlayer = StreamingPlayer()
+        selectBtn.isHidden = !isParent!
 }
     
     override func didReceiveMemoryWarning() {
@@ -123,8 +126,35 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         }else if key == "audioData"{
                 
                 streamingPlayer.recvAudio(networkCom.audioData as Data!)
-        }
-    }
+        }else if key == "convertComp"{
+                if change?[.newKey] as! Bool == true{
+                   
+                    DispatchQueue.main.async(execute: {() -> Void in
+                        if self.streamPlayerUrl != nil{
+                            if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
+                                
+                                self.networkCom.sendAudiodata(data: data)
+                            }
+                        }
+                        if self.isParent!{
+                            let audiosession = AVAudioSession.sharedInstance()
+                            do{
+                                try audiosession.setCategory(AVAudioSessionCategoryPlayback)
+                                self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
+                                self.player?.prepareToPlay()
+                                self.player?.volume = self.volumeSlider.value * self.volumeSlider.value
+                            }catch{
+                                print("あんまりだあ")
+                            }
+                        }
+                        self.exporter.removeObserver(self as NSObject, forKeyPath: "convertComp")
+                        SVProgressHUD.dismiss(withDelay: Double(self.networkCom.peerNameArray.count) * 2.0)
+                    })
+                    
+                }
+            }
+        
+     }
 }
     @IBAction func restart(_ sender: AnyObject) {
        
@@ -151,10 +181,11 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     @IBAction func returnBtn(_ sender: AnyObject) {
         if isParent!{
             networkCom.stopsendingAudio()
-            stopAudioStream()
+            deleteFile()
         }
+        stopAudioStream()
         removeOb()
-        deleteFile()
+        
 
     }
     
@@ -262,48 +293,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
     func prepareAudioStreaming(item :MPMediaItem) -> NSURL {
         
-        let exporter:AudioExporter = AudioExporter()
+        exporter = AudioExporter()
+        exporter.addObserver(self as NSObject, forKeyPath: "convertComp", options: [.old,.new], context: nil)//変換が終わったかどうかを判断するキー
         let url = exporter.convertItemtoAAC(item: item)
-        
         self.ownPlayerUrl = url[1]
               return url[0] as NSURL
     }
     
-  //MARK : notification
-    func finishedConvert(notification:Notification?){
-        
-        DispatchQueue.main.async(execute: {() -> Void in
-            
-           
-           
-            if self.streamPlayerUrl != nil{
-                if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
-                    
-                   self.networkCom.sendAudiodata(data: data)
-                }
-            }
-           
-           
-            
-            if self.isParent!{
-                let audiosession = AVAudioSession.sharedInstance()
-                do{
-                    try audiosession.setCategory(AVAudioSessionCategoryPlayback)
-                    self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
-                    self.player?.prepareToPlay()
-                    self.player?.volume = self.volumeSlider.value * self.volumeSlider.value
-                    
-                }catch{
-                    print("あんまりだあ")
-                }
-                
-            }
-            SVProgressHUD.dismiss(withDelay: Double(self.networkCom.peerNameArray.count) * 2.0)
-            
-        })
 
-    }
-    
 }
-
 

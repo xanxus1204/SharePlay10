@@ -140,7 +140,8 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     // MARK: MCSessionDelegate
       func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
+        let usingData:NSData = NSData(data: data)
+        let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: usingData as Data) as! NSMutableArray!
         if recvDataArray != nil{
             let  recvType:Int = recvDataArray[0] as! Int
             let recvContents:NSMutableData =  recvDataArray[2] as! NSMutableData

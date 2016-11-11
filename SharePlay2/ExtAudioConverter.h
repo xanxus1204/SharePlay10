@@ -14,5 +14,5 @@
 
 }
 
--(void)convertFrom:(NSURL*)fromURL toURL:(NSURL*)toURL;
+-(BOOL)convertFrom:(NSURL*)fromURL toURL:(NSURL*)toURL;
 @end

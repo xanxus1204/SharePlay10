@@ -9,7 +9,7 @@
 import Foundation
 import MediaPlayer
 class AudioExporter: NSObject {
-    
+    dynamic var convertComp:Bool = false
     func convertItemtoAAC(item:MPMediaItem) -> [NSURL] {
         
         let url:NSURL = item.value(forProperty: MPMediaItemPropertyAssetURL) as! NSURL
@@ -44,7 +44,7 @@ class AudioExporter: NSObject {
             let extConverter:ExtAudioConverter = ExtAudioConverter()
             
             
-            extConverter.convert(from:exportSession.outputURL, to: saveUrlforAAC as URL!)
+           self.convertComp = extConverter.convert(from:exportSession.outputURL, to: saveUrlforAAC as URL!)
            
             
         })

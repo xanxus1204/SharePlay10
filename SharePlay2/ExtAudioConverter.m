@@ -20,7 +20,7 @@ static void checkError(OSStatus err,const char *message){
     }
 }
 
--(void)convertFrom:(NSURL*)fromURL
+-(BOOL)convertFrom:(NSURL*)fromURL
              toURL:(NSURL*)toURL{
     ExtAudioFileRef infile,outfile;
     OSStatus err;
@@ -133,6 +133,7 @@ static void checkError(OSStatus err,const char *message){
         //読み込むフレームが無くなったら終了する
         if(numPacketToRead == 0){
             NSLog(@"変換完了");
+           
             break;
             
         }
@@ -144,8 +145,6 @@ static void checkError(OSStatus err,const char *message){
     ExtAudioFileDispose(infile);
     ExtAudioFileDispose(outfile);
     free(buffer);
-    
-    NSNotification *finishn = [NSNotification notificationWithName:@"finishConvert" object:nil];
-    [[NSNotificationCenter defaultCenter] postNotification:finishn];
+    return  YES;
 }
 @end
