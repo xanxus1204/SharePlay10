@@ -23,6 +23,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var alert:UIAlertController!
     
+    private var nowalertShowing:Bool = false
+    
     @IBOutlet weak var startBtn: UIButton!
     
     @IBOutlet weak var roomLabel: UILabel!
@@ -49,7 +51,9 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     if self.isParent{
                         self.startBtn.isHidden = false
                         SVProgressHUD.dismiss()
+                        self.stopServer()
                     }else{
+                        self.stopClient()
                         self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
                         self.segueFirstToSecond()
                         SVProgressHUD.dismiss()
@@ -106,7 +110,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             self.startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
              self.isParent = true //親フラグを立てる
             SVProgressHUD.show(withStatus: "公開中")
-            self.dismissHud(withDelay: 7)
+            self.dismissHud(withDelay: 10)
         })
         let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler:nil)
         alert.addAction(cancelAction)
@@ -161,13 +165,56 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     //相手を見つけたとき
     public func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?){
         print("見つけた")
-        browser.invitePeer(peerID, to: networkCom.session, withContext: nil, timeout: 0)
-    }
+        SVProgressHUD.dismiss()
+        alert = UIAlertController(title: "この相手に接続しますか？", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
+        let acceptAction = UIAlertAction(title: "はい",style: UIAlertActionStyle.default,handler: {(action:UIAlertAction!) -> Void in
+            browser.invitePeer(peerID, to: self.networkCom.session, withContext: nil, timeout: 0)
+
+        })
+        let cancelAction = UIAlertAction(title: "いいえ",style: UIAlertActionStyle.cancel,handler: {(action:UIAlertAction!) -> Void in  })
+        alert.addAction(acceptAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+
+           }
     //MARK: MCNearbyserviceadvitiserdelegate
     //招待されたとき
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
         print("招待された")
-        invitationHandler(true,networkCom.session)
+        SVProgressHUD.dismiss()
+        
+            alert = UIAlertController(title: "接続要求", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
+        let acceptAction = UIAlertAction(title: "許可",style: UIAlertActionStyle.default,handler: {(action:UIAlertAction!) -> Void in
+            self.nowalertShowing = false
+            invitationHandler(true,self.networkCom.session)
+        })
+        
+        
+        let cancelAction = UIAlertAction(title: "拒否",style: UIAlertActionStyle.cancel,handler: {(action:UIAlertAction!) -> Void in
+            self.nowalertShowing = false
+            invitationHandler(false,self.networkCom.session)
+        })
+        alert.addAction(acceptAction)
+        alert.addAction(cancelAction)
+        DispatchQueue.global().async {
+            while true {
+                if self.nowalertShowing {
+                    Thread.sleep(forTimeInterval: 0.5)
+                    //連続して要求が来た場合にちゃんと表示できるようにする。
+                }else{
+                    self.present(self.alert, animated: true, completion: {Void in
+                        self.nowalertShowing = true
+                    })
+                    break
+                }
+                
+            }
+        }
+        
+        
+
+        
+        
     }
     //MARK: 自作関数　主にデータ送受信系
     func startServerWithName(name:String?) -> Swift.Void {
