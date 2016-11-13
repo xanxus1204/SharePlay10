@@ -17,9 +17,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     var networkCom:NetworkCommunicater!
     
-    private let roomName:String = "abcdefg"
-    
-    private var roomNum:Int = 0
+    private let roomName:String = "shareplay10"
     
     private var isParent:Bool = false
     
@@ -86,7 +84,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         networkCom.createSessionwithID(peerID: peerID)
         networkCom.prepare()
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
-        roomNum = 0
         startBtn.isHidden = true
         roomLabel.text = nil
         peerTable.reloadData()
@@ -102,21 +99,17 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
 
-        roomNum = createRandomNum() //部屋作成時の４けたの鍵を新たに作成
         
-        let roomNumName = String(describing: roomNum)//数字を文字に変換
-        roomLabel.text = roomNumName //番号を表示
-         alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "公開", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
-         self.startServerWithName(name: self.roomName + roomNumName)//公開ボタンを押すと公開される
+        
+         alert = UIAlertController(title: "部屋を作成", message: "周辺の端末に公開します", preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+            self.startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
              self.isParent = true //親フラグを立てる
             SVProgressHUD.show(withStatus: "公開中")
             self.dismissHud(withDelay: 7)
-            
-            
-            
-            
         })
+        let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler:nil)
+        alert.addAction(cancelAction)
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }
@@ -124,35 +117,22 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
        
         roomLabel.text = nil//部屋番号を表す数字を消す
-         alert = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler:
+         alert = UIAlertController(title: "部屋を検索", message: "周辺の端末を検索します", preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler:
             {(action:UIAlertAction!)-> Void in
-            let textFields:Array<UITextField>? = self.alert.textFields as Array<UITextField>?
-            if textFields != nil{
-                    
-                    let roomNumName = textFields?[0].text
-                    let predicate = NSPredicate(format: "SELF MATCHES '\\\\d{4}'")//0-9の数字4桁のみ採用
-                if predicate.evaluate(with: roomNumName){
-                    if self.roomNum != Int(roomNumName!)!{
-                        self.startClientWithName(name: self.roomName + roomNumName!)
-                        self.roomNum = Int(roomNumName!)!
-                         self.isParent = false //親フラグを建てないs
+                        self.isParent = false //親フラグを建てないs
+                        self.startClientWithName(name: self.roomName)
                         DispatchQueue.main.async {
-                            SVProgressHUD.show(withStatus: "検索中\n\(roomNumName!)")
+                            SVProgressHUD.show(withStatus: "検索中")
                             self.dismissHud(withDelay: 7)
                         }
-                        
-                    }
-                }else{
-                    SVProgressHUD.showInfo(withStatus: "4桁の数字で入力してください")
-                }
-            }
+            
         })
-        
+        let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler:nil)
         //let anotherAction = UIAlertAction(title: "以前接続した相手を検索", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction) -> Void in})
         alert.addAction(okAction)
+        alert.addAction(cancelAction)
        // alert.addAction(anotherAction)
-        alert.addTextField(configurationHandler: {(text:UITextField!) -> Void in    text.keyboardType = UIKeyboardType.decimalPad})
         present(alert, animated: true, completion: nil)
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
@@ -248,7 +228,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             browser.stopBrowsingForPeers()
             browser = nil
         }
-        roomNum = 0
+      
         
     }
     
