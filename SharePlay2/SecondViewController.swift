@@ -26,6 +26,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     
     private var exporter:AudioExporter!
     
+    private var alert:UIAlertController!
+    
      var isParent:Bool!
     
      var networkCom:NetworkCommunicater!
@@ -42,6 +44,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
+        SVProgressHUD.dismiss()
         // Do any additional setup after loading the view, typically from a nib.
        
     }
@@ -50,7 +53,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         let nc:NotificationCenter = NotificationCenter.default
         let accesoryEvent:MPRemoteCommandCenter = MPRemoteCommandCenter.shared()
         accesoryEvent.togglePlayPauseCommand.addTarget(self, action: #selector(SecondViewController.accesoryToggled(event:)))
-        UIApplication.shared.beginReceivingRemoteControlEvents()
+        UIApplication.shared.beginReceivingRemoteControlEvents()//イヤホンのボタンなどのイベント検知
         nc.addObserver(
             self,
             selector: #selector(SecondViewController.deleteFile),
@@ -101,12 +104,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                 if networkCom.peerNameArray.count == 0{
                     DispatchQueue.main.async {
                         self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る
-                        self.networkCom.stopsendingAudio()
-                    }
+                }
                 }
         }else if key == "artImage"{
                 DispatchQueue.main.async {
                     self.titleArt.image = self.networkCom.artImage
+                    self.view.setNeedsDisplay()
+
                 }
                 
         }else if key == "recvStr"{
@@ -121,8 +125,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                 DispatchQueue.main.async {
                     
                     self.titlelabel.text = self.networkCom.recvStr
-                    self.view.setNeedsDisplay()
-                    self.stopAudioStream()
+                                        self.stopAudioStream()
                     self.resetStream()
                     self.changeVolume(value: self.volumeSlider.value * self.volumeSlider.value)
                 }
@@ -182,20 +185,17 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         present(picker,animated: true,completion: nil)
         
     }
-   
-    @IBAction func returnBtn(_ sender: AnyObject) {
-        if isParent!{
-            networkCom.stopsendingAudio()
-            deleteFile()
-        }
-        stopAudioStream()
-        removeOb()
-        
-
+    
+    @IBAction func returnBtnTapped(_ sender: Any) {
+         alert = UIAlertController(title: "戻りますか？", message: "相手との接続が切れます", preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: "戻る", style: UIAlertActionStyle.default, handler:{(action:UIAlertAction)-> Void in
+                self.segueSecondtofirst()
+        })
+        let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler: nil)
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
     }
-    
-   
-    
     @IBAction func volumeSliderChanged(_ sender: UISlider) {
         changeVolume(value: sender.value * sender.value)
     }
@@ -252,11 +252,23 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
     //MARK: -Segue
     func segueSecondtofirst(){
-        stopAudioStream()
-        removeOb()
-        deleteFile()
+        
         performSegue(withIdentifier: "2to1", sender: nil)
         
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "2to1" {
+            if isParent!{
+                networkCom.stopsendingAudio()
+                deleteFile()
+                pauseAudio()
+            }
+            UIApplication.shared.endReceivingRemoteControlEvents()
+            stopAudioStream()
+            removeOb()
+            networkCom = nil
+            
+        }
     }
        //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {

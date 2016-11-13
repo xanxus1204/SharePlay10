@@ -23,16 +23,19 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var isParent:Bool = false
     
+    private var alert:UIAlertController!
+    
     @IBOutlet weak var startBtn: UIButton!
     
     @IBOutlet weak var roomLabel: UILabel!
     
     @IBOutlet weak var peerTable: UITableView!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         SVProgressHUD.setDefaultStyle(SVProgressHUDStyle.dark)
-        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.none)
+        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear)
         initialize()
     }
 
@@ -60,7 +63,25 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         
     }
     func initialize(){
-        peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
+        let userDefaults = UserDefaults.standard //データ永続化用
+        let oldName:String? = userDefaults.string(forKey: "DisplayName")
+        let deviceName:String = UIDevice.current.name
+        if let old = oldName{
+            if old == deviceName{
+                let peerIDData = userDefaults.data(forKey: "PeerID")
+                peerID = NSKeyedUnarchiver.unarchiveObject(with: peerIDData!) as! MCPeerID!
+                print("前回のIDを再利用")
+            }
+        }else{
+            
+             peerID = MCPeerID(displayName: deviceName)//peerIDの設定端末の名前を渡す
+            let peerIDData = NSKeyedArchiver.archivedData(withRootObject: peerID)
+            userDefaults.set(peerIDData, forKey: "PeerID")
+            userDefaults.set(deviceName, forKey: "DisplayName")
+            userDefaults.synchronize()
+        }
+       
+        
         networkCom = NetworkCommunicater()
         networkCom.createSessionwithID(peerID: peerID)
         networkCom.prepare()
@@ -70,19 +91,31 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         roomLabel.text = nil
         peerTable.reloadData()
     }
+    func dismissHud(withDelay delay:Double){
+        DispatchQueue.global().async {
+            Thread.sleep(forTimeInterval: delay)
+            SVProgressHUD.dismiss()
+        }
+       
+    }
+    
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
-       
-       SVProgressHUD.dismiss()
+
         roomNum = createRandomNum() //部屋作成時の４けたの鍵を新たに作成
         
         let roomNumName = String(describing: roomNum)//数字を文字に変換
         roomLabel.text = roomNumName //番号を表示
-        let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
+         alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "公開", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
          self.startServerWithName(name: self.roomName + roomNumName)//公開ボタンを押すと公開される
              self.isParent = true //親フラグを立てる
             SVProgressHUD.show(withStatus: "公開中")
+            self.dismissHud(withDelay: 7)
+            
+            
+            
+            
         })
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
@@ -91,27 +124,34 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
        
         roomLabel.text = nil//部屋番号を表す数字を消す
-        SVProgressHUD.dismiss()
-        let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
+         alert = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler:
             {(action:UIAlertAction!)-> Void in
-            let textFields:Array<UITextField>? = alert.textFields as Array<UITextField>?
+            let textFields:Array<UITextField>? = self.alert.textFields as Array<UITextField>?
             if textFields != nil{
                     
                     let roomNumName = textFields?[0].text
-                    let predicate = NSPredicate(format: "SELF MATCHES '\\\\d+'")//0-9の数字のみ採用
+                    let predicate = NSPredicate(format: "SELF MATCHES '\\\\d{4}'")//0-9の数字4桁のみ採用
                 if predicate.evaluate(with: roomNumName){
                     if self.roomNum != Int(roomNumName!)!{
                         self.startClientWithName(name: self.roomName + roomNumName!)
                         self.roomNum = Int(roomNumName!)!
-                         self.isParent = false //親フラグを建てない
-                        SVProgressHUD.show(withStatus: "検索中\n\(roomNumName!)")
+                         self.isParent = false //親フラグを建てないs
+                        DispatchQueue.main.async {
+                            SVProgressHUD.show(withStatus: "検索中\n\(roomNumName!)")
+                            self.dismissHud(withDelay: 7)
+                        }
                         
                     }
+                }else{
+                    SVProgressHUD.showInfo(withStatus: "4桁の数字で入力してください")
                 }
             }
         })
+        
+        //let anotherAction = UIAlertAction(title: "以前接続した相手を検索", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction) -> Void in})
         alert.addAction(okAction)
+       // alert.addAction(anotherAction)
         alert.addTextField(configurationHandler: {(text:UITextField!) -> Void in    text.keyboardType = UIKeyboardType.decimalPad})
         present(alert, animated: true, completion: nil)
             }

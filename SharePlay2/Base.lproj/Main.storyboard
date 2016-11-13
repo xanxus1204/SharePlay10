@@ -144,8 +144,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="戻る"/>
                                 <connections>
-                                    <action selector="returnBtn:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="2Io-TQ-8bs"/>
-                                    <segue destination="x64-in-pbC" kind="unwind" identifier="2to1" unwindAction="backtoFirstWithSegue:" id="D9V-sK-Naf"/>
+                                    <action selector="returnBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="CPb-JN-6pV"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5BZ-AV-vXD">
@@ -156,7 +155,7 @@
                                     <action selector="stopBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="w69-hE-BxY"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no_image.png" translatesAutoresizingMaskIntoConstraints="NO" id="SvE-vO-IuD">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no_image.png" translatesAutoresizingMaskIntoConstraints="NO" id="SvE-vO-IuD">
                                 <rect key="frame" x="42" y="131" width="236" height="236"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="SvE-vO-IuD" secondAttribute="height" multiplier="1:1" id="bBC-ad-Vco"/>
@@ -204,12 +203,13 @@
                         <outlet property="titleArt" destination="SvE-vO-IuD" id="GH0-wb-B20"/>
                         <outlet property="titlelabel" destination="144-CI-nf5" id="x6P-AK-JdL"/>
                         <outlet property="volumeSlider" destination="Zr6-2f-Dcq" id="5Qp-vk-Hbw"/>
+                        <segue destination="x64-in-pbC" kind="unwind" identifier="2to1" unwindAction="backtoFirstWithSegue:" id="Khr-ad-INY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qlm-J5-tSb" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="x64-in-pbC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="737" y="293"/>
+            <point key="canvasLocation" x="938" y="293"/>
         </scene>
     </scenes>
     <resources>

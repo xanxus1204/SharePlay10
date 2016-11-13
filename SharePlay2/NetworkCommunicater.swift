@@ -143,7 +143,8 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     // MARK: MCSessionDelegate
       func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        let usingData:NSData = NSData(data: data)
+        
+       let usingData:NSData = NSData(data: data)
         let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: usingData as Data) as! NSMutableArray!
         if recvDataArray != nil{
             let  recvType:Int = recvDataArray[0] as! Int
@@ -175,7 +176,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             }
             
         }
-        recvDataArray.removeAllObjects()
+        
 
     }
      public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
