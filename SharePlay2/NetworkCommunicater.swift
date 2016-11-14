@@ -176,14 +176,11 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             }
             
         }
-        
-
     }
      public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
         if state == MCSessionState.connected{
             print(peerID.displayName)
             peerNameArray.append(peerID.displayName)
-            
             print("接続完了")
             
            

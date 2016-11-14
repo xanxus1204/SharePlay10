@@ -17,7 +17,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     var networkCom:NetworkCommunicater!
     
-    private let roomName:String = "shareplay10"
+    private let roomName:String = "shareplay-10"
     
     private var isParent:Bool = false
     
@@ -49,7 +49,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     if self.isParent{
                         self.startBtn.isHidden = false
                         SVProgressHUD.dismiss()
-                        self.stopServer()
                     }else{
                         self.stopClient()
                         self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")

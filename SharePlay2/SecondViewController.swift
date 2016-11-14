@@ -32,6 +32,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     
      var networkCom:NetworkCommunicater!
     
+     let nc:NotificationCenter = NotificationCenter.default
+    
     @IBOutlet weak var titlelabel: UILabel!
 
     @IBOutlet weak var titleArt: UIImageView!
@@ -50,13 +52,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
     func initialize(){
         
-        let nc:NotificationCenter = NotificationCenter.default
+       
         let accesoryEvent:MPRemoteCommandCenter = MPRemoteCommandCenter.shared()
         accesoryEvent.togglePlayPauseCommand.addTarget(self, action: #selector(SecondViewController.accesoryToggled(event:)))
         UIApplication.shared.beginReceivingRemoteControlEvents()//イヤホンのボタンなどのイベント検知
         nc.addObserver(
             self,
-            selector: #selector(SecondViewController.deleteFile),
+            selector: #selector(SecondViewController.doBeforeTerminate),
             name:NSNotification.Name.UIApplicationWillTerminate,//アプリケーション終了時に実行するメソッドを指定
             object: nil)
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
@@ -90,6 +92,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
     func accesoryToggled(event:MPRemoteCommandEvent){
         print("させない")
+    }
+    func doBeforeTerminate(){
+        deleteFile()
+        nc.removeObserver(self)
     }
     private func removeOb(){
         networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
