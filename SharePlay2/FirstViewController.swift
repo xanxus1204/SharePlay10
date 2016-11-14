@@ -23,8 +23,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var alert:UIAlertController!
     
-    private var nowalertShowing:Bool = false
-    
     @IBOutlet weak var startBtn: UIButton!
     
     @IBOutlet weak var roomLabel: UILabel!
@@ -180,39 +178,32 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     //MARK: MCNearbyserviceadvitiserdelegate
     //招待されたとき
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
+        
+            
+        
         print("招待された")
         SVProgressHUD.dismiss()
         
-            alert = UIAlertController(title: "接続要求", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
+            self.alert = UIAlertController(title: "接続要求", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
         let acceptAction = UIAlertAction(title: "許可",style: UIAlertActionStyle.default,handler: {(action:UIAlertAction!) -> Void in
-            self.nowalertShowing = false
+          
             invitationHandler(true,self.networkCom.session)
         })
         
         
         let cancelAction = UIAlertAction(title: "拒否",style: UIAlertActionStyle.cancel,handler: {(action:UIAlertAction!) -> Void in
-            self.nowalertShowing = false
+           
             invitationHandler(false,self.networkCom.session)
         })
-        alert.addAction(acceptAction)
-        alert.addAction(cancelAction)
-        DispatchQueue.global().async {
-            while true {
-                if self.nowalertShowing {
-                    Thread.sleep(forTimeInterval: 0.5)
-                    //連続して要求が来た場合にちゃんと表示できるようにする。
-                }else{
-                    self.present(self.alert, animated: true, completion: {Void in
-                        self.nowalertShowing = true
-                    })
-                    break
-                }
-                
+        self.alert.addAction(acceptAction)
+        self.alert.addAction(cancelAction)
+            var baseView: UIViewController = self.view.window!.rootViewController!
+            while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
+                baseView = baseView.presentedViewController!
             }
-        }
-        
-        
 
+        baseView.present(self.alert, animated: true, completion:nil)
+        
         
         
     }
@@ -304,6 +295,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     // A nearby peer has stopped advertising.
     public func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID){
+        print("lostpeer")
     }
 }
 
