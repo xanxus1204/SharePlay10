@@ -14,9 +14,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     var peerID:MCPeerID!
     private var browser: MCNearbyServiceBrowser! //ピアーを探索するときに使うオブジェクト
     private var nearbyAd:MCNearbyServiceAdvertiser! //サービスを公開するときに使うオブジェクト
-    
     var networkCom:NetworkCommunicater!
-    
     private let roomName:String = "shareplay-10"
     
     private var isParent:Bool = false
@@ -65,8 +63,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         let userDefaults = UserDefaults.standard //データ永続化用
         let oldName:String? = userDefaults.string(forKey: "DisplayName")
         let deviceName:String = UIDevice.current.name
-        if let old = oldName{
-            if old == deviceName{
+        
+            if oldName == deviceName{
                 let peerIDData = userDefaults.data(forKey: "PeerID")
                 peerID = NSKeyedUnarchiver.unarchiveObject(with: peerIDData!) as! MCPeerID!
                 print("前回のIDを再利用")
@@ -78,7 +76,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 userDefaults.set(deviceName, forKey: "DisplayName")
                 userDefaults.synchronize()
             }
-        }
+        
        
         
         networkCom = NetworkCommunicater()
