@@ -71,14 +71,14 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 let peerIDData = userDefaults.data(forKey: "PeerID")
                 peerID = NSKeyedUnarchiver.unarchiveObject(with: peerIDData!) as! MCPeerID!
                 print("前回のIDを再利用")
+            }else{
+                
+                peerID = MCPeerID(displayName: deviceName)//peerIDの設定端末の名前を渡す
+                let peerIDData = NSKeyedArchiver.archivedData(withRootObject: peerID)
+                userDefaults.set(peerIDData, forKey: "PeerID")
+                userDefaults.set(deviceName, forKey: "DisplayName")
+                userDefaults.synchronize()
             }
-        }else{
-            
-             peerID = MCPeerID(displayName: deviceName)//peerIDの設定端末の名前を渡す
-            let peerIDData = NSKeyedArchiver.archivedData(withRootObject: peerID)
-            userDefaults.set(peerIDData, forKey: "PeerID")
-            userDefaults.set(deviceName, forKey: "DisplayName")
-            userDefaults.synchronize()
         }
        
         
