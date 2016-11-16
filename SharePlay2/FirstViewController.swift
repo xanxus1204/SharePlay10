@@ -54,16 +54,19 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                         SVProgressHUD.dismiss()
                     }
                 }
-
             }
         }
-        
     }
     func initialize(){
+        self.startBtn.isHidden = true
         let userDefaults = UserDefaults.standard //データ永続化用
         let oldName:String? = userDefaults.string(forKey: "DisplayName")
         let deviceName:String = UIDevice.current.name
-        
+        if deviceName == " " || deviceName == "　"{//端末の名前がスペースあるいは半角スペースのとき
+            SVProgressHUD.showInfo(withStatus:"アプリを終了して\n設定->一般->情報から\n名前を設定してください")
+            self.view.isUserInteractionEnabled = false //操作できなくする。
+        }
+       
             if oldName == deviceName{
                 let peerIDData = userDefaults.data(forKey: "PeerID")
                 peerID = NSKeyedUnarchiver.unarchiveObject(with: peerIDData!) as! MCPeerID!
@@ -76,9 +79,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 userDefaults.set(deviceName, forKey: "DisplayName")
                 userDefaults.synchronize()
             }
-        
-       
-        
         networkCom = NetworkCommunicater()
         networkCom.createSessionwithID(peerID: peerID)
         networkCom.prepare()
