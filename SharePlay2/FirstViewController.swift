@@ -123,7 +123,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                         self.startClientWithName(name: self.roomName)
                         DispatchQueue.main.async {
                             SVProgressHUD.show(withStatus: "検索中")
-                            self.dismissHud(withDelay: 7)
+                            self.dismissHud(withDelay: 9)
                         }
             
         })
@@ -151,9 +151,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         return cell
 
     }
-    
-   
-    
     //MARK: MCSessiondelegate
     // 接続状況が変化したとき.
 
@@ -169,7 +166,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         let cancelAction = UIAlertAction(title: "いいえ",style: UIAlertActionStyle.cancel,handler: {(action:UIAlertAction!) -> Void in  })
         alert.addAction(acceptAction)
         alert.addAction(cancelAction)
-        present(alert, animated: true, completion: nil)
+        var baseView: UIViewController = self.view.window!.rootViewController!
+        while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
+            baseView = baseView.presentedViewController!
+        }
+        baseView.present(alert, animated: true, completion: nil)
 
            }
     //MARK: MCNearbyserviceadvitiserdelegate

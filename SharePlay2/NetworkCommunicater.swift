@@ -27,6 +27,15 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     private var timer:Timer!
     
     private var delayTime:Double!
+    
+    dynamic var motherID:MCPeerID!
+    
+    struct peerState {
+        var name:String
+        var peerID:MCPeerID
+    }
+    private var peerStates:[peerState] = []
+    
     enum dataType:Int {//送信するデータのタイプ
         case isString = 1
         case isImage = 2
@@ -178,25 +187,31 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         }
     }
      public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
+        
+        let newpeer = peerState(name: peerID.displayName, peerID: peerID)
+
         if state == MCSessionState.connected{
-            print(peerID.displayName)
-            peerNameArray.append(peerID.displayName)
-            print("接続完了")
-            
-           
+            peerStates.append(newpeer)
+            if peerNameArray.count == 0{
+                motherID = peerID
+            }
+            peerNameArray.append(newpeer.name)
+            print("接続完了\(peerID.displayName)")
         }
         if state == MCSessionState.notConnected{
-            
             var num = 0
-            for name in peerNameArray {
-                
-                if name == peerID.displayName{
-                    print(peerNameArray[num])
-                    peerNameArray.remove(at: num)
-                    num = num + 1
+            for peerst in peerStates{
+                if peerID .isEqual(motherID){
+                    motherID = nil
                 }
+                if peerID .isEqual(peerst.peerID){
+                    peerStates.remove(at: num)
+                    peerNameArray.remove(at: num)
+                    print("接続解除\(peerID.displayName)")
+                }
+                num = num + 1
             }
-            print("接続解除")
+    
         }
 
     }

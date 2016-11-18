@@ -59,8 +59,6 @@ static void checkError(OSStatus err,const char *message){
                            0, NULL,
                            &size,
                            &outputFormat);//変換後のフォーマット
-    
-    
     err = ExtAudioFileGetProperty(infile,//変換前のファイルのプロパティを取得
                                   kExtAudioFileProperty_FileDataFormat,
                                   &size,

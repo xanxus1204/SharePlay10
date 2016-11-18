@@ -81,7 +81,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         networkCom.addObserver(self as NSObject, forKeyPath: "artImage", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "recvStr", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "audioData", options: [.new,.old], context: nil)
-        
+        networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
+
         streamingPlayer = StreamingPlayer()
         selectBtn.isHidden = !isParent!
 }
@@ -102,7 +103,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         networkCom.removeObserver(self as NSObject, forKeyPath: "artImage")
         networkCom.removeObserver(self as NSObject, forKeyPath: "recvStr")
         networkCom.removeObserver(self as NSObject, forKeyPath: "audioData")
-        
+        networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
     }
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let key = keyPath{
@@ -111,6 +112,12 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                     DispatchQueue.main.async {
                         self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る
                 }
+                }
+        }else if key == "motherID"{
+                if networkCom.motherID == nil && !isParent{
+                    DispatchQueue.main.async {
+                        self.segueSecondtofirst()
+                    }
                 }
         }else if key == "artImage"{
                 DispatchQueue.main.async {
@@ -272,7 +279,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             UIApplication.shared.endReceivingRemoteControlEvents()
             stopAudioStream()
             removeOb()
-            networkCom = nil
+            
             
         }
     }
