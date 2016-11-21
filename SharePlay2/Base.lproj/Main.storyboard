@@ -76,16 +76,9 @@
                                     <action selector="createBtnTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LA7-dC-Lmk"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="91B-AD-fit">
-                                <rect key="frame" x="160" y="133" width="0.0" height="0.0"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="91B-AD-fit" firstAttribute="top" secondItem="hzk-y9-hct" secondAttribute="bottom" constant="14" id="1e6-ko-X5e"/>
                             <constraint firstItem="hbB-U4-HVa" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="9HF-nI-diN"/>
                             <constraint firstItem="jWh-su-X1t" firstAttribute="top" secondItem="hbB-U4-HVa" secondAttribute="bottom" constant="3" id="9iL-dk-TA4"/>
                             <constraint firstItem="jWh-su-X1t" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="Fhu-cA-PPp"/>
@@ -98,13 +91,11 @@
                             <constraint firstItem="hbB-U4-HVa" firstAttribute="top" secondItem="hzk-y9-hct" secondAttribute="bottom" constant="14" id="oV6-3b-SKJ"/>
                             <constraint firstItem="hzk-y9-hct" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="65" id="ozg-iG-vfG"/>
                             <constraint firstItem="4lz-GH-gxd" firstAttribute="baseline" secondItem="hbB-U4-HVa" secondAttribute="firstBaseline" id="pND-fq-JgO"/>
-                            <constraint firstItem="91B-AD-fit" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="sa0-sU-BUD"/>
                             <constraint firstAttribute="trailing" secondItem="jWh-su-X1t" secondAttribute="trailing" id="xe9-9Y-mZ7"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="peerTable" destination="jWh-su-X1t" id="eOV-ra-JOh"/>
-                        <outlet property="roomLabel" destination="91B-AD-fit" id="FuI-R0-ETu"/>
                         <outlet property="startBtn" destination="hzk-y9-hct" id="lpO-Rb-bQ4"/>
                         <segue destination="VyZ-mK-Ub2" kind="presentation" identifier="1to2" id="ehk-vf-HeP"/>
                     </connections>

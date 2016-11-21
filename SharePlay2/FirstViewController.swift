@@ -23,8 +23,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     @IBOutlet weak var startBtn: UIButton!
     
-    @IBOutlet weak var roomLabel: UILabel!
-    
     @IBOutlet weak var peerTable: UITableView!
     
     
@@ -41,17 +39,20 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let key = keyPath{
-            if key == "peerNameArray"{//変化したプロパティがPEERnamearryだった場合
+            if key == "motherID"{//変化したプロパティがPEERnamearryだった場合
                 DispatchQueue.main.async {
                     self.peerTable.reloadData()
                     if self.isParent{
                         self.startBtn.isHidden = false
                         SVProgressHUD.dismiss()
                     }else{
-                        self.stopClient()
-                        self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
-                        self.segueFirstToSecond()
-                        SVProgressHUD.dismiss()
+                        if self.networkCom.motherID != nil{
+                            self.stopClient()
+                            self.networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
+                            self.segueFirstToSecond()
+                            SVProgressHUD.dismiss()
+                        }
+                        
                     }
                 }
             }
@@ -82,9 +83,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         networkCom = NetworkCommunicater()
         networkCom.createSessionwithID(peerID: peerID)
         networkCom.prepare()
-        networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         startBtn.isHidden = true
-        roomLabel.text = nil
         peerTable.reloadData()
     }
     func dismissHud(withDelay delay:Double){
@@ -115,7 +115,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
        
-        roomLabel.text = nil//部屋番号を表す数字を消す
          alert = UIAlertController(title: "部屋を検索", message: "周辺の端末を検索します", preferredStyle: UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler:
             {(action:UIAlertAction!)-> Void in
@@ -136,7 +135,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             stopServer()
-            networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
+            networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
             segueFirstToSecond()
     }
     //MARK: tableview delegate
@@ -145,8 +144,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "peerCell",for: indexPath)
-        let peerName = networkCom.peerNameArray[indexPath.row]
-        cell.textLabel!.text = peerName
+        if networkCom.peerNameArray.count > indexPath.row{
+            let peerName = networkCom.peerNameArray[indexPath.row]
+            cell.textLabel!.text = peerName
+        }
+        
+        
     
         return cell
 
@@ -286,9 +289,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
         self.networkCom.disconnectPeer()
-        print("戻ってきた")
-        self.viewDidLoad()
+        DispatchQueue.main.async {
+            self.startBtn.isHidden = true
+            self.peerTable.reloadData()
+        }
         
+        networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
     }
     
     // A nearby peer has stopped advertising.

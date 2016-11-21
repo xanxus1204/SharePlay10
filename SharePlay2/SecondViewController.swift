@@ -99,7 +99,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         nc.removeObserver(self)
     }
     private func removeOb(){
+        
         networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
+        
         networkCom.removeObserver(self as NSObject, forKeyPath: "artImage")
         networkCom.removeObserver(self as NSObject, forKeyPath: "recvStr")
         networkCom.removeObserver(self as NSObject, forKeyPath: "audioData")
@@ -265,7 +267,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
     //MARK: -Segue
     func segueSecondtofirst(){
-        
+        removeOb()
         performSegue(withIdentifier: "2to1", sender: nil)
         
     }
@@ -278,7 +280,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             }
             UIApplication.shared.endReceivingRemoteControlEvents()
             stopAudioStream()
-            removeOb()
             
             
         }
@@ -333,7 +334,5 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         self.ownPlayerUrl = url[1]
               return url[0] as NSURL
     }
-    
-
 }
 
