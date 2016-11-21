@@ -42,11 +42,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             if key == "motherID"{//変化したプロパティがPEERnamearryだった場合
                 DispatchQueue.main.async {
                     self.peerTable.reloadData()
-                    if self.isParent{
-                        self.startBtn.isHidden = false
-                        SVProgressHUD.dismiss()
-                    }else{
-                        if self.networkCom.motherID != nil{
+                    
+                    if self.networkCom.motherID != nil{
+                        if self.networkCom.motherID .isEqual(self.peerID) || self.isParent{
+                            self.startBtn.isHidden = false
+                            SVProgressHUD.dismiss()
+                        }else{
                             self.stopClient()
                             self.networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
                             self.segueFirstToSecond()
@@ -54,10 +55,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                         }
                         
                     }
+                        
+                    }
                 }
             }
         }
-    }
+    
     func initialize(){
         self.startBtn.isHidden = true
         let userDefaults = UserDefaults.standard //データ永続化用
@@ -137,6 +140,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             stopServer()
             networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
             segueFirstToSecond()
+            startBtn.isHidden = true
     }
     //MARK: tableview delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -144,12 +148,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "peerCell",for: indexPath)
-        if networkCom.peerNameArray.count > indexPath.row{
+       
             let peerName = networkCom.peerNameArray[indexPath.row]
             cell.textLabel!.text = peerName
-        }
-        
-        
+    
+
     
         return cell
 
@@ -288,12 +291,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-        self.networkCom.disconnectPeer()
-        DispatchQueue.main.async {
-            self.startBtn.isHidden = true
-            self.peerTable.reloadData()
-        }
         
+        
+            print("戻ってきたmain")
+            self.peerTable.reloadData()
+            self.view.setNeedsDisplay()
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
     }
     

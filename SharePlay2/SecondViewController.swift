@@ -273,11 +273,20 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "2to1" {
+           
+            DispatchQueue.main.async {
+                
+                self.networkCom.disconnectPeer()//戻るので切断
+            }
+        let firstViewController:FirstViewController = segue.destination as! FirstViewController
+           firstViewController.networkCom = self.networkCom
+            
             if isParent!{
                 networkCom.stopsendingAudio()
                 deleteFile()
                 pauseAudio()
             }
+            
             UIApplication.shared.endReceivingRemoteControlEvents()
             stopAudioStream()
             
