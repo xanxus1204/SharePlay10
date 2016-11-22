@@ -22,11 +22,11 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     private var musicName:String?
     
-    private var tempData:NSMutableData!//ファイルの容量が大きいものを受信する時用
+    private var tempData:NSMutableData = NSMutableData()//ファイルの容量が大きいものを受信する時用
     
     private var timer:Timer!
     
-    private var delayTime:Double!
+    private var delayTime:Double = 0.6
     
     dynamic var motherID:MCPeerID!
     
@@ -43,16 +43,14 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     }
     dynamic var recvStr:String? = nil
     dynamic var audioData:NSData!
-   func  prepare() {
-    
-        delayTime = 0.6
-        tempData = NSMutableData()
-
-    }
-    func createSessionwithID(peerID:MCPeerID){
+     init(withID peerID:MCPeerID) {
+        super.init()
         session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
         session.delegate = self
+        
     }
+    
+    
     func disconnectPeer(){
         session.disconnect()
     }
@@ -81,15 +79,17 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         sendData(data: orderData! as NSData, option: dataType.isString)
     }
     func sendAudiodata(data:NSData){
+        
         sendData(data: data, option: dataType.isAudio)
         if self.timer != nil {
             timer.invalidate()
         }
         timer = Timer.scheduledTimer(timeInterval:delayTime, target: self, selector: #selector(NetworkCommunicater.sendDataInterval), userInfo: nil, repeats: true)
-        timer.fire()
+        
         for _ in 0..<5{
             sendDataInterval()//5パケットだけさっと送る
         }
+        timer.fire()
     }
     func sendImage(image:UIImage){
         let imageData:NSData = UIImagePNGRepresentation(image)! as NSData

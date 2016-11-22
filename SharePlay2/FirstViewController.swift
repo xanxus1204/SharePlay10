@@ -41,8 +41,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         if let key = keyPath{
             if key == "motherID"{//変化したプロパティがPEERnamearryだった場合
                 DispatchQueue.main.async {
-                    self.peerTable.reloadData()
-                    
                     if self.networkCom.motherID != nil{
                         if self.networkCom.motherID .isEqual(self.peerID) || self.isParent{
                             self.startBtn.isHidden = false
@@ -50,6 +48,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                         }else{
                             self.stopClient()
                             self.networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
+                            self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
                             self.segueFirstToSecond()
                             SVProgressHUD.dismiss()
                         }
@@ -57,7 +56,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     }
                         
                     }
+                }else if key == "peerNameArray"{
+                DispatchQueue.main.async {
+                    self.peerTable.reloadData()
                 }
+                
+            }
             }
         }
     
@@ -83,10 +87,10 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 userDefaults.set(deviceName, forKey: "DisplayName")
                 userDefaults.synchronize()
             }
-        networkCom = NetworkCommunicater()
-        networkCom.createSessionwithID(peerID: peerID)
-        networkCom.prepare()
+        networkCom = NetworkCommunicater(withID: peerID)
+        
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
         startBtn.isHidden = true
         peerTable.reloadData()
     }
@@ -139,6 +143,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             stopServer()
             networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
+            networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
             segueFirstToSecond()
             startBtn.isHidden = true
     }
@@ -297,6 +302,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             self.peerTable.reloadData()
             self.view.setNeedsDisplay()
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
+
     }
     
     // A nearby peer has stopped advertising.

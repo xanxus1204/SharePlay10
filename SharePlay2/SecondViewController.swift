@@ -140,8 +140,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                 DispatchQueue.main.async {
                     
                     self.titlelabel.text = self.networkCom.recvStr
-                                        self.stopAudioStream()
-                    self.resetStream()
                     self.changeVolume(value: self.volumeSlider.value * self.volumeSlider.value)
                 }
                 
@@ -300,6 +298,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         self.toPlayItem = mediaItemCollection.items[0]
         self.musicName =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String
         self.titlelabel.text = self.musicName
+        self.networkCom.sendStr(str: "stop")
         if toPlayItem.value(forProperty: MPMediaItemPropertyArtwork) != nil{
             let artwork:MPMediaItemArtwork  = (self.toPlayItem.value(forProperty: MPMediaItemPropertyArtwork) as? MPMediaItemArtwork)!
             
