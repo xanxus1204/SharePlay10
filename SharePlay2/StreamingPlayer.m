@@ -157,6 +157,7 @@ void packetsProc( void *inClientData,
     OSStatus err;
     count ++;
     if ( count == 5) {
+        NSLog(@"Prime");
         AudioQueuePrime(streamInfo->audioQueueObject, 0, 0);
     }
     //キューバッファを作成し、エンキューする
@@ -188,21 +189,10 @@ static void checkError(OSStatus err,const char *message){
         exit(1);
     }
 }
-
-
 void outputCallback( void                 *inClientData,
                     AudioQueueRef        inAQ,
                     AudioQueueBufferRef  inBuffer ){
-    StreamInfo* streamInfo = (StreamInfo*)inClientData;
-    //㈰inBufferがstreamInfo->audioQueueBuffer[ ]のどれかを探す
-    UInt32 bufIndex = 0;
-    for (int i = 0; i < kNumberOfBuffers; ++i){
-        if (inBuffer == streamInfo->audioQueueBuffer[i]){
-            bufIndex = i;
-            AudioQueueFreeBuffer(streamInfo->audioQueueObject, streamInfo->audioQueueBuffer[bufIndex]);
-            break;
-        }
-    }
+  
 }
 -(void)recvAudio:(NSData *)data{
     if (data != nil){
