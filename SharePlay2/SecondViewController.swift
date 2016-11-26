@@ -136,6 +136,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             }else if networkCom.recvStr == "stop"{
                 stopAudioStream()
                 resetStream()
+            }else if networkCom.recvStr == "noimage"{
+                DispatchQueue.main.async {
+                    print("画像なし")
+                    self.titleArt.image = UIImage(named: "no_image.png")
+                }
+                
+
             }else{
                 DispatchQueue.main.async {
                     
@@ -309,17 +316,17 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
             networkCom.artImage = nil
             DispatchQueue.main.async {
                  self.titleArt.image = UIImage(named: "no_image.png")
+                
             }
-           
+            networkCom.sendStr(str: "noimage")
+
             
             print("Noimaage")
         }
         if networkCom.artImage != nil{
                 networkCom.sendImage(image: networkCom.artImage)
-        }else{
-            networkCom.sendStr(str: "noimage")
-            
         }
+        
         
             self.networkCom.sendStr(str: self.musicName!)
         
