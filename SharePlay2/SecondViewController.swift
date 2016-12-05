@@ -10,19 +10,18 @@ import UIKit
 import MultipeerConnectivity
 import MediaPlayer
 
-class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
+class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVAudioPlayerDelegate{
     
-   private var toPlayItem:MPMediaItem!
     
-   private var player:AVAudioPlayer? = nil
+    private var nowplayingIndex:Int = 0
+    
+    private var player:AVAudioPlayer? = nil
   
     private var streamPlayerUrl:NSURL?
     
     private var streamingPlayer:StreamingPlayer!
     
-    private var ownPlayerUrl:NSURL?
-    
-    private var musicName:String?
+    private var playitemManager:playItemManager!
     
     private var exporter:AudioExporter!
     
@@ -147,14 +146,14 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                 DispatchQueue.main.async {
                     
                     self.titlelabel.text = self.networkCom.recvStr
-                    self.changeVolume(value: self.volumeSlider.value * self.volumeSlider.value)
+                    self.changeVolume(value: self.volumeSlider.value)
                 }
                 
                             }
         }else if key == "audioData"{
                 
                 streamingPlayer.recvAudio(networkCom.audioData as Data!)
-        }else if key == "convertComp"{
+        }else if key == "convertComp"{//変換完了した場合の措置
                 if change?[.newKey] as! Bool == true{
                    
                     DispatchQueue.main.async(execute: {() -> Void in
@@ -168,16 +167,23 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                             let audiosession = AVAudioSession.sharedInstance()
                             do{
                                 try audiosession.setCategory(AVAudioSessionCategoryPlayback)
-                                self.player = try  AVAudioPlayer(contentsOf: self.ownPlayerUrl as! URL)
+                                self.player = try  AVAudioPlayer(contentsOf: self.playitemManager.playUrl!)
+                                self.player?.delegate = self
                                 self.player?.prepareToPlay()
-                                self.player?.volume = self.volumeSlider.value * self.volumeSlider.value
+                                self.player?.volume = self.volumeSlider.value
                             }catch{
                                 print("あんまりだあ")
                             }
                         }
                         self.exporter.removeObserver(self as NSObject, forKeyPath: "convertComp")
                         SVProgressHUD.dismiss(withDelay: Double(self.networkCom.peerNameArray.count) * 2.0)
+                        
                     })
+                    if nowplayingIndex != 0{//最初の曲でなければ自動的に再生
+                        Thread.sleep(forTimeInterval: Double(self.networkCom.peerNameArray.count) * 2.0)
+                        networkCom.sendStr(str: "play")
+                        player?.play()
+                    }
                     
                 }
             }
@@ -201,7 +207,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
        
         let picker = MPMediaPickerController()
         picker.delegate = self
-        picker.allowsPickingMultipleItems = false
+        picker.allowsPickingMultipleItems = true
         present(picker,animated: true,completion: nil)
         
     }
@@ -217,7 +223,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         present(alert, animated: true, completion: nil)
     }
     @IBAction func volumeSliderChanged(_ sender: UISlider) {
-        changeVolume(value: sender.value * sender.value)
+        changeVolume(value: sender.value)
     }
         func deleteFile(){
         
@@ -227,8 +233,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
                 try manager.removeItem(at: streamPlayerUrl as! URL)
                 
             }
-            if ownPlayerUrl != nil{
-                try manager.removeItem(at: ownPlayerUrl as! URL)
+            if playitemManager.playUrl != nil{
+                try manager.removeItem(at: playitemManager.playUrl!)
             }
            
         } catch  {
@@ -300,42 +306,39 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
     }
        //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
+        if playitemManager == nil{
+           playitemManager = playItemManager(withItems: mediaItemCollection)
+        }
+        
         networkCom.stopsendingAudio()
         self.deleteFile()
-        self.toPlayItem = mediaItemCollection.items[0]
-        self.musicName =  self.toPlayItem.value(forProperty: MPMediaItemPropertyTitle) as? String
-        self.titlelabel.text = self.musicName
+        
+        self.titlelabel.text = playitemManager.itemProperty.musicTitle
         self.networkCom.sendStr(str: "stop")
-        if toPlayItem.value(forProperty: MPMediaItemPropertyArtwork) != nil{
-            let artwork:MPMediaItemArtwork  = (self.toPlayItem.value(forProperty: MPMediaItemPropertyArtwork) as? MPMediaItemArtwork)!
-            
-            networkCom.artImage = artwork.image(at: artwork.bounds.size)
+        
+        if  let artwork = playitemManager.itemProperty.albumArtWork{
+            networkCom.artImage = artwork
             self.titleArt.image = networkCom.artImage
+            networkCom.sendImage(image: networkCom.artImage)
 
         }else{
-            networkCom.artImage = nil
             DispatchQueue.main.async {
-                 self.titleArt.image = UIImage(named: "no_image.png")
+                self.titleArt.image = UIImage(named: "no_image.png")
                 
             }
             networkCom.sendStr(str: "noimage")
-
-            
             print("Noimaage")
         }
-        if networkCom.artImage != nil{
-                networkCom.sendImage(image: networkCom.artImage)
-        }
         
         
-            self.networkCom.sendStr(str: self.musicName!)
+            self.networkCom.sendStr(str: "play")
         
 
        
                         mediaPicker.dismiss(animated: true, completion: nil)
          DispatchQueue.main.async(execute: {() -> Void in
                        SVProgressHUD.show(withStatus: "準備中")})
-            self.streamPlayerUrl = self.prepareAudioStreaming(item: self.toPlayItem)
+            self.streamPlayerUrl = self.prepareAudioStreaming(item: self.playitemManager.toPlayItem)
         
     }
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
@@ -346,8 +349,41 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate {
         exporter = AudioExporter()
         exporter.addObserver(self as NSObject, forKeyPath: "convertComp", options: [.old,.new], context: nil)//変換が終わったかどうかを判断するキー
         let url = exporter.convertItemtoAAC(item: item)
-        self.ownPlayerUrl = url[1]
-              return url[0] as NSURL
+        //self.ownPlayerUrl = url[1]
+              return url
+    }
+    // MARK: AVAudioplayerDelegate
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
+        nowplayingIndex = nowplayingIndex + 1
+        print("再生終了")
+        networkCom.stopsendingAudio()
+        self.deleteFile()
+        playitemManager.movePlayItem(toIndex: nowplayingIndex)
+        self.titlelabel.text = playitemManager.itemProperty.musicTitle
+        self.networkCom.sendStr(str: "stop")
+      
+        if  let artwork = playitemManager.itemProperty.albumArtWork{
+            networkCom.artImage = artwork
+            self.titleArt.image = networkCom.artImage
+            networkCom.sendImage(image: networkCom.artImage)
+            
+        }else{
+            DispatchQueue.main.async {
+                self.titleArt.image = UIImage(named: "no_image.png")
+                
+            }
+            networkCom.sendStr(str: "noimage")
+            print("Noimaage")
+        }
+        
+        
+        self.networkCom.sendStr(str: "play")
+        
+        
+        
+        DispatchQueue.main.async(execute: {() -> Void in
+            SVProgressHUD.show(withStatus: "準備中")})
+        self.streamPlayerUrl = self.prepareAudioStreaming(item: self.playitemManager.toPlayItem)
     }
 }
 

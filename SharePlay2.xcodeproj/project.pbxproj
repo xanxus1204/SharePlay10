@@ -23,6 +23,7 @@
 		43D4E2541D9CBADB005631E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2531D9CBADB005631E5 /* Assets.xcassets */; };
 		43D4E2571D9CBADB005631E5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2551D9CBADB005631E5 /* LaunchScreen.storyboard */; };
 		43D4E25F1D9CF387005631E5 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E25E1D9CF387005631E5 /* SecondViewController.swift */; };
+		43DC87A21DF53BCD000BF7EF /* playItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DC87A11DF53BCD000BF7EF /* playItemManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		43D4E2561D9CBADB005631E5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		43D4E2581D9CBADB005631E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		43D4E25E1D9CF387005631E5 /* SecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		43DC87A11DF53BCD000BF7EF /* playItemManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = playItemManager.swift; sourceTree = "<group>"; };
 		BB6DE8D61DABB95600384CEF /* SharePlay2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SharePlay2-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,6 +108,7 @@
 				43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */,
 				43D4E25E1D9CF387005631E5 /* SecondViewController.swift */,
 				43224BF71DD2B7DE00E99D47 /* NetworkCommunicater.swift */,
+				43DC87A11DF53BCD000BF7EF /* playItemManager.swift */,
 				430D42FD1DA349F80090465A /* AudioExporter.swift */,
 				4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */,
 				4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */,
@@ -206,6 +209,7 @@
 				430D43041DA349F80090465A /* AudioExporter.swift in Sources */,
 				438E5E131DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m in Sources */,
 				43D4E24F1D9CBADB005631E5 /* FirstViewController.swift in Sources */,
+				43DC87A21DF53BCD000BF7EF /* playItemManager.swift in Sources */,
 				438E5E141DAF570F00E9EE65 /* SVProgressAnimatedView.m in Sources */,
 				4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */,
 				438E5E161DAF570F00E9EE65 /* SVProgressHUD.m in Sources */,
