@@ -233,9 +233,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 try manager.removeItem(at: streamPlayerUrl as! URL)
                 
             }
-            if playitemManager.playUrl != nil{
-                try manager.removeItem(at: playitemManager.playUrl!)
-            }
+            
            
         } catch  {
             print("削除できず")
@@ -308,37 +306,33 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         if playitemManager == nil{
            playitemManager = playItemManager(withItems: mediaItemCollection)
-        }
-        
-        networkCom.stopsendingAudio()
-        self.deleteFile()
-        
-        self.titlelabel.text = playitemManager.itemProperty.musicTitle
-        self.networkCom.sendStr(str: "stop")
-        
-        if  let artwork = playitemManager.itemProperty.albumArtWork{
-            networkCom.artImage = artwork
-            self.titleArt.image = networkCom.artImage
-            networkCom.sendImage(image: networkCom.artImage)
-
-        }else{
-            DispatchQueue.main.async {
-                self.titleArt.image = UIImage(named: "no_image.png")
+            self.titlelabel.text = playitemManager.itemProperty.musicTitle
+            self.networkCom.sendStr(str: "stop")
+            
+            if  let artwork = playitemManager.itemProperty.albumArtWork{
+                networkCom.artImage = artwork
+                self.titleArt.image = networkCom.artImage
+                networkCom.sendImage(image: networkCom.artImage)
                 
+            }else{
+                DispatchQueue.main.async {
+                    self.titleArt.image = UIImage(named: "no_image.png")
+                    
+                }
+                networkCom.sendStr(str: "noimage")
+                print("Noimaage")
             }
-            networkCom.sendStr(str: "noimage")
-            print("Noimaage")
-        }
-        
-        
-            self.networkCom.sendStr(str: "play")
-        
 
-       
-                        mediaPicker.dismiss(animated: true, completion: nil)
-         DispatchQueue.main.async(execute: {() -> Void in
-                       SVProgressHUD.show(withStatus: "準備中")})
+            self.networkCom.sendStr(str:playitemManager.itemProperty.musicTitle)
+            DispatchQueue.main.async(execute: {() -> Void in
+                SVProgressHUD.show(withStatus: "準備中")})
             self.streamPlayerUrl = self.prepareAudioStreaming(item: self.playitemManager.toPlayItem)
+        }else{
+            playitemManager.addPlayItems(mediaItems: mediaItemCollection)
+        }
+    
+            mediaPicker.dismiss(animated: true, completion: nil)
+        
         
     }
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
@@ -354,36 +348,37 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     // MARK: AVAudioplayerDelegate
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
-        nowplayingIndex = nowplayingIndex + 1
+        DispatchQueue.main.async {
+            
+        
+        self.nowplayingIndex = self.nowplayingIndex + 1
         print("再生終了")
-        networkCom.stopsendingAudio()
+        self.networkCom.stopsendingAudio()
         self.deleteFile()
-        playitemManager.movePlayItem(toIndex: nowplayingIndex)
-        self.titlelabel.text = playitemManager.itemProperty.musicTitle
+        self.playitemManager.movePlayItem(toIndex: self.nowplayingIndex)//次のあいてむに　すすめる
+        self.titlelabel.text = self.playitemManager.itemProperty.musicTitle
         self.networkCom.sendStr(str: "stop")
       
-        if  let artwork = playitemManager.itemProperty.albumArtWork{
-            networkCom.artImage = artwork
-            self.titleArt.image = networkCom.artImage
-            networkCom.sendImage(image: networkCom.artImage)
+        if  let artwork = self.playitemManager.itemProperty.albumArtWork{
+            self.networkCom.artImage = artwork
+            self.titleArt.image = self.networkCom.artImage
+            self.networkCom.sendImage(image: self.networkCom.artImage)
             
         }else{
-            DispatchQueue.main.async {
+            
                 self.titleArt.image = UIImage(named: "no_image.png")
                 
-            }
-            networkCom.sendStr(str: "noimage")
+            
+            self.networkCom.sendStr(str: "noimage")
             print("Noimaage")
         }
         
         
-        self.networkCom.sendStr(str: "play")
+        self.networkCom.sendStr(str:self.playitemManager.itemProperty.musicTitle)
         
-        
-        
-        DispatchQueue.main.async(execute: {() -> Void in
-            SVProgressHUD.show(withStatus: "準備中")})
+            SVProgressHUD.show(withStatus: "準備中")
         self.streamPlayerUrl = self.prepareAudioStreaming(item: self.playitemManager.toPlayItem)
+    }
     }
 }
 

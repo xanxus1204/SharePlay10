@@ -45,6 +45,11 @@ class AudioExporter: NSObject {
             
             
            self.convertComp = extConverter.convert(from:exportSession.outputURL, to: saveUrlforAAC as URL!)
+            do{
+                try fileManager.removeItem(at: exportSession.outputURL!)//変換終わったらすぐ削除
+            }catch{
+                
+            }
            
             
         })

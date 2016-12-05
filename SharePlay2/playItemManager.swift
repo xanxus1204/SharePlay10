@@ -15,9 +15,9 @@ struct playItemProperty {//アイテムのプロパティを持つ構造体
 }
 class playItemManager: NSObject {
     var toPlayItem:MPMediaItem!
-    var playItemList:[MPMediaItem]!
+    var playItemList:[MPMediaItem] = []
     var itemProperty:playItemProperty = playItemProperty()
-    var musicTitleArray:[String]!
+    var musicTitleArray:[String] = []
     var playUrl:URL? = nil
     init(withItems Items:MPMediaItemCollection){
         playItemList = Items.items
@@ -43,8 +43,7 @@ class playItemManager: NSObject {
             if let artWork = toPlayItem.artwork{
                 itemProperty.albumArtWork = artWork.image(at: artWork.bounds.size)
             }
-            musicTitleArray.remove(at: 0)
-            itemProperty.musicTitle = musicTitleArray[0]
+            itemProperty.musicTitle = musicTitleArray[index]
             playUrl = toPlayItem.assetURL
 
         }
