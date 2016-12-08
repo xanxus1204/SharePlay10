@@ -28,11 +28,15 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.shared.isIdleTimerDisabled = true
         SVProgressHUD.setDefaultStyle(SVProgressHUDStyle.dark)
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear)
         initialize()
     }
-
+    override func viewWillAppear(_ animated: Bool) {
+        UIApplication.shared.isIdleTimerDisabled = true
+       
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -78,7 +82,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             if oldName == deviceName{
                 let peerIDData = userDefaults.data(forKey: "PeerID")
                 peerID = NSKeyedUnarchiver.unarchiveObject(with: peerIDData!) as! MCPeerID!
-                print("前回のIDを再利用")
+                
             }else{
                 
                 peerID = MCPeerID(displayName: deviceName)//peerIDの設定端末の名前を渡す
@@ -153,10 +157,14 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "peerCell",for: indexPath)
-       
+        if indexPath.row < networkCom.peerNameArray.count{
             let peerName = networkCom.peerNameArray[indexPath.row]
             cell.textLabel!.text = peerName
-    
+
+        }else{
+            cell.textLabel?.text = nil
+        }
+        
 
     
         return cell
@@ -167,7 +175,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
 
     //相手を見つけたとき
     public func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?){
-        print("見つけた")
+        
         SVProgressHUD.dismiss()
         alert = UIAlertController(title: "この相手に接続しますか？", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
         let acceptAction = UIAlertAction(title: "はい",style: UIAlertActionStyle.default,handler: {(action:UIAlertAction!) -> Void in
@@ -190,7 +198,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         
             
         
-        print("招待された")
+    
         SVProgressHUD.dismiss()
         
             self.alert = UIAlertController(title: "接続要求", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
@@ -292,14 +300,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
             secondViewController.networkCom = self.networkCom
             secondViewController.isParent = self.isParent
+            secondViewController.peerID = self.peerID
             
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-        
-        
-            print("戻ってきたmain")
-            self.peerTable.reloadData()
+    
             self.view.setNeedsDisplay()
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)

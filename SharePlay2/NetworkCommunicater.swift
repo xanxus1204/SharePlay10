@@ -30,6 +30,8 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     dynamic var motherID:MCPeerID!
     
+    dynamic var recvedData:NSMutableData = NSMutableData()
+    
     struct peerState {
         var name:String
         var peerID:MCPeerID
@@ -40,6 +42,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         case isString = 1
         case isImage = 2
         case isAudio = 3
+        case isData = 4
     }
     dynamic var recvStr:String? = nil
     dynamic var audioData:NSData!
@@ -74,13 +77,17 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             sendQueue.removeAll()
         }
     }
-    func sendStr(str:String) -> Void {
+    func sendStrtoAll(str:String) -> Void {
         let orderData = str.data(using: String.Encoding.utf8)
-        sendData(data: orderData! as NSData, option: dataType.isString)
+        sendData(data: orderData! as NSData, option: dataType.isString,recvpeer:nil)
+    }
+    func sendStrtoOne(str:String,peer:MCPeerID) -> Void {
+        let orderData = str.data(using: String.Encoding.utf8)
+        sendData(data: orderData! as NSData, option: dataType.isString,recvpeer:peer)
     }
     func sendAudiodata(data:NSData){
         
-        sendData(data: data, option: dataType.isAudio)
+        sendData(data: data, option: dataType.isAudio,recvpeer:nil)
         if self.timer != nil {
             timer.invalidate()
         }
@@ -93,9 +100,16 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     }
     func sendImage(image:UIImage){
         let imageData:NSData = UIImagePNGRepresentation(image)! as NSData
-        sendData(data: imageData, option: dataType.isImage)
+        sendData(data: imageData, option: dataType.isImage,recvpeer: nil)
     }
-  private  func sendData(data:NSData,option:dataType) -> () {
+    func sendDatatoOne(data:NSData,recvpeer:MCPeerID?) ->(){
+        sendData(data: data, option: dataType.isData, recvpeer: recvpeer)
+    }
+    func sendDatatoAll(data:NSData) ->(){
+        sendDatatoOne(data: data, recvpeer: nil)
+    }
+    
+    private  func sendData(data:NSData,option:dataType,recvpeer:MCPeerID?) -> () {
         
         var splitDataSize = bufferSize
         //var indexofData = 0
@@ -121,7 +135,12 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
                     sendQueue.append(sendingData as NSData)
                 }else{
                     do {
-                        try session.send(sendingData, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                        if recvpeer != nil{
+                            try session.send(sendingData, toPeers: [recvpeer!], with: MCSessionSendDataMode.reliable)
+                        }else{
+                            try session.send(sendingData, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                        }
+                        
                         
                     }catch{
                         
@@ -137,7 +156,11 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
                     sendQueue.append(sendingData as NSData)
                 }else{
                     do {
-                        try session.send(sendingData, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                        if recvpeer != nil{
+                            try session.send(sendingData, toPeers: [recvpeer!], with: MCSessionSendDataMode.reliable)
+                        }else{
+                            try session.send(sendingData, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                        }
                         
                     }catch{
                         
@@ -167,12 +190,12 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             }else if recvType == dataType.isString.rawValue{//中身が文字列のとき
                 let str = NSString(data: recvContents as Data, encoding: String.Encoding.utf8.rawValue) as String?
                 recvStr = str
-
+        
             }else if recvType == dataType.isImage.rawValue{//中身が画像のとき
                 let isFin = recvDataArray[1] as! Int
                 if isFin == 0 {
                     tempData.append(recvContents as Data)
-                    print("画像のデータサイズ",tempData.length)
+                    
                         self.artImage = UIImage(data: tempData as Data)
                         //画像の変更を反映する処理
                         self.tempData = NSMutableData()
@@ -182,6 +205,19 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
                     
                 }
                 
+            }else if recvType == dataType.isData.rawValue{//中身が単純なDataのとき
+                let isFin = recvDataArray[1] as! Int
+                if isFin == 0 {
+                    tempData.append(recvContents as Data)
+                    self.recvedData = tempData
+                    //画像の変更を反映する処理
+                    self.tempData = NSMutableData()
+                    //ここでNSDataからUIimageに変換を入れて　artImageに設定
+                }else{
+                    tempData.append(recvContents as Data)
+                    
+                }
+
             }
             
         }
