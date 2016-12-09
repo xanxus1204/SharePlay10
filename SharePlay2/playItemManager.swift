@@ -47,9 +47,7 @@ class playItemManager: NSObject {
         if index < playItemList.count{
             toPlayItem = playItemList[index]
             let artWork = toPlayItem.artwork
-            
             itemProperty.albumArtWork = artWork?.image(at: (artWork?.bounds.size)!)
-            
             itemProperty.musicTitle = musicTitleArray[index]
             playUrl = toPlayItem.assetURL
             print("moveto\(itemProperty.musicTitle!)")

@@ -21,6 +21,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var alert:UIAlertController!
     
+    private var firstViewFlag:Bool = true
     @IBOutlet weak var startBtn: UIButton!
     
     @IBOutlet weak var peerTable: UITableView!
@@ -99,11 +100,13 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         peerTable.reloadData()
     }
     func dismissHud(withDelay delay:Double){
-        DispatchQueue.global().async {
-            Thread.sleep(forTimeInterval: delay)
-            SVProgressHUD.dismiss()
-        }
-       
+        
+            DispatchQueue.global().async {
+                Thread.sleep(forTimeInterval: delay)
+                if self.firstViewFlag{
+                SVProgressHUD.dismiss()
+                }
+            }
     }
     
     
@@ -138,10 +141,8 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             
         })
         let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler:nil)
-        //let anotherAction = UIAlertAction(title: "以前接続した相手を検索", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction) -> Void in})
         alert.addAction(okAction)
         alert.addAction(cancelAction)
-       // alert.addAction(anotherAction)
         present(alert, animated: true, completion: nil)
             }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
@@ -296,7 +297,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "1to2" {
             // インスタンスの引き継ぎ
-            
+             firstViewFlag = false
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
             secondViewController.networkCom = self.networkCom
             secondViewController.isParent = self.isParent

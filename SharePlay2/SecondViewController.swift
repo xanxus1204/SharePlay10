@@ -56,7 +56,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
-        SVProgressHUD.dismiss()
+        
         UIApplication.shared.isIdleTimerDisabled = false //スリープしても良い
         // Do any additional setup after loading the view, typically from a nib.
        
@@ -83,7 +83,16 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         streamingPlayer = StreamingPlayer()
         
         showTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(SecondViewController.showInfoWithtitle(timer:)), userInfo: nil, repeats: true)
+        //SVProgressHUD.setMinimumDismissTimeInterval(0)
         showTimer.fire()
+        if !isParent!{//子なら親が来るまで操作不能にする
+            DispatchQueue.main.async {
+                SVProgressHUD.show(withStatus: "待機中")
+            }
+            
+        }else{
+            networkCom.sendStrtoAll(str: "Imhere")
+        }
         
 }
     override func didReceiveMemoryWarning() {
@@ -148,6 +157,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     playitemManager = playItemManager()
                 }
                 if isParent!{//親なら
+                    
                     let yourID:MCPeerID = recvedArr[0] as! MCPeerID
                     recvedArr.remove(at: 0)
                     for title in recvedArr{
@@ -163,7 +173,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     }
 
                 }else{//子なら受け入れる
-                    songtitleArr = recvedArr as! [String]
+                    songtitleArr.removeAll()
+                    songtitleArr.append(contentsOf: recvedArr as! [String])
                 }
                 
             }else if key == "convertComp"{//変換完了した場合の措置
@@ -233,6 +244,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             sendOrderWhenendOfPlay()
             
             
+        }else if str == "Imhere"{
+            print("ので")
+            SVProgressHUD.dismiss()
         }else{
             DispatchQueue.main.async {
                 
@@ -372,15 +386,20 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 sequenceOfPeer.append((item.title!,peerID))
                 
             }
+            var sendArr:[String] = []//新しく追加された曲のタイトル
+            for item in mediaItemCollection.items{
+                sendArr.append(item.title!)
+            }
             
             if playitemManager == nil{//最初選んだとき
                 playitemManager = playItemManager(withItems: mediaItemCollection)//最初なので初期化
-                songtitleArr.append(contentsOf: playitemManager.musicTitleArray)
+                songtitleArr.append(contentsOf: sendArr)
                 leftPlaylist = true
                 playandStreamingSong()
             }else{
                 playitemManager.addPlayItems(mediaItems: mediaItemCollection)
-                songtitleArr.append(contentsOf: playitemManager.musicTitleArray)
+                playitemManager.movePlayItem(toIndex: ownplayingIndex)
+                songtitleArr.append(contentsOf: sendArr)
                 if !leftPlaylist{
                     //追加されたのでつぎいきまーす.
                 
@@ -390,10 +409,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                         allplayingIndex += 1
                     }
                 }
+                
             }
             let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
             networkCom.sendDatatoAll(data: titleData as NSData)
-
         }else{
             //子側の処理
              var sendArr:[Any] = [self.peerID]//配列の人マス目に自分のIDを格納
@@ -434,7 +453,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
         
         self.networkCom.sendStrtoAll(str:playitemManager.itemProperty.musicTitle)
-        self.streamPlayerUrl = self.prepareAudioStreaming(item: self.playitemManager.toPlayItem)
+        
+        self.streamPlayerUrl = self.prepareAudioStreaming(item: playitemManager.toPlayItem)
     }
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
         mediaPicker.dismiss(animated: true, completion: nil)
@@ -481,7 +501,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         self.player?.delegate = nil
         self.player = nil
         ownplayingIndex += 1
-        print("インデックスをすすめる\(ownplayingIndex)")
         playitemManager.movePlayItem(toIndex: ownplayingIndex)
         //基本的にこのメソッドを通るのは自分のライブラリにその曲を持っている場合のみ
         networkCom.sendStrtoAll(str: "stop")
