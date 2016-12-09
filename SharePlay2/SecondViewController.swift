@@ -14,7 +14,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     var peerID:MCPeerID!
     
-    private var ownplayingIndex:Int = 0
+    private var ownplayingIndex:Int = 0//自分自身のアイテムのプレイリストインデックス
     
     private var allplayingIndex:Int = 0
     
@@ -29,12 +29,16 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     private var exporter:AudioExporter!
     
     private var alert:UIAlertController!
-    
+
     private var leftPlaylist:Bool = false//再生中かどうかも判断可能？ falseなら止まっている
     
     private var sequenceOfPeer:[(title:String,peerID:MCPeerID)] = []
     
     private var songtitleArr:[String] = []
+    
+    private var showTimer:Timer!
+    
+    private var showTimerIndex:Int = 0
     
      var isParent:Bool!
     
@@ -75,14 +79,24 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         networkCom.addObserver(self as NSObject, forKeyPath: "audioData", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "recvedData", options: [.new,.old], context: nil)
-
+        
         streamingPlayer = StreamingPlayer()
+        
+        showTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(SecondViewController.showInfoWithtitle(timer:)), userInfo: nil, repeats: true)
+        showTimer.fire()
         
 }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    func showInfoWithtitle(timer:Timer){
+        if showTimerIndex < self.songtitleArr.count{
+            SVProgressHUD.showInfo(withStatus: "プレイリストに追加されました\n\(self.songtitleArr[showTimerIndex])")
+            showTimerIndex += 1
+        }
+    }
+    
     func accesoryToggled(event:MPRemoteCommandEvent){
         
     }
@@ -117,65 +131,17 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 DispatchQueue.main.async {
                     self.titleArt.image = self.networkCom.artImage
                     self.view.setNeedsDisplay()
-                    SVProgressHUD.show()
-                    self.dismissHud(withDelay: 2.0)
+                    
+                    
 
                 }
                 
         }else if key == "recvStr"{
-            if networkCom.recvStr == "play"{
-                playAudio()
-                if !isParent!{
-                    allplayingIndex = 1 //自動で次にいくフラグを強制的に立てる
-                }
-            }else if networkCom.recvStr == "pause"{
-                    pauseAudio()
-            }else if networkCom.recvStr == "stop"{
-                stopAudioStream()
-                resetStream()
-
-            }else if networkCom.recvStr == "noimage"{
-                DispatchQueue.main.async {
-                    
-                    self.titleArt.image = UIImage(named: "no_image.png")
-                }
-                
-
-            }else if networkCom.recvStr == "yourturn"{
-                    playitemManager.movePlayItem(toIndex: ownplayingIndex)
-                    playandStreamingSong()
-            }else if networkCom.recvStr == "end"{
-                //親なら次の曲をやるように司令をだす
-                sendOrderWhenendOfPlay()
-                
-                
-            }else{
-                DispatchQueue.main.async {
-                    
-                    self.titlelabel.text = self.networkCom.recvStr
-                    self.changeVolume(value: self.volumeSlider.value)
-                    let audiosession = AVAudioSession.sharedInstance()
-                    do {
-                        try audiosession.setCategory(AVAudioSessionCategoryPlayback)//バックグラウンド再生を許可
-                    } catch  {
-                        // エラー処理
-                        fatalError("カテゴリ設定失敗")
-                    }
-                    // sessionのアクティブ化
-                    do {
-                        try audiosession.setActive(true)
-                    } catch {
-                        // audio session有効化失敗時の処理
-                        // (ここではエラーとして停止している）
-                        fatalError("session有効化失敗")
-                    }
-
-                }
-            }
+                doSomething(withStr: networkCom.recvStr!)
         }else if key == "audioData"{
                 
                 streamingPlayer.recvAudio(networkCom.audioData as Data!)
-            }else if key == "recvedData"{//タイトルの配列しかない今のところ
+        }else if key == "recvedData"{//タイトルの配列しかない今のところ
                 var recvedArr:[Any] =  NSKeyedUnarchiver.unarchiveObject(with: networkCom.recvedData as Data) as! [Any]
                
                 if playitemManager == nil{
@@ -188,6 +154,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                         songtitleArr.append(title as! String)
                         sequenceOfPeer.append((title as! String,yourID))
                     }
+                    
                     let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
                     networkCom.sendDatatoAll(data: titleData as NSData)//全員に今のタイトル配列を送る
                     if !leftPlaylist{//現在再生中の曲がなければ
@@ -198,8 +165,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 }else{//子なら受け入れる
                     songtitleArr = recvedArr as! [String]
                 }
-                
-               
                 
             }else if key == "convertComp"{//変換完了した場合の措置
                 if change?[.newKey] as! Bool == true{
@@ -232,7 +197,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                             self.player?.play()
                         }
                         self.exporter.removeObserver(self as NSObject, forKeyPath: "convertComp")
-                        SVProgressHUD.dismiss(withDelay: Double(self.networkCom.peerNameArray.count) * 1.0)
                         
                     })
                     
@@ -242,6 +206,59 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         
      }
 }
+    func doSomething(withStr str:String){
+        if str == "play"{
+            playAudio()
+            if !isParent!{
+                allplayingIndex = 1 //自動で次にいくフラグを強制的に立てる
+            }
+        }else if str == "pause"{
+            pauseAudio()
+        }else if str == "stop"{
+            stopAudioStream()
+            resetStream()
+            
+        }else if str == "noimage"{
+            DispatchQueue.main.async {
+                
+                self.titleArt.image = UIImage(named: "no_image.png")
+            }
+            
+            
+        }else if str == "yourturn"{
+            playitemManager.movePlayItem(toIndex: ownplayingIndex)
+            playandStreamingSong()
+        }else if str == "end"{
+            //親なら次の曲をやるように司令をだす
+            sendOrderWhenendOfPlay()
+            
+            
+        }else{
+            DispatchQueue.main.async {
+                
+                self.titlelabel.text = str
+                self.changeVolume(value: self.volumeSlider.value)
+                let audiosession = AVAudioSession.sharedInstance()
+                do {
+                    try audiosession.setCategory(AVAudioSessionCategoryPlayback)//バックグラウンド再生を許可
+                } catch  {
+                    // エラー処理
+                    fatalError("カテゴリ設定失敗")
+                }
+                // sessionのアクティブ化
+                do {
+                    try audiosession.setActive(true)
+                } catch {
+                    // audio session有効化失敗時の処理
+                    // (ここではエラーとして停止している）
+                    fatalError("session有効化失敗")
+                }
+                
+            }
+        }
+
+    }
+    
     @IBAction func restart(_ sender: AnyObject) {
        
         networkCom.sendStrtoAll(str: "play")
@@ -333,6 +350,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             DispatchQueue.main.async {
                 
                 self.networkCom.disconnectPeer()//戻るので切断
+                self.showTimer.invalidate()
             }
         let firstViewController:FirstViewController = segue.destination as! FirstViewController
            firstViewController.networkCom = self.networkCom
@@ -349,16 +367,20 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         ///親側と子側で分岐
         if isParent!{
+           
             for item in mediaItemCollection.items{
                 sequenceOfPeer.append((item.title!,peerID))
-                songtitleArr.append(item.title!)
+                
             }
+            
             if playitemManager == nil{//最初選んだとき
                 playitemManager = playItemManager(withItems: mediaItemCollection)//最初なので初期化
+                songtitleArr.append(contentsOf: playitemManager.musicTitleArray)
                 leftPlaylist = true
                 playandStreamingSong()
             }else{
                 playitemManager.addPlayItems(mediaItems: mediaItemCollection)
+                songtitleArr.append(contentsOf: playitemManager.musicTitleArray)
                 if !leftPlaylist{
                     //追加されたのでつぎいきまーす.
                 
@@ -369,6 +391,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     }
                 }
             }
+            let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
+            networkCom.sendDatatoAll(data: titleData as NSData)
 
         }else{
             //子側の処理
@@ -410,8 +434,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
         
         self.networkCom.sendStrtoAll(str:playitemManager.itemProperty.musicTitle)
-        DispatchQueue.main.async(execute: {() -> Void in
-            SVProgressHUD.show(withStatus: "準備中")})
         self.streamPlayerUrl = self.prepareAudioStreaming(item: self.playitemManager.toPlayItem)
     }
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
@@ -450,13 +472,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             }
         }
     }
-    func dismissHud(withDelay delay:Double){
-        DispatchQueue.global().async {
-            Thread.sleep(forTimeInterval: delay)
-            SVProgressHUD.dismiss()
-        }
-        
-    }
+    
+    
     // MARK: AVAudioplayerDelegate
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
         print("終わり")
@@ -473,7 +490,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         deleteFile()
         sendOrderWhenendOfPlay()
        
-        
     }
 }
 
