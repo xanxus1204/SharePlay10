@@ -27,7 +27,7 @@ double lastVolume;
     streamInfo.isPlaying = YES;
     streamInfo.readyToPlay = NO;
 }
--(void)play{
+-(BOOL)play{
         if(!streamInfo.started && streamInfo.readyToPlay){
             streamInfo.started = YES;
           OSStatus  err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
@@ -39,9 +39,10 @@ double lastVolume;
         }else{
             NSLog(@"I'm not ready");
         }
+    return streamInfo.isPlaying;
 }
--(void)pause{
-    if (!streamInfo.isPlaying)return;
+-(BOOL)pause{
+    if (!streamInfo.isPlaying)return streamInfo.isPlaying;
     if (streamInfo.started && !streamInfo.isDone) {
         
         OSStatus err = AudioQueuePause(streamInfo.audioQueueObject);
@@ -51,10 +52,11 @@ double lastVolume;
         streamInfo.started = NO;
 
     }
+    return streamInfo.isPlaying;
     
 }
--(void)stop{
-    if (!streamInfo.isPlaying)return;
+-(BOOL)stop{
+    if (!streamInfo.isPlaying)return streamInfo.isPlaying;
     if (streamInfo.started && !streamInfo.isDone) {
         streamInfo.isDone = YES;
         OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
@@ -63,6 +65,7 @@ double lastVolume;
         AudioQueueDispose(streamInfo.audioQueueObject, YES);
         streamInfo.audioQueueObject = NULL;
     }
+    return  streamInfo.isPlaying;
 }
 -(void)changeVolume:(float)value{
     lastVolume = value;

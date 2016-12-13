@@ -40,6 +40,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     private var showTimerIndex:Int = 0
     
+    private var playingState:Bool = false
+    
      var isParent:Bool!
     
      var networkCom:NetworkCommunicater!
@@ -50,9 +52,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
 
     @IBOutlet weak var titleArt: UIImageView!
     
-    @IBOutlet weak var restartBtn: UIButton!
-    
     @IBOutlet weak var volumeSlider: UISlider!
+    @IBOutlet weak var stoppauseBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
@@ -73,6 +74,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             name:NSNotification.Name.UIApplicationWillTerminate,//アプリケーション終了時に実行するメソッドを指定
             object: nil)
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
+        SVProgressHUD.setMinimumDismissTimeInterval(0.3)
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "artImage", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "recvStr", options: [.new,.old], context: nil)
@@ -232,14 +234,15 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
 }
     func doSomething(withStr str:String){
         if str == "play"{
-            playAudio()
-            
+           playingState = playAudio()
+           toggleBtnImage()
         }else if str == "pause"{
-            pauseAudio()
+           playingState = pauseAudio()
+           toggleBtnImage()
         }else if str == "stop"{
             stopAudioStream()
             resetStream()
-            
+            toggleBtnImage()
         }else if str == "noimage"{
             DispatchQueue.main.async {
                 
@@ -252,6 +255,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             playandStreamingSong()
         }else if str == "end"{
             //親なら次の曲をやるように司令をだす
+            
             sendOrderWhenendOfPlay()
             
             
@@ -286,16 +290,31 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
 
     }
     
-    @IBAction func restart(_ sender: AnyObject) {
-       
-        networkCom.sendStrtoAll(str: "play")
-        playAudio()
-}
-    @IBAction func stopBtnTapped(_ sender: AnyObject){
-        
+    @IBAction func playstopBtnTapped(_ sender: AnyObject) {
+        if playingState{
             networkCom.sendStrtoAll(str: "pause")
-        
-        pauseAudio()
+           playingState = pauseAudio()
+            
+        }else{
+            networkCom.sendStrtoAll(str: "play")
+           playingState = playAudio()
+        }
+        toggleBtnImage()
+    }
+    func toggleBtnImage(){
+        let image1 = UIImage(named: "play_button.png")
+        let image2 = UIImage(named: "stop_button.png")
+        if playingState{
+            DispatchQueue.main.async {
+                self.stoppauseBtn.setImage(image2, for: UIControlState.normal)
+                SVProgressHUD.show(image1, status: "再生")
+            }
+        }else{
+            DispatchQueue.main.async {
+                 self.stoppauseBtn.setImage(image1, for: UIControlState.normal)
+                SVProgressHUD.show(image2, status: "停止")
+            }
+        }
     }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
        
@@ -329,31 +348,35 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
     }
     //再生、停止などの処理safe
-    func playAudio(){
+    func playAudio() -> Bool{
+        var result:Bool = false
         if  player != nil{
             player?.play()
+            result = (player?.isPlaying)!
         }else if streamingPlayer != nil{
-            streamingPlayer.play()
+           result = streamingPlayer.play()
         }
-        
+        return result
     }
-    func pauseAudio(){
+    func pauseAudio() -> Bool{
+        var result:Bool = false
         if  player != nil{
             player?.pause()
+            result = (player?.isPlaying)!
         }else if streamingPlayer != nil{
-            streamingPlayer.pause()
+            result = streamingPlayer.pause()
         }
-
+        
+        return result
     }
     func resetStream(){
         streamingPlayer = nil
         streamingPlayer = StreamingPlayer()
         streamingPlayer.start()
-        
     }
     func stopAudioStream(){
         if streamingPlayer != nil{
-            streamingPlayer.stop()
+           playingState = streamingPlayer.stop()
         }
     }
     func changeVolume(value:Float){
@@ -381,7 +404,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
            
                 networkCom.stopsendingAudio()
                 deleteFile()
-                pauseAudio()
+               playingState = pauseAudio()
             UIApplication.shared.endReceivingRemoteControlEvents()
             stopAudioStream()
         }
@@ -507,6 +530,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
         print("終わり")
         self.player?.stop()
+        playingState = true
+        toggleBtnImage()
         self.player?.delegate = nil
         self.player = nil
         ownplayingIndex += 1

@@ -27,10 +27,10 @@ typedef struct StreamInfo{
 @interface StreamingPlayer : NSObject{
     StreamInfo streamInfo;
     }
--(void)play;
+-(BOOL)play;
 -(void)start;
--(void)pause;
--(void)stop;
+-(BOOL)pause;
+-(BOOL)stop;
 -(void)changeVolume:(float)value;
 -(void)recvAudio:(NSData *)data;
 @end
