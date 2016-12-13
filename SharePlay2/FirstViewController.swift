@@ -19,7 +19,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var isParent:Bool = false
     
-    private var alert:UIAlertController!
+    private var myAlert:AlertControlller!
     
     private var firstViewFlag:Bool = true
     @IBOutlet weak var startBtn: UIButton!
@@ -115,39 +115,33 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
 
-        
-        
-         alert = UIAlertController(title: "部屋を作成", message: "周辺の端末に公開します", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
+        myAlert = AlertControlller(titlestr: "部屋を作成", messagestr: "周辺の端末に公開します", okTextstr: "OK", canceltextstr: "キャンセル")
+        myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
             self.startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
-             self.isParent = true //親フラグを立てる
-            SVProgressHUD.show(withStatus: "公開中")
-            self.dismissHud(withDelay: 10)
-        })
-        let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler:nil)
-        alert.addAction(cancelAction)
-        alert.addAction(okAction)
-        present(alert, animated: true, completion: nil)
+                         self.isParent = true //親フラグを立てる
+                        SVProgressHUD.show(withStatus: "公開中")
+                        self.dismissHud(withDelay: 10)
+                                    })
+        myAlert.addCancelAction(cancelblock:nil )
+        present(myAlert.alert, animated: true, completion: nil)
+        
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-       
-         alert = UIAlertController(title: "部屋を検索", message: "周辺の端末を検索します", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler:
-            {(action:UIAlertAction!)-> Void in
-                        self.isParent = false //親フラグを建てないs
-                        self.startClientWithName(name: self.roomName)
-                        DispatchQueue.main.async {
-                            SVProgressHUD.show(withStatus: "検索中")
-                            self.dismissHud(withDelay: 9)
-                        }
+       myAlert = AlertControlller(titlestr: "部屋を検索", messagestr: "周辺の端末を検索します", okTextstr: "OK", canceltextstr: "キャンセル")
+        myAlert.addOkAction(okblock: {(action:UIAlertAction!)-> Void in
+            self.isParent = false //親フラグを建てないs
+            self.startClientWithName(name: self.roomName)
+            DispatchQueue.main.async {
+                SVProgressHUD.show(withStatus: "検索中")
+                self.dismissHud(withDelay: 9)
+            }
             
         })
-        let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler:nil)
-        alert.addAction(okAction)
-        alert.addAction(cancelAction)
-        present(alert, animated: true, completion: nil)
-            }
+        myAlert.addCancelAction(cancelblock: nil)
+       
+        present(myAlert.alert, animated: true, completion: nil)
+        }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             stopServer()
             networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
@@ -181,19 +175,17 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     public func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?){
         
         SVProgressHUD.dismiss()
-        alert = UIAlertController(title: "この相手に接続しますか？", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
-        let acceptAction = UIAlertAction(title: "はい",style: UIAlertActionStyle.default,handler: {(action:UIAlertAction!) -> Void in
+        myAlert = AlertControlller(titlestr: "この相手に接続しますか？", messagestr: peerID.displayName, okTextstr: "はい", canceltextstr: "いいえ")
+        myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
             browser.invitePeer(peerID, to: self.networkCom.session, withContext: nil, timeout: 0)
-
+            
         })
-        let cancelAction = UIAlertAction(title: "いいえ",style: UIAlertActionStyle.cancel,handler: {(action:UIAlertAction!) -> Void in  })
-        alert.addAction(acceptAction)
-        alert.addAction(cancelAction)
+        myAlert.addCancelAction(cancelblock: {(alert:UIAlertAction) -> Void in})
         var baseView: UIViewController = self.view.window!.rootViewController!
         while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
             baseView = baseView.presentedViewController!
         }
-        baseView.present(alert, animated: true, completion: nil)
+        baseView.present(myAlert.alert, animated: true, completion: nil)
 
            }
     //MARK: MCNearbyserviceadvitiserdelegate
@@ -204,26 +196,20 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         
     
         SVProgressHUD.dismiss()
-        
-            self.alert = UIAlertController(title: "接続要求", message: peerID.displayName, preferredStyle: UIAlertControllerStyle.alert)
-        let acceptAction = UIAlertAction(title: "許可",style: UIAlertActionStyle.default,handler: {(action:UIAlertAction!) -> Void in
-          
+            myAlert = AlertControlller(titlestr: "接続要求", messagestr: peerID.displayName, okTextstr: "許可", canceltextstr: "拒否")
+        myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
+            
             invitationHandler(true,self.networkCom.session)
         })
-        
-        
-        let cancelAction = UIAlertAction(title: "拒否",style: UIAlertActionStyle.cancel,handler: {(action:UIAlertAction!) -> Void in
-           
+        myAlert.addCancelAction(cancelblock: {(action:UIAlertAction!) -> Void in
+            
             invitationHandler(false,self.networkCom.session)
         })
-        self.alert.addAction(acceptAction)
-        self.alert.addAction(cancelAction)
-            var baseView: UIViewController = self.view.window!.rootViewController!
-            while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
+        var baseView: UIViewController = self.view.window!.rootViewController!
+        while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
                 baseView = baseView.presentedViewController!
             }
-
-        baseView.present(self.alert, animated: true, completion:nil)
+        baseView.present(myAlert.alert, animated: true, completion:nil)
         
         
         
@@ -310,7 +296,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
     
-            self.view.setNeedsDisplay()
+        
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
 

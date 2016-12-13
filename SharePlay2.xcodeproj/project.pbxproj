@@ -10,6 +10,8 @@
 		430D43041DA349F80090465A /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430D42FD1DA349F80090465A /* AudioExporter.swift */; };
 		43224BF81DD2B7DE00E99D47 /* NetworkCommunicater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43224BF71DD2B7DE00E99D47 /* NetworkCommunicater.swift */; };
 		432348431DB0A775006B13FE /* no_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 432348421DB0A775006B13FE /* no_image.png */; };
+		433EF6A71DFF8E7200989310 /* AlertControlller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433EF6A61DFF8E7200989310 /* AlertControlller.swift */; };
+		433EF6A91DFFACAC00989310 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 433EF6A81DFFACAC00989310 /* Settings.bundle */; };
 		4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */; };
 		4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6981DAE04F700D003D0 /* StreamingPlayer.m */; };
 		438E5E131DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E0A1DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m */; };
@@ -30,6 +32,8 @@
 		430D42FD1DA349F80090465A /* AudioExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
 		43224BF71DD2B7DE00E99D47 /* NetworkCommunicater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkCommunicater.swift; sourceTree = "<group>"; };
 		432348421DB0A775006B13FE /* no_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = no_image.png; sourceTree = "<group>"; };
+		433EF6A61DFF8E7200989310 /* AlertControlller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertControlller.swift; sourceTree = "<group>"; };
+		433EF6A81DFFACAC00989310 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtAudioConverter.h; sourceTree = "<group>"; };
 		4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtAudioConverter.m; sourceTree = "<group>"; };
 		4354A6971DAE04F700D003D0 /* StreamingPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingPlayer.h; sourceTree = "<group>"; };
@@ -107,6 +111,7 @@
 				43D4E24C1D9CBADB005631E5 /* AppDelegate.swift */,
 				43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */,
 				43D4E25E1D9CF387005631E5 /* SecondViewController.swift */,
+				433EF6A61DFF8E7200989310 /* AlertControlller.swift */,
 				43224BF71DD2B7DE00E99D47 /* NetworkCommunicater.swift */,
 				43DC87A11DF53BCD000BF7EF /* playItemManager.swift */,
 				430D42FD1DA349F80090465A /* AudioExporter.swift */,
@@ -119,6 +124,7 @@
 				43D4E2531D9CBADB005631E5 /* Assets.xcassets */,
 				43D4E2551D9CBADB005631E5 /* LaunchScreen.storyboard */,
 				43D4E2581D9CBADB005631E5 /* Info.plist */,
+				433EF6A81DFFACAC00989310 /* Settings.bundle */,
 				BB6DE8D61DABB95600384CEF /* SharePlay2-Bridging-Header.h */,
 			);
 			path = SharePlay2;
@@ -194,6 +200,7 @@
 				43D4E2541D9CBADB005631E5 /* Assets.xcassets in Resources */,
 				43D4E2521D9CBADB005631E5 /* Main.storyboard in Resources */,
 				438E5E151DAF570F00E9EE65 /* SVProgressHUD.bundle in Resources */,
+				433EF6A91DFFACAC00989310 /* Settings.bundle in Resources */,
 				432348431DB0A775006B13FE /* no_image.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -207,6 +214,7 @@
 			files = (
 				43D4E25F1D9CF387005631E5 /* SecondViewController.swift in Sources */,
 				430D43041DA349F80090465A /* AudioExporter.swift in Sources */,
+				433EF6A71DFF8E7200989310 /* AlertControlller.swift in Sources */,
 				438E5E131DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m in Sources */,
 				43D4E24F1D9CBADB005631E5 /* FirstViewController.swift in Sources */,
 				43DC87A21DF53BCD000BF7EF /* playItemManager.swift in Sources */,

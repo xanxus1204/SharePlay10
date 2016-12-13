@@ -28,7 +28,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     private var exporter:AudioExporter!
     
-    private var alert:UIAlertController!
+    private var myAlert:AlertControlller!
 
     private var leftPlaylist:Bool = false//再生中かどうかも判断可能？ falseなら止まっている
     
@@ -82,8 +82,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         
         streamingPlayer = StreamingPlayer()
         
-        showTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(SecondViewController.showInfoWithtitle(timer:)), userInfo: nil, repeats: true)
-        //SVProgressHUD.setMinimumDismissTimeInterval(0)
+        showTimer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(SecondViewController.showInfoWithtitle(timer:)), userInfo: nil, repeats: true)
+       
         showTimer.fire()
         if !isParent!{//子なら親が来るまで操作不能にする
             DispatchQueue.main.async {
@@ -130,16 +130,27 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let key = keyPath{
             if key == "peerNameArray"{
-                if networkCom.peerNameArray.count == 0{
+                if networkCom.peerNameArray.count == 0 && isParent!{
                     DispatchQueue.main.async {
-                        self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る
+                        self.myAlert = AlertControlller(titlestr: "接続が切れました", messagestr: "もとの画面に戻ります", okTextstr: "確認", canceltextstr: nil)
+                        self.myAlert.addOkAction(okblock: {(alert:UIAlertAction) -> Void in
+                            self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る
+                        })
+                        self.present(self.myAlert.alert, animated: true, completion: nil)
+                        
                 }
             }
         }else if key == "motherID"{
                 if networkCom.motherID == nil && !isParent{
                     DispatchQueue.main.async {
-                        self.segueSecondtofirst()
+                        self.myAlert = AlertControlller(titlestr: "接続が切れました", messagestr: "もとの画面に戻ります", okTextstr: "確認", canceltextstr: nil)
+                        self.myAlert.addOkAction(okblock: {(alert:UIAlertAction) -> Void in
+                            self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る
+                        })
+                        self.present(self.myAlert.alert, animated: true, completion: nil)
+                        
                     }
+
                 }
         }else if key == "artImage"{
                 DispatchQueue.main.async {
@@ -296,14 +307,12 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     
     @IBAction func returnBtnTapped(_ sender: Any) {
-         alert = UIAlertController(title: "戻りますか？", message: "相手との接続が切れます", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "戻る", style: UIAlertActionStyle.default, handler:{(action:UIAlertAction)-> Void in
-                self.segueSecondtofirst()
+        myAlert = AlertControlller(titlestr: "戻りますか？", messagestr: "相手との接続が切れます", okTextstr: "戻る", canceltextstr: "キャンセル")
+        myAlert.addOkAction(okblock: {(action:UIAlertAction)-> Void in
+            self.segueSecondtofirst()
         })
-        let cancelAction = UIAlertAction(title: "キャンセル", style: UIAlertActionStyle.cancel, handler: nil)
-        alert.addAction(okAction)
-        alert.addAction(cancelAction)
-        present(alert, animated: true, completion: nil)
+        myAlert.addCancelAction(cancelblock: nil)
+        present(myAlert.alert, animated: true, completion: nil)
     }
     @IBAction func volumeSliderChanged(_ sender: UISlider) {
         changeVolume(value: sender.value)
@@ -362,12 +371,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "2to1" {
-           
-            DispatchQueue.main.async {
-                self.removeOb()
-                self.networkCom.disconnectPeer()//戻るので切断
-                self.showTimer.invalidate()
-            }
+           removeOb()
+            networkCom.disconnectPeer()//戻るので切断
+            showTimer.invalidate()
+            
         let firstViewController:FirstViewController = segue.destination as! FirstViewController
            firstViewController.networkCom = self.networkCom
             

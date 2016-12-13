@@ -56,6 +56,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     func disconnectPeer(){
         session.disconnect()
+        peerNameArray.removeAll()
     }
     @objc private  func sendDataInterval(){
         if sendQueue.count > 0{
