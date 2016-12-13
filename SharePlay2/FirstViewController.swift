@@ -57,11 +57,14 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                             self.segueFirstToSecond()
                             SVProgressHUD.dismiss()
                         }
-                        
                     }
-                        
                     }
                 }else if key == "peerNameArray"{
+                if networkCom.peerNameArray.count == 0{
+                    DispatchQueue.main.async {
+                        self.startBtn.isHidden = true
+                    }
+                }
                 DispatchQueue.main.async {
                     self.peerTable.reloadData()
                 }

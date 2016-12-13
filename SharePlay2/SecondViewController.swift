@@ -90,6 +90,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 SVProgressHUD.show(withStatus: "待機中")
             }
             
+            
         }else{
             networkCom.sendStrtoAll(str: "Imhere")
         }
@@ -109,9 +110,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func accesoryToggled(event:MPRemoteCommandEvent){
         
     }
+   
+    
+    
     func doBeforeTerminate(){
         deleteFile()
         nc.removeObserver(self)
+        
     }
     private func removeOb(){
         
@@ -140,9 +145,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 DispatchQueue.main.async {
                     self.titleArt.image = self.networkCom.artImage
                     self.view.setNeedsDisplay()
-                    
-                    
-
                 }
                 
         }else if key == "recvStr"{
@@ -168,7 +170,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
                     networkCom.sendDatatoAll(data: titleData as NSData)//全員に今のタイトル配列を送る
                     if !leftPlaylist{//現在再生中の曲がなければ
-                    
+                        leftPlaylist = checkListOfSong(num: allplayingIndex)
                         networkCom.sendStrtoOne(str: "yourturn", peer: sequenceOfPeer[allplayingIndex].peerID)
                     }
 
@@ -220,9 +222,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func doSomething(withStr str:String){
         if str == "play"{
             playAudio()
-            if !isParent!{
-                allplayingIndex = 1 //自動で次にいくフラグを強制的に立てる
-            }
+            
         }else if str == "pause"{
             pauseAudio()
         }else if str == "stop"{
@@ -248,8 +248,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             print("ので")
             SVProgressHUD.dismiss()
         }else{
-            DispatchQueue.main.async {
-                
+            DispatchQueue.main.async {//タイトルの文字列が送られてきたと判断
+                if !self.isParent!{
+                    self.allplayingIndex = 1 //自動で次にいくフラグを強制的に立てる
+                }
                 self.titlelabel.text = str
                 self.changeVolume(value: self.volumeSlider.value)
                 let audiosession = AVAudioSession.sharedInstance()
@@ -354,7 +356,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     //MARK: -Segue
     func segueSecondtofirst(){
-        removeOb()
+        
         performSegue(withIdentifier: "2to1", sender: nil)
         
     }
@@ -362,7 +364,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         if segue.identifier == "2to1" {
            
             DispatchQueue.main.async {
-                
+                self.removeOb()
                 self.networkCom.disconnectPeer()//戻るので切断
                 self.showTimer.invalidate()
             }
@@ -406,6 +408,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     leftPlaylist = checkListOfSong(num: allplayingIndex + 1)
                     if leftPlaylist{
                         playandStreamingSong()
+                        print("こいつが動いている生")
                         allplayingIndex += 1
                     }
                 }
@@ -413,8 +416,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             }
             let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
             networkCom.sendDatatoAll(data: titleData as NSData)
-        }else{
-            //子側の処理
+        }else{//子側の処理
              var sendArr:[Any] = [self.peerID]//配列の人マス目に自分のIDを格納
             for item in mediaItemCollection.items{
                 sendArr.append(item.title!)
