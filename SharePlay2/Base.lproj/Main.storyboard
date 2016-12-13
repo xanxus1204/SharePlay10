@@ -116,24 +116,30 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ここに曲のタイトルを表示" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="144-CI-nf5">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="曲が選択されていません" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="144-CI-nf5">
                                 <rect key="frame" x="26" y="82" width="268" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j6E-dw-lRX">
-                                <rect key="frame" x="230" y="40" width="74" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="曲を選択"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j6E-dw-lRX">
+                                <rect key="frame" x="276" y="40" width="28" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="DVE-el-ffF"/>
+                                    <constraint firstAttribute="width" secondItem="j6E-dw-lRX" secondAttribute="height" multiplier="1:1" constant="-2" id="h47-Hb-8uC"/>
+                                </constraints>
+                                <state key="normal" image="add_button.png"/>
                                 <connections>
                                     <action selector="selectBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="t1I-bZ-8Jk"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jP0-aC-mB1">
-                                <rect key="frame" x="16" y="40" width="37" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="戻る"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jP0-aC-mB1">
+                                <rect key="frame" x="16" y="40" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="QSa-JK-l8j"/>
+                                    <constraint firstAttribute="width" secondItem="jP0-aC-mB1" secondAttribute="height" multiplier="2:2" id="tiA-HH-uuA"/>
+                                </constraints>
+                                <state key="normal" image="back_button.png"/>
                                 <connections>
                                     <action selector="returnBtnTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="CPb-JN-6pV"/>
                                 </connections>
@@ -199,10 +205,12 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qlm-J5-tSb" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="x64-in-pbC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="938" y="293"/>
+            <point key="canvasLocation" x="937.5" y="292.6056338028169"/>
         </scene>
     </scenes>
     <resources>
+        <image name="add_button.png" width="130" height="130"/>
+        <image name="back_button.png" width="256" height="256"/>
         <image name="no_image.png" width="600" height="600"/>
     </resources>
 </document>
