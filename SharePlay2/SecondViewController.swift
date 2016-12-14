@@ -144,6 +144,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }else if key == "motherID"{
                 if networkCom.motherID == nil && !isParent{
                     DispatchQueue.main.async {
+                        SVProgressHUD.dismiss()
                         self.myAlert = AlertControlller(titlestr: "接続が切れました", messagestr: "もとの画面に戻ります", okTextstr: "確認", canceltextstr: nil)
                         self.myAlert.addOkAction(okblock: {(alert:UIAlertAction) -> Void in
                             self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る

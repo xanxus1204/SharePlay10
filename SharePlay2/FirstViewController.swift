@@ -21,22 +21,25 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var myAlert:AlertControlller!
     
-    private var firstViewFlag:Bool = true
+    private var isConnected:Bool = false
+    
+    
     @IBOutlet weak var startBtn: UIButton!
     
     @IBOutlet weak var peerTable: UITableView!
     
+    @IBOutlet weak var createBtn: UIButton!
     
+    @IBOutlet weak var searchBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-        UIApplication.shared.isIdleTimerDisabled = true
-        SVProgressHUD.setDefaultStyle(SVProgressHUDStyle.dark)
-        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear)
         initialize()
-    }
+        SVProgressHUD.setDefaultStyle(SVProgressHUDStyle.dark)
+        SVProgressHUD.setDefaultAnimationType(SVProgressHUDAnimationType.native)
+        }
     override func viewWillAppear(_ animated: Bool) {
         UIApplication.shared.isIdleTimerDisabled = true
-       
+        isConnected = false
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -49,17 +52,16 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     if self.networkCom.motherID != nil{
                         if self.networkCom.motherID .isEqual(self.peerID) || self.isParent{
                             self.startBtn.isHidden = false
-                            SVProgressHUD.dismiss()
                         }else{
                             self.stopClient()
                             self.networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
                             self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
                             self.segueFirstToSecond()
-                            SVProgressHUD.dismiss()
                         }
                     }
                     }
                 }else if key == "peerNameArray"{
+                isConnected = true
                 if networkCom.peerNameArray.count == 0{
                     DispatchQueue.main.async {
                         self.startBtn.isHidden = true
@@ -102,46 +104,33 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         startBtn.isHidden = true
         peerTable.reloadData()
     }
-    func dismissHud(withDelay delay:Double){
-        
-            DispatchQueue.global().async {
-                Thread.sleep(forTimeInterval: delay)
-                if self.firstViewFlag{
-                SVProgressHUD.dismiss()
-                }
-            }
-    }
-    
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
-
-        myAlert = AlertControlller(titlestr: "部屋を作成", messagestr: "周辺の端末に公開します", okTextstr: "OK", canceltextstr: "キャンセル")
-        myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
-            self.startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
-                         self.isParent = true //親フラグを立てる
-                        SVProgressHUD.show(withStatus: "公開中")
-                        self.dismissHud(withDelay: 10)
-                                    })
-        myAlert.addCancelAction(cancelblock:nil )
-        present(myAlert.alert, animated: true, completion: nil)
+            createBtn.isEnabled = false
+            searchBtn.isEnabled = false
+                    startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
+                    isParent = true //親フラグを立てる
+                    SVProgressHUD.show(withStatus: "募集中\n画面上部をタップして\nキャンセル")
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if !isConnected{
+            createBtn.isEnabled = true
+            searchBtn.isEnabled = true
+            SVProgressHUD.dismiss()
+            stopClient()
+            stopServer()
+        }
         
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-       myAlert = AlertControlller(titlestr: "部屋を検索", messagestr: "周辺の端末を検索します", okTextstr: "OK", canceltextstr: "キャンセル")
-        myAlert.addOkAction(okblock: {(action:UIAlertAction!)-> Void in
-            self.isParent = false //親フラグを建てないs
-            self.startClientWithName(name: self.roomName)
-            DispatchQueue.main.async {
-                SVProgressHUD.show(withStatus: "検索中")
-                self.dismissHud(withDelay: 9)
-            }
-            
-        })
-        myAlert.addCancelAction(cancelblock: nil)
-       
-        present(myAlert.alert, animated: true, completion: nil)
-        }
+        self.isParent = false //親フラグを建てないs
+        createBtn.isEnabled = false
+        searchBtn.isEnabled = false
+        self.startClientWithName(name: self.roomName)
+        SVProgressHUD.show(withStatus: "検索中\n画面上部をタップして\nキャンセル")
+        
+    }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
             stopServer()
             networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
@@ -162,9 +151,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }else{
             cell.textLabel?.text = nil
         }
-        
-
-    
         return cell
 
     }
@@ -192,9 +178,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     //招待されたとき
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
         
-            
-        
-    
         SVProgressHUD.dismiss()
             myAlert = AlertControlller(titlestr: "接続要求", messagestr: peerID.displayName, okTextstr: "許可", canceltextstr: "拒否")
         myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
@@ -210,9 +193,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 baseView = baseView.presentedViewController!
             }
         baseView.present(myAlert.alert, animated: true, completion:nil)
-        
-        
-        
     }
     //MARK: 自作関数　主にデータ送受信系
     func startServerWithName(name:String?) -> Swift.Void {
@@ -281,7 +261,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "1to2" {
             // インスタンスの引き継ぎ
-             firstViewFlag = false
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
             secondViewController.networkCom = self.networkCom
             secondViewController.isParent = self.isParent
@@ -289,7 +268,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-        firstViewFlag = true
+        
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
 
