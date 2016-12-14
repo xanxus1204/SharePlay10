@@ -273,16 +273,11 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             browser.stopBrowsingForPeers()
             browser = nil
         }
-      
-        
     }
-    
     //MARK: segue
-    
     func segueFirstToSecond(){
         performSegue(withIdentifier: "1to2", sender: nil)
     }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "1to2" {
             // インスタンスの引き継ぎ
@@ -291,12 +286,10 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             secondViewController.networkCom = self.networkCom
             secondViewController.isParent = self.isParent
             secondViewController.peerID = self.peerID
-            
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-    
-        
+        firstViewFlag = true
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
 

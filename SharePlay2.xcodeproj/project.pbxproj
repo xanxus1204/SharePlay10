@@ -25,6 +25,8 @@
 		43B962A41DFFCBBE00D42093 /* stop_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962A21DFFCBBE00D42093 /* stop_button.png */; };
 		43B962A91DFFD82400D42093 /* volume_max.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962A71DFFD82400D42093 /* volume_max.png */; };
 		43B962AA1DFFD82400D42093 /* volume_min.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962A81DFFD82400D42093 /* volume_min.png */; };
+		43B962AD1E00E29500D42093 /* search_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962AB1E00E29500D42093 /* search_button.png */; };
+		43B962AE1E00E29500D42093 /* create_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962AC1E00E29500D42093 /* create_button.png */; };
 		43D4E24D1D9CBADB005631E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E24C1D9CBADB005631E5 /* AppDelegate.swift */; };
 		43D4E24F1D9CBADB005631E5 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */; };
 		43D4E2521D9CBADB005631E5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2501D9CBADB005631E5 /* Main.storyboard */; };
@@ -60,6 +62,8 @@
 		43B962A21DFFCBBE00D42093 /* stop_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stop_button.png; sourceTree = "<group>"; };
 		43B962A71DFFD82400D42093 /* volume_max.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = volume_max.png; sourceTree = "<group>"; };
 		43B962A81DFFD82400D42093 /* volume_min.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = volume_min.png; sourceTree = "<group>"; };
+		43B962AB1E00E29500D42093 /* search_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = search_button.png; sourceTree = "<group>"; };
+		43B962AC1E00E29500D42093 /* create_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = create_button.png; sourceTree = "<group>"; };
 		43D4E2491D9CBADB005631E5 /* SharePlay2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SharePlay2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43D4E24C1D9CBADB005631E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -132,6 +136,8 @@
 				4354A6971DAE04F700D003D0 /* StreamingPlayer.h */,
 				4354A6981DAE04F700D003D0 /* StreamingPlayer.m */,
 				43D4E2501D9CBADB005631E5 /* Main.storyboard */,
+				43B962AB1E00E29500D42093 /* search_button.png */,
+				43B962AC1E00E29500D42093 /* create_button.png */,
 				432348421DB0A775006B13FE /* no_image.png */,
 				43B962951DFFC5DC00D42093 /* add_button.png */,
 				43B962971DFFC5E800D42093 /* back_button.png */,
@@ -223,9 +229,11 @@
 				438E5E151DAF570F00E9EE65 /* SVProgressHUD.bundle in Resources */,
 				433EF6A91DFFACAC00989310 /* Settings.bundle in Resources */,
 				43B962981DFFC5E800D42093 /* back_button.png in Resources */,
+				43B962AD1E00E29500D42093 /* search_button.png in Resources */,
 				432348431DB0A775006B13FE /* no_image.png in Resources */,
 				43B962A31DFFCBBE00D42093 /* play_button.png in Resources */,
 				43B962A41DFFCBBE00D42093 /* stop_button.png in Resources */,
+				43B962AE1E00E29500D42093 /* create_button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,7 +392,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "SharePlay2/SharePlay2-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -404,7 +412,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "SharePlay2/SharePlay2-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
