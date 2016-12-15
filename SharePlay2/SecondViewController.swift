@@ -62,6 +62,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         // Do any additional setup after loading the view, typically from a nib.
        
     }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    
+    }
     func initialize(){
         
         let accesoryEvent:MPRemoteCommandCenter = MPRemoteCommandCenter.shared()
@@ -133,8 +136,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             if key == "peerNameArray"{
                 if networkCom.peerNameArray.count == 0 && isParent!{
                     DispatchQueue.main.async {
+                        self.networkCom.stopsendingAudio()
                         self.myAlert = AlertControlller(titlestr: "接続が切れました", messagestr: "もとの画面に戻ります", okTextstr: "確認", canceltextstr: nil)
                         self.myAlert.addOkAction(okblock: {(alert:UIAlertAction) -> Void in
+                            
                             self.segueSecondtofirst()//接続人数が0になったらもとの画面に戻る
                         })
                         self.present(self.myAlert.alert, animated: true, completion: nil)

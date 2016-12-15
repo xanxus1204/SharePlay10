@@ -39,7 +39,9 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }
     override func viewWillAppear(_ animated: Bool) {
         UIApplication.shared.isIdleTimerDisabled = true
+        print("willapper")
         isConnected = false
+        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.none)
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -52,6 +54,10 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     if self.networkCom.motherID != nil{
                         if self.networkCom.motherID .isEqual(self.peerID) || self.isParent{
                             self.startBtn.isHidden = false
+                            UIView.animate(withDuration: 1.0, delay: 0, options: [UIViewAnimationOptions.repeat, UIViewAnimationOptions.allowUserInteraction], animations:  {()-> Void in
+                                self.startBtn.alpha = 0.1
+                            }, completion: nil)
+                            
                         }else{
                             self.stopClient()
                             self.networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
@@ -113,6 +119,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     SVProgressHUD.show(withStatus: "募集中\n画面上部をタップして\nキャンセル")
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("began")
         if !isConnected{
             createBtn.isEnabled = true
             searchBtn.isEnabled = true
@@ -132,6 +139,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         
     }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
+            SVProgressHUD.dismiss()
             stopServer()
             networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
             networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
@@ -183,6 +191,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
             
             invitationHandler(true,self.networkCom.session)
+            SVProgressHUD.show(withStatus: "募集中\n上のボタンをタップしてスタート")
         })
         myAlert.addCancelAction(cancelblock: {(action:UIAlertAction!) -> Void in
             
