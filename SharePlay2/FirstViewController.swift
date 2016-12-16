@@ -171,6 +171,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         myAlert = AlertControlller(titlestr: "この相手に接続しますか？", messagestr: peerID.displayName, okTextstr: "はい", canceltextstr: "いいえ")
         myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
             browser.invitePeer(peerID, to: self.networkCom.session, withContext: nil, timeout: 0)
+            SVProgressHUD.show(withStatus: "接続中")
             
         })
         myAlert.addCancelAction(cancelblock: {(alert:UIAlertAction) -> Void in})
@@ -264,6 +265,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     //MARK: segue
     func segueFirstToSecond(){
+        SVProgressHUD.dismiss()
         performSegue(withIdentifier: "1to2", sender: nil)
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

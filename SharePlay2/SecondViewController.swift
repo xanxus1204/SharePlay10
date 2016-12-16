@@ -364,6 +364,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func playAudio() -> Bool{
         var result:Bool = false
         if  player != nil{
+            Thread.sleep(forTimeInterval: 0.06)
             player?.play()
             result = (player?.isPlaying)!
         }else if streamingPlayer != nil{
@@ -375,7 +376,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         var result:Bool = false
         if  player != nil{
             player?.pause()
-            print( "いま何秒\(player?.currentTime ?? 0)")
             result = (player?.isPlaying)!
         }else if streamingPlayer != nil{
             result = streamingPlayer.pause()

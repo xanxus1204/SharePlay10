@@ -162,10 +162,10 @@ void packetsProc( void *inClientData,
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
     count ++;
-    if ( count == 3) {
+    if (count == 5){
         NSLog(@"Prime");
         AudioQueuePrime(streamInfo->audioQueueObject, 0, 0);
-    
+    }
     //キューバッファを作成し、エンキューする
     AudioQueueBufferRef queueBuffer;
     err = AudioQueueAllocateBuffer(streamInfo->audioQueueObject,
@@ -183,9 +183,7 @@ void packetsProc( void *inClientData,
                                   NULL);
     
     if(err)NSLog(@"AudioQueueEnqueueBuffer err = %d",(int)err);
-    }else{
-        
-    }
+    
     
 }
 static void checkError(OSStatus err,const char *message){
@@ -200,10 +198,6 @@ static void checkError(OSStatus err,const char *message){
 void outputCallback( void                 *inClientData,
                     AudioQueueRef        inAQ,
                     AudioQueueBufferRef  inBuffer ){
-    StreamingPlayer *player = (__bridge StreamingPlayer*)inClientData;
-            //inBufferをEnqueueする
-        //読み込み位置をインクリメント
-        player->startingPacketCount += 32768;
 
 }
 -(void)recvAudio:(NSData *)data{
