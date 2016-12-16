@@ -57,7 +57,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
-        
+        self.view.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
         UIApplication.shared.isIdleTimerDisabled = false //スリープしても良い
         // Do any additional setup after loading the view, typically from a nib.
        
@@ -190,9 +190,12 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     if !leftPlaylist{//現在再生中の曲がなければ
                         print("動いてるよん")
                         leftPlaylist = checkListOfSong(num: allplayingIndex + 1)
-                        allplayingIndex += 1
-                        print(sequenceOfPeer[allplayingIndex].peerID.displayName)
-                        networkCom.sendStrtoOne(str: "yourturn", peer: sequenceOfPeer[allplayingIndex].peerID)
+                        if leftPlaylist{
+                            allplayingIndex += 1
+                            print(sequenceOfPeer[allplayingIndex].peerID.displayName)
+                            networkCom.sendStrtoOne(str: "yourturn", peer: sequenceOfPeer[allplayingIndex].peerID)
+
+                        }
                     }
 
                 }else{//子なら受け入れる
@@ -372,6 +375,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         var result:Bool = false
         if  player != nil{
             player?.pause()
+            print( "いま何秒\(player?.currentTime ?? 0)")
             result = (player?.isPlaying)!
         }else if streamingPlayer != nil{
             result = streamingPlayer.pause()

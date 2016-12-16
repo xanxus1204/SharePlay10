@@ -21,8 +21,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     
     private var myAlert:AlertControlller!
     
-    private var isConnected:Bool = false
-    
     
     @IBOutlet weak var startBtn: UIButton!
     
@@ -33,6 +31,9 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     @IBOutlet weak var searchBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
+        peerTable.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
+
         initialize()
         SVProgressHUD.setDefaultStyle(SVProgressHUDStyle.dark)
         SVProgressHUD.setDefaultAnimationType(SVProgressHUDAnimationType.native)
@@ -40,7 +41,6 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     override func viewWillAppear(_ animated: Bool) {
         UIApplication.shared.isIdleTimerDisabled = true
         print("willapper")
-        isConnected = false
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.none)
     }
     override func didReceiveMemoryWarning() {
@@ -67,9 +67,9 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     }
                     }
                 }else if key == "peerNameArray"{
-                isConnected = true
                 if networkCom.peerNameArray.count == 0{
                     DispatchQueue.main.async {
+                        
                         self.startBtn.isHidden = true
                     }
                 }
@@ -119,8 +119,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                     SVProgressHUD.show(withStatus: "募集中\n画面上部をタップして\nキャンセル")
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print("began")
-        if !isConnected{
+        if networkCom.peerNameArray.count == 0{
             createBtn.isEnabled = true
             searchBtn.isEnabled = true
             SVProgressHUD.dismiss()
@@ -191,7 +190,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
             
             invitationHandler(true,self.networkCom.session)
-            SVProgressHUD.show(withStatus: "募集中\n上のボタンをタップしてスタート")
+            SVProgressHUD.show(withStatus: "募集中\n上のボタンをタップして\nスタート")
         })
         myAlert.addCancelAction(cancelblock: {(action:UIAlertAction!) -> Void in
             

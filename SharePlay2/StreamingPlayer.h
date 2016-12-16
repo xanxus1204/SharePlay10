@@ -21,11 +21,14 @@ typedef struct StreamInfo{
     BOOL              isDone;
     AudioQueueBufferRef  audioQueueBuffer[kNumberOfBuffers];
     BOOL readyToPlay;
+    
    
     
 }StreamInfo;
 @interface StreamingPlayer : NSObject{
     StreamInfo streamInfo;
+    UInt32 numPacketsToRead;
+    SInt64 startingPacketCount;
     }
 -(BOOL)play;
 -(void)start;
