@@ -20,6 +20,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     dynamic var artImage:UIImage!
     
+    
     private var musicName:String?
     
     private var tempData:NSMutableData = NSMutableData()//ファイルの容量が大きいものを受信する時用
@@ -36,7 +37,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         var name:String
         var peerID:MCPeerID
     }
-    private var peerStates:[peerState] = []
+     var peerStates:[peerState] = []
     
     enum dataType:Int {//送信するデータのタイプ
         case isString = 1
@@ -235,11 +236,12 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
             print("接続完了\(peerID.displayName)")
         }
         if state == MCSessionState.notConnected{
+            
+            if peerID .isEqual(motherID){
+                motherID = nil
+            }
             var num = 0
             for peerst in peerStates{
-                if peerID .isEqual(motherID){
-                    motherID = nil
-                }
                 if peerID .isEqual(peerst.peerID){
                     peerStates.remove(at: num)
                     peerNameArray.remove(at: num)

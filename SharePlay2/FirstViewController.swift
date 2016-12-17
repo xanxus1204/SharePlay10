@@ -41,6 +41,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     override func viewWillAppear(_ animated: Bool) {
         UIApplication.shared.isIdleTimerDisabled = true
         print("willapper")
+        self.startBtn.alpha = 1
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.none)
     }
     override func didReceiveMemoryWarning() {
@@ -157,6 +158,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
 
         }else{
             cell.textLabel?.text = nil
+            print("nilを返している")
         }
         return cell
 
@@ -196,6 +198,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         myAlert.addCancelAction(cancelblock: {(action:UIAlertAction!) -> Void in
             
             invitationHandler(false,self.networkCom.session)
+            SVProgressHUD.show(withStatus: "募集中\n画面上部をタップして\nキャンセル")
         })
         var baseView: UIViewController = self.view.window!.rootViewController!
         while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
@@ -288,6 +291,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     public func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID){
         print("lostpeer")
     }
+    
 }
 
 
