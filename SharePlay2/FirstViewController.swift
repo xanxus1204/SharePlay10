@@ -70,7 +70,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
                 }else if key == "peerNameArray"{
                 if networkCom.peerNameArray.count == 0{
                     DispatchQueue.main.async {
-                        
+                        SVProgressHUD.dismiss()
                         self.startBtn.isHidden = true
                     }
                 }

@@ -37,7 +37,7 @@ class AudioExporter: NSObject {
         
         //ここまで準備
         exportSession.exportAsynchronously(completionHandler: { () -> Void in
-            print("Export Complete")
+            NSLog("Export Complete")
     
             let extConverter:ExtAudioConverter = ExtAudioConverter()
             self.convertComp = extConverter.convert(from:exportSession.outputURL, to: saveUrlforAAC as URL!)

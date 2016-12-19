@@ -42,6 +42,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     private var playingState:Bool = false
     
+    private var durationOfSong:TimeInterval!//曲の再生時間
+    
+    private var doOnceFlag:Bool!
+    
      var isParent:Bool!
     
      var networkCom:NetworkCommunicater!
@@ -86,7 +90,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         
         streamingPlayer = StreamingPlayer()
         
-        showTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(SecondViewController.showInfoWithtitle), userInfo: nil, repeats: true)
+        showTimer = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(SecondViewController.showInfoWithtitle), userInfo: nil, repeats: true)
        
         showTimer.fire()
         if !isParent!{//子なら親が来るまで操作不能にする
@@ -104,7 +108,22 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    func showInfoWithtitle(){
+    func showInfoWithtitle(){//2秒に一回実行される
+        if player != nil{
+            let leftTime:TimeInterval = durationOfSong - (player?.currentTime)!
+            if leftTime < 2.6 && doOnceFlag{
+                print("いまだ！\(leftTime)")
+                ownplayingIndex += 1
+                playitemManager.movePlayItem(toIndex: ownplayingIndex)
+                //基本的にこのメソッドを通るのは自分のライブラリにその曲を持っている場合のみ
+                networkCom.sendStrtoAll(str: "end")//曲が終わったことを全員にしらせる
+                sendOrderWhenendOfPlay()
+                doOnceFlag = false
+            }
+        }
+        
+        
+        
         if showTimerIndex < self.songtitleArr.count{
             if self.songtitleArr.count - showTimerIndex > 5 {
                 var text = ""
@@ -212,6 +231,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
 }
     func doWhenConvertCompleted(){
         DispatchQueue.main.async {
+            self.networkCom.sendStrtoAll(str: "stop")
+
             if self.streamPlayerUrl != nil{
                 if let data = NSData(contentsOf: self.streamPlayerUrl! as URL) {
                     self.networkCom.sendAudiodata(data: data)
@@ -225,6 +246,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             player = try  AVAudioPlayer(contentsOf: self.playitemManager.playUrl!)
             player?.delegate = self
             player?.prepareToPlay()
+            durationOfSong = player?.duration
+            doOnceFlag = true
             player?.volume = self.volumeSlider.value
         }catch{
             print("あんまりだあ")
@@ -239,6 +262,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             print("自動で次にいくよ\(self.allplayingIndex)")
             Thread.sleep(forTimeInterval: 2.0)
             networkCom.sendStrtoAll(str: "play")
+            Thread.sleep(forTimeInterval: 0.03)
             player?.play()
             playingState = (player?.isPlaying)!
             toggleBtnImage()
@@ -307,12 +331,12 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     @IBAction func playstopBtnTapped(_ sender: AnyObject) {
         if playingState{
             networkCom.sendStrtoAll(str: "pause")
-            Thread.sleep(forTimeInterval: 0.06)
+            Thread.sleep(forTimeInterval: 0.03)
            playingState = pauseAudio()
             
         }else{
             networkCom.sendStrtoAll(str: "play")
-            Thread.sleep(forTimeInterval: 0.06)
+            Thread.sleep(forTimeInterval: 0.03)
            playingState = playAudio()
         }
         toggleBtnImage()
@@ -421,8 +445,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             
         let firstViewController:FirstViewController = segue.destination as! FirstViewController
            firstViewController.networkCom = self.networkCom
-            
-           
                 networkCom.stopsendingAudio()
                 deleteFile()
                playingState = pauseAudio()
@@ -489,7 +511,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         DispatchQueue.main.async {
             self.titlelabel.text = self.playitemManager.itemProperty.musicTitle
         }
-        self.networkCom.sendStrtoAll(str: "stop")
         
         if  let artwork = playitemManager.itemProperty.albumArtWork{
             networkCom.artImage = artwork
@@ -507,7 +528,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
         
         self.networkCom.sendStrtoAll(str:playitemManager.itemProperty.musicTitle)
-        
+        deleteFile()
         self.streamPlayerUrl = self.prepareAudioStreaming(item: playitemManager.toPlayItem)
     }
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
@@ -571,24 +592,18 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         playingState = player.isPlaying
         self.player?.delegate = nil
         self.player = nil
-        ownplayingIndex += 1
-        playitemManager.movePlayItem(toIndex: ownplayingIndex)
-        //基本的にこのメソッドを通るのは自分のライブラリにその曲を持っている場合のみ
-        networkCom.sendStrtoAll(str: "pause")
-        networkCom.sendStrtoAll(str: "stop")
-        networkCom.sendStrtoAll(str: "end")//曲が終わったことを全員にしらせる
+//        networkCom.sendStrtoAll(str: "pause")
+//        networkCom.sendStrtoAll(str: "stop")
         networkCom.stopsendingAudio()
         deleteFile()
-        sendOrderWhenendOfPlay()
+       
        
     }
     // MARK: AVAudiosession Interruption
     func addAudioSessionObservers() {
         let center = NotificationCenter.default
         center.addObserver(self, selector: #selector(SecondViewController.handleInterruption(_:)), name: NSNotification.Name.AVAudioSessionInterruption, object: nil)
-        
     }
-    
     /// Interruption : 電話による割り込み
     func handleInterruption(_ notification: Notification) {
         
