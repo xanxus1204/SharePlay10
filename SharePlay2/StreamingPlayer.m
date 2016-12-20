@@ -55,10 +55,7 @@ double lastVolume;
     return streamInfo.isPlaying;
     
 }
--(void)setCurrentPosition:(float)position{
-    [self pause];
-    
-}
+
 -(BOOL)stop{
     if (!streamInfo.isPlaying)return streamInfo.isPlaying;
     if (streamInfo.started && !streamInfo.isDone) {
