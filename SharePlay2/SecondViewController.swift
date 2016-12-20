@@ -42,7 +42,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     private var playingState:Bool = false
     
-    private var durationOfSong:TimeInterval!//曲の再生時間
+    private var durationOfSong:TimeInterval = 100.0//曲の再生時間
     
     private var doOnceFlag:Bool!
     
@@ -62,7 +62,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         super.viewDidLoad()
         initialize()
         self.view.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
-        UIApplication.shared.isIdleTimerDisabled = false //スリープしても良い
+//        UIApplication.shared.isIdleTimerDisabled = false //スリープしても良い
         SVProgressHUD.setMinimumDismissTimeInterval(1.0)
         // Do any additional setup after loading the view, typically from a nib.
        
@@ -72,6 +72,21 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     func initialize(){
         addAudioSessionObservers()
+        let audiosession = AVAudioSession.sharedInstance()
+        do {
+            try audiosession.setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)//バックグラウンド再生を許可
+        } catch  {
+            // エラー処理
+            fatalError("カテゴリ設定失敗")
+        }
+        // sessionのアクティブ化
+        do {
+            try audiosession.setActive(true)
+        } catch {
+            // audio session有効化失敗時の処理
+            // (ここではエラーとして停止している）
+            fatalError("session有効化失敗")
+        }
         let accesoryEvent:MPRemoteCommandCenter = MPRemoteCommandCenter.shared()
         accesoryEvent.togglePlayPauseCommand.addTarget(self, action: #selector(SecondViewController.accesoryToggled(event:)))
         UIApplication.shared.beginReceivingRemoteControlEvents()//イヤホンのボタンなどのイベント検知
@@ -242,11 +257,11 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         
         let audiosession = AVAudioSession.sharedInstance()
         do{
-            try audiosession.setCategory(AVAudioSessionCategoryPlayback)
+            try audiosession.setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)
             player = try  AVAudioPlayer(contentsOf: self.playitemManager.playUrl!)
             player?.delegate = self
             player?.prepareToPlay()
-            durationOfSong = player?.duration
+            durationOfSong = (player?.duration)!
             doOnceFlag = true
             player?.volume = self.volumeSlider.value
         }catch{
@@ -307,21 +322,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 }
                 self.titlelabel.text = str
                 self.changeVolume(value: self.volumeSlider.value)
-                let audiosession = AVAudioSession.sharedInstance()
-                do {
-                    try audiosession.setCategory(AVAudioSessionCategoryPlayback)//バックグラウンド再生を許可
-                } catch  {
-                    // エラー処理
-                    fatalError("カテゴリ設定失敗")
-                }
-                // sessionのアクティブ化
-                do {
-                    try audiosession.setActive(true)
-                } catch {
-                    // audio session有効化失敗時の処理
-                    // (ここではエラーとして停止している）
-                    fatalError("session有効化失敗")
-                }
                 
             }
         }
@@ -491,12 +491,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
             networkCom.sendDatatoAll(data: titleData as NSData)
         }else{//子側の処理
-             var sendArr:[Any] = [self.peerID]//配列の人マス目に自分のIDを格納
-            for item in mediaItemCollection.items{
-                sendArr.append(item.title!)
-            }
-            let titleData = NSKeyedArchiver.archivedData(withRootObject: sendArr)
-            networkCom.sendDatatoOne(data: titleData as NSData, recvpeer: networkCom.motherID)
             if playitemManager == nil{
                 playitemManager = playItemManager(withItems: mediaItemCollection)//最初なので初期化
                 
@@ -504,6 +498,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 playitemManager.addPlayItems(mediaItems: mediaItemCollection)
                 playitemManager.movePlayItem(toIndex: ownplayingIndex)//ある種の初期化作業
             }
+             var sendArr:[Any] = [self.peerID]//配列の人マス目に自分のIDを格納
+            for item in mediaItemCollection.items{
+                sendArr.append(item.title!)
+            }
+            let titleData = NSKeyedArchiver.archivedData(withRootObject: sendArr)
+            networkCom.sendDatatoOne(data: titleData as NSData, recvpeer: networkCom.motherID)
+           
         }
                     mediaPicker.dismiss(animated: true, completion: nil)
     }
@@ -592,8 +593,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         playingState = player.isPlaying
         self.player?.delegate = nil
         self.player = nil
-//        networkCom.sendStrtoAll(str: "pause")
-//        networkCom.sendStrtoAll(str: "stop")
         networkCom.stopsendingAudio()
         deleteFile()
        
@@ -614,8 +613,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             switch interruptionType {
             case .began:
                 print("Interruption Begin")
-                playingState = pauseAudio()
-                toggleBtnImage()
+               
                                 break
             case .ended:
                 break
