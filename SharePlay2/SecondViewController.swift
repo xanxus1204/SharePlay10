@@ -616,15 +616,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 print("Interruption Begin")
                 playingState = pauseAudio()
                 toggleBtnImage()
-                networkCom.disconnectPeer()
-                // interruptionが開始した時(電話がかかってきたなど)
-                // 音楽は自動的に停止される
-                // (ここにUI更新処理などを書きます)
-                //
-                break
+                                break
             case .ended:
-                // interruptionが終了した時の処理
-                //
                 break
                 
             }
