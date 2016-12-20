@@ -113,11 +113,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
+        print("親")
             createBtn.isEnabled = false
             searchBtn.isEnabled = false
                     startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
                     isParent = true //親フラグを立てる
-                    SVProgressHUD.show(withStatus: "募集中\n画面上部をタップして\nキャンセル")
+                    SVProgressHUD.show(withStatus: "募集中\nタップして\nキャンセル")
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if networkCom.peerNameArray.count == 0{
@@ -131,11 +132,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
+        print("子")
         self.isParent = false //親フラグを建てないs
         createBtn.isEnabled = false
         searchBtn.isEnabled = false
         self.startClientWithName(name: self.roomName)
-        SVProgressHUD.show(withStatus: "検索中\n画面上部をタップして\nキャンセル")
+        SVProgressHUD.show(withStatus: "検索中\nタップして\nキャンセル")
         
     }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
@@ -198,7 +200,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         myAlert.addCancelAction(cancelblock: {(action:UIAlertAction!) -> Void in
             
             invitationHandler(false,self.networkCom.session)
-            SVProgressHUD.show(withStatus: "募集中\n画面上部をタップして\nキャンセル")
+            SVProgressHUD.show(withStatus: "募集中\nタップして\nキャンセル")
         })
         var baseView: UIViewController = self.view.window!.rootViewController!
         while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
