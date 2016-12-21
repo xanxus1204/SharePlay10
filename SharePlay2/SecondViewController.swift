@@ -357,7 +357,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             print("ので")
             SVProgressHUD.dismiss()
         }else{
-            SVProgressHUD.dismiss()
+           
             DispatchQueue.main.async {//タイトルの文字列が送られてきたと判断
                 if !self.isParent!{
                     self.allplayingIndex = 2 //自動で次にいくフラグを強制的に立てる
@@ -377,6 +377,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
            playingState = pauseAudio()
             
         }else{
+             SVProgressHUD.dismiss()
             networkCom.sendStrtoAll(str: "play")
             Thread.sleep(forTimeInterval: 0.03)
            playingState = playAudio()
