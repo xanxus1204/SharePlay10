@@ -32,8 +32,9 @@ static void checkError(OSStatus err,const char *message){
     AudioStreamBasicDescription outputFormat;
     AVAudioSession * audiosession =[AVAudioSession sharedInstance];
     
-    [audiosession setActive:YES error:nil];
     [audiosession setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
+    [audiosession setActive:YES error:nil];
+
     //変換するフォーマット(IMA4)
     memset(&outputFormat, 0, sizeof(AudioStreamBasicDescription));
     
@@ -145,6 +146,10 @@ static void checkError(OSStatus err,const char *message){
     ExtAudioFileDispose(infile);
     ExtAudioFileDispose(outfile);
     free(buffer);
+    [audiosession setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
+    [audiosession setActive:YES error:nil];
+
+    
     return  YES;
 }
 @end
