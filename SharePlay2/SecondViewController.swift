@@ -645,7 +645,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func sendOrderWhenendOfPlay(){
         if isParent!{//親の場合
             var peerofYou:MCPeerID
-            if songtitleArr.count == 1{
+            if songtitleArr.count == 1 && allplayingIndex == 0{
                 leftPlaylist = checkListOfSong(num: 0)
                 peerofYou = sequenceOfPeer[0].peerID
             }else{
