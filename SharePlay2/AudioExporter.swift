@@ -32,7 +32,7 @@ class AudioExporter: NSObject {
         }catch{
             print("Cannnot make a direc†ory")
         }
-        let savePathforAAC:String = cacheDir + "/" + itemTitleString + ".aac"
+        let savePathforAAC:String = cacheDir + "/" + itemTitleString + ".caf"
         let saveUrlforAAC = NSURL(fileURLWithPath: savePathforAAC)
         
         //ここまで準備

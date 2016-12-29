@@ -65,6 +65,7 @@ double lastVolume;
         streamInfo.isPlaying = NO;
         AudioQueueDispose(streamInfo.audioQueueObject, YES);
         streamInfo.audioQueueObject = NULL;
+        AudioFileStreamClose(streamInfo.audioFileStream);
     }
     return  streamInfo.isPlaying;
 }
