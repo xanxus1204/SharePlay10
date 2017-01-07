@@ -293,8 +293,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             print("あんまりだあ")
         }
         // sessionのアクティブ化
+        self.changeVolume(value: self.volumeSlider.value)
        
-        if allplayingIndex >= 1{//最初の曲でなければ自動的に再生
+        if allplayingIndex > 1{//最初の曲でなければ自動的に再生
             print("自動で次にいくよ\(self.allplayingIndex)")
             networkCom.sendStrtoAll(str: "play")
             Thread.sleep(forTimeInterval: 0.03)
@@ -320,6 +321,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             stopAudioStream()
             resetStream()
             
+        }else if str == "next"{
+            skipAudio()
         }else if str == "noimage"{
             
             DispatchQueue.main.async {
@@ -366,6 +369,11 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
 
     }
     
+    @IBAction func nextButtonTapped(_ sender: Any) {
+        networkCom.sendStrtoAll(str: "next")
+        skipAudio()
+        
+    }
     @IBAction func playstopBtnTapped(_ sender: AnyObject) {
         if playingState{
             networkCom.sendStrtoAll(str: "pause")
@@ -424,6 +432,14 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             }
         } catch  {
             print("削除できず")
+        }
+    }
+    func skipAudio(){
+        changeVolume(value: 0)
+        if  player != nil && myturn{
+            networkCom.stopsendingAudio()
+            player?.currentTime = durationOfSong - 10.0
+            
         }
     }
     //再生、停止などの処理safe
