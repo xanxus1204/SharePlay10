@@ -2,7 +2,6 @@
 //  ExtAudioConverter.m
 //  ExtAudio
 //
-//  Created by Norihisa Nagano
 //
 
 #import "ExtAudioConverter.h"

@@ -94,8 +94,8 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         }
         timer = Timer.scheduledTimer(timeInterval:delayTime, target: self, selector: #selector(NetworkCommunicater.sendDataInterval), userInfo: nil, repeats: true)
         
-        for _ in 0..<5{
-            sendDataInterval()//5パケットだけさっと送る
+        for _ in 0..<3{
+            sendDataInterval()//3パケットだけさっと送る
         }
         timer.fire()
     }

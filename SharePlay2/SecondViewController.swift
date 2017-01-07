@@ -140,7 +140,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 print("いまだ！\(leftTime)")
                 ownplayingIndex += 1
                 sleeptime = leftTime
-                SVProgressHUD.show(withStatus: "次の曲の準備中")
+                SVProgressHUD.show(withStatus: "曲の準備中")
                 let strtime = String(Int(sleeptime * 100))
                 playitemManager.movePlayItem(toIndex: ownplayingIndex)
                 //基本的にこのメソッドを通るのは自分のライブラリにその曲を持っている場合のみ
@@ -166,10 +166,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             }
         }
     }
-    
-//    func accesoryToggled(event:MPRemoteCommandEvent){
-//        
-//    }
     func doBeforeTerminate(){
         deleteFile()
         nc.removeObserver(self)
@@ -298,7 +294,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
         // sessionのアクティブ化
        
-        if allplayingIndex != 1{//最初の曲でなければ自動的に再生
+        if allplayingIndex >= 1{//最初の曲でなければ自動的に再生
             print("自動で次にいくよ\(self.allplayingIndex)")
             networkCom.sendStrtoAll(str: "play")
             Thread.sleep(forTimeInterval: 0.03)

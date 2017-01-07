@@ -160,7 +160,7 @@ void packetsProc( void *inClientData,
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
     count ++;
-    if (count == 5){
+    if (count == 3){
         NSLog(@"Prime");
         AudioQueuePrime(streamInfo->audioQueueObject, 0, 0);
     }
