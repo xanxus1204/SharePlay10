@@ -14,6 +14,7 @@
 		433EF6A91DFFACAC00989310 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 433EF6A81DFFACAC00989310 /* Settings.bundle */; };
 		4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */; };
 		4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6981DAE04F700D003D0 /* StreamingPlayer.m */; };
+		4389F8051E25BD6D00E60431 /* next_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 4389F8041E25BD6D00E60431 /* next_button.png */; };
 		438E5E131DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E0A1DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m */; };
 		438E5E141DAF570F00E9EE65 /* SVProgressAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E0C1DAF570F00E9EE65 /* SVProgressAnimatedView.m */; };
 		438E5E151DAF570F00E9EE65 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 438E5E0E1DAF570F00E9EE65 /* SVProgressHUD.bundle */; };
@@ -47,6 +48,7 @@
 		4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtAudioConverter.m; sourceTree = "<group>"; };
 		4354A6971DAE04F700D003D0 /* StreamingPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingPlayer.h; sourceTree = "<group>"; };
 		4354A6981DAE04F700D003D0 /* StreamingPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamingPlayer.m; sourceTree = "<group>"; };
+		4389F8041E25BD6D00E60431 /* next_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_button.png; sourceTree = "<group>"; };
 		438E5E091DAF570F00E9EE65 /* SVIndefiniteAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVIndefiniteAnimatedView.h; sourceTree = "<group>"; };
 		438E5E0A1DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVIndefiniteAnimatedView.m; sourceTree = "<group>"; };
 		438E5E0B1DAF570F00E9EE65 /* SVProgressAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressAnimatedView.h; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 				BB35F9261E0239350076EA96 /* start_btn.png */,
 				43B962AC1E00E29500D42093 /* create_button.png */,
 				432348421DB0A775006B13FE /* no_image.png */,
+				4389F8041E25BD6D00E60431 /* next_button.png */,
 				43B962951DFFC5DC00D42093 /* add_button.png */,
 				43B962971DFFC5E800D42093 /* back_button.png */,
 				43B962A11DFFCBBE00D42093 /* play_button.png */,
@@ -235,6 +238,7 @@
 				43B962981DFFC5E800D42093 /* back_button.png in Resources */,
 				43B962AD1E00E29500D42093 /* search_button.png in Resources */,
 				432348431DB0A775006B13FE /* no_image.png in Resources */,
+				4389F8051E25BD6D00E60431 /* next_button.png in Resources */,
 				43B962A31DFFCBBE00D42093 /* play_button.png in Resources */,
 				43B962A41DFFCBBE00D42093 /* stop_button.png in Resources */,
 				43B962AE1E00E29500D42093 /* create_button.png in Resources */,
@@ -392,7 +396,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kurumecs.SharePlay2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "77c6cc84-8e93-4370-a45d-0bdf93659599";
+				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "SharePlay2/SharePlay2-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -406,7 +410,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Suguru Kabashima (69LS254W7V)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 69LS254W7V;
 				INFOPLIST_FILE = SharePlay2/Info.plist;
@@ -414,7 +418,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kurumecs.SharePlay2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "77c6cc84-8e93-4370-a45d-0bdf93659599";
+				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "SharePlay2/SharePlay2-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;

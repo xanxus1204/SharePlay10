@@ -75,7 +75,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         initialize()
         self.view.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
 //        UIApplication.shared.isIdleTimerDisabled = false //スリープしても良い
-        SVProgressHUD.setMinimumDismissTimeInterval(1.0)
+        SVProgressHUD.setMinimumDismissTimeInterval(2.0)
         // Do any additional setup after loading the view, typically from a nib.
        
     }
@@ -99,9 +99,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             // (ここではエラーとして停止している）
             fatalError("session有効化失敗")
         }
-//        let accesoryEvent:MPRemoteCommandCenter = MPRemoteCommandCenter.shared()
-//        accesoryEvent.togglePlayPauseCommand.addTarget(self, action: #selector(SecondViewController.accesoryToggled(event:)))
-//        UIApplication.shared.beginReceivingRemoteControlEvents()//イヤホンのボタンなどのイベント検知
         nc.addObserver(
             self,
             selector: #selector(SecondViewController.doBeforeTerminate),
@@ -115,9 +112,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "recvedData", options: [.new,.old], context: nil)
         
-        streamingPlayer = StreamingPlayer()
-        streamingPlayer46 = StreamingPlayer()
-        showTimer = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(SecondViewController.showInfoWithtitle), userInfo: nil, repeats: true)
+        showTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(SecondViewController.showInfoWithtitle), userInfo: nil, repeats: true)
        
         showTimer.fire()
         if !isParent!{//子なら親が来るまで操作不能にする
@@ -140,7 +135,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 print("いまだ！\(leftTime)")
                 ownplayingIndex += 1
                 sleeptime = leftTime
-                SVProgressHUD.show(withStatus: "曲の準備中")
+                SVProgressHUD.show(withStatus: "準備中...")
                 let strtime = String(Int(sleeptime * 100))
                 playitemManager.movePlayItem(toIndex: ownplayingIndex)
                 //基本的にこのメソッドを通るのは自分のライブラリにその曲を持っている場合のみ
@@ -161,7 +156,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 SVProgressHUD.showInfo(withStatus: "プレイリストに追加されました\n" + text)
                 showTimerIndex += 5
             }else{
-                SVProgressHUD.showInfo(withStatus: "プレイリストに追加されました\n\(self.songtitleArr[showTimerIndex])")
+                for _ in 1...5{
+                    SVProgressHUD.showInfo(withStatus: "プレイリストに追加されました\n\(self.songtitleArr[showTimerIndex])")
+                    Thread.sleep(forTimeInterval: 0.5)
+                }
                 showTimerIndex += 1
             }
         }
@@ -340,9 +338,12 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             DispatchQueue.main.async {
                 self.stoppauseBtn.setImage(image2, for: UIControlState.normal)
             }
+            myturn = false
+            changePlayer = !changePlayer
+            
         }else if str.hasPrefix("end"){
             //親なら次の曲をやるように司令をだす
-            SVProgressHUD.show(withStatus: "次の曲の準備中")
+            SVProgressHUD.show(withStatus: "準備中...")
             let timestr = str.substring(from:str.index(str.endIndex, offsetBy: -3) )
             let timeDouble = Double(timestr)
             sleeptime = timeDouble! / 100.0
@@ -356,13 +357,14 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             print("ので")
             SVProgressHUD.dismiss()
         }else{
-           
+           resetStream()
             DispatchQueue.main.async {//タイトルの文字列が送られてきたと判断
                 if !self.isParent!{
                     self.allplayingIndex = 2 //自動で次にいくフラグを強制的に立てる
                 }
                 self.titlelabel.text = str
                 self.changeVolume(value: self.volumeSlider.value)
+                
                 
             }
         }
@@ -692,6 +694,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 SVProgressHUD.dismiss()
                 SVProgressHUD.showInfo(withStatus: "次の曲がありません")
                 networkCom.sendStrtoAll(str: "noSong")
+                myturn = false
+                changePlayer = !changePlayer
             }
         }
     }
