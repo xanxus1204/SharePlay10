@@ -150,7 +150,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         if showTimerIndex < self.songtitleArr.count{
             if self.songtitleArr.count - showTimerIndex > 5 {
                 var text = ""
-                for num in 1...5{
+                for num in 0...4{
                     text.append(self.songtitleArr[showTimerIndex+num]+"\n")
                 }
                 SVProgressHUD.showInfo(withStatus: "プレイリストに追加されました\n" + text)
