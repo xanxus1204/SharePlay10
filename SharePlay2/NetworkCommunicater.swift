@@ -49,7 +49,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     dynamic var audioData:NSData!
      init(withID peerID:MCPeerID) {
         super.init()
-        session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
+        session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.optional)//↑で作ったIDを利用してセッションを作成
         session.delegate = self
         
     }

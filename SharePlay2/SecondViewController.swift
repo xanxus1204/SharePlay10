@@ -378,15 +378,21 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     @IBAction func playstopBtnTapped(_ sender: AnyObject) {
         if playingState{
-            networkCom.sendStrtoAll(str: "pause")
+            
             Thread.sleep(forTimeInterval: 0.03)
            playingState = pauseAudio()
+            if !playingState{
+                networkCom.sendStrtoAll(str: "pause")
+            }
             
         }else{
              SVProgressHUD.dismiss()
-            networkCom.sendStrtoAll(str: "play")
+            
             Thread.sleep(forTimeInterval: 0.03)
-           playingState = playAudio()
+           playingState = playAudio()//playが可能だったつまり再生の状態になったら再生を送る。
+            if playingState{
+                networkCom.sendStrtoAll(str: "play")
+            }
         }
         toggleBtnImage()
     }
@@ -439,6 +445,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func skipAudio(){
         changeVolume(value: 0)
         if  player != nil && myturn{
+            playingState = playAudio()
             networkCom.stopsendingAudio()
             player?.currentTime = durationOfSong - 10.0
             
