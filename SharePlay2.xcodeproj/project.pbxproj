@@ -153,8 +153,8 @@
 				43B962A21DFFCBBE00D42093 /* stop_button.png */,
 				43D4E2531D9CBADB005631E5 /* Assets.xcassets */,
 				43D4E2551D9CBADB005631E5 /* LaunchScreen.storyboard */,
-				43D4E2581D9CBADB005631E5 /* Info.plist */,
 				433EF6A81DFFACAC00989310 /* Settings.bundle */,
+				43D4E2581D9CBADB005631E5 /* Info.plist */,
 				BB6DE8D61DABB95600384CEF /* SharePlay2-Bridging-Header.h */,
 			);
 			path = SharePlay2;
