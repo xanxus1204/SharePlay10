@@ -175,10 +175,20 @@ void packetsProc( void *inClientData,
     queueBuffer->mAudioDataByteSize = inNumberBytes;
     queueBuffer->mPacketDescriptionCount = inNumberPackets;
     
+    if (inPacketDescriptions == 0){
         err = AudioQueueEnqueueBuffer(streamInfo->audioQueueObject,
-                                  queueBuffer,
-                                  0,
-                                  NULL);
+                                      queueBuffer,
+                                      0,
+                                      NULL);
+
+            }else{
+                err = AudioQueueEnqueueBuffer(streamInfo->audioQueueObject,
+                                              queueBuffer,
+                                              inNumberPackets,
+                                              inPacketDescriptions);//VBRのファイルの場合
+    }
+
+
     
     if(err)NSLog(@"AudioQueueEnqueueBuffer err = %d",(int)err);
     

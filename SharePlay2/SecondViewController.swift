@@ -561,9 +561,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 networkCom.stopsendingAudio()
                 deleteFile()
                playingState = pauseAudio()
-//            UIApplication.shared.endReceivingRemoteControlEvents()
+               player?.stop()
+
             stopAudioStream()
-        }
+            }
     }
        //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
