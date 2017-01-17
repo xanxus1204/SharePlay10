@@ -176,52 +176,54 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     // MARK: MCSessionDelegate
       func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        
-       let usingData:NSData = NSData(data: data)
-        let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: usingData as Data) as! NSMutableArray!
-        if recvDataArray != nil{
-            let  recvType:Int = recvDataArray[0] as! Int
-            let recvContents:NSMutableData =  recvDataArray[2] as! NSMutableData
-            
-            if recvType  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
+        DispatchQueue.main.async {
+            let usingData:NSData = NSData(data: data)
+            let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: usingData as Data) as! NSMutableArray!
+            if recvDataArray != nil{
+                let  recvType:Int = recvDataArray[0] as! Int
+                let recvContents:NSMutableData =  recvDataArray[2] as! NSMutableData
                 
-                   audioData = recvContents as NSData!
+                if recvType  == dataType.isAudio.rawValue{//中身がオーディオデータのとき
                     
-                
-            }else if recvType == dataType.isString.rawValue{//中身が文字列のとき
-                let str = NSString(data: recvContents as Data, encoding: String.Encoding.utf8.rawValue) as String?
-                recvStr = str
-        
-            }else if recvType == dataType.isImage.rawValue{//中身が画像のとき
-                let isFin = recvDataArray[1] as! Int
-                if isFin == 0 {
-                    tempData.append(recvContents as Data)
+                    self.audioData = recvContents as NSData!
                     
-                        self.artImage = UIImage(data: tempData as Data)
+                    
+                }else if recvType == dataType.isString.rawValue{//中身が文字列のとき
+                    let str = NSString(data: recvContents as Data, encoding: String.Encoding.utf8.rawValue) as String?
+                    self.recvStr = str
+                    
+                }else if recvType == dataType.isImage.rawValue{//中身が画像のとき
+                    let isFin = recvDataArray[1] as! Int
+                    if isFin == 0 {
+                        self.tempData.append(recvContents as Data)
+                        
+                        self.artImage = UIImage(data: self.tempData as Data)
                         //画像の変更を反映する処理
                         self.tempData = NSMutableData()
                         //ここでNSDataからUIimageに変換を入れて　artImageに設定
-                }else{
-                    tempData.append(recvContents as Data)
+                    }else{
+                        self.tempData.append(recvContents as Data)
+                        
+                    }
+                    
+                }else if recvType == dataType.isData.rawValue{//中身が単純なDataのとき
+                    let isFin = recvDataArray[1] as! Int
+                    if isFin == 0 {
+                        self.tempData.append(recvContents as Data)
+                        self.recvedData = self.tempData
+                        //画像の変更を反映する処理
+                        self.tempData = NSMutableData()
+                        //ここでNSDataからUIimageに変換を入れて　artImageに設定
+                    }else{
+                        self.tempData.append(recvContents as Data)
+                        
+                    }
                     
                 }
                 
-            }else if recvType == dataType.isData.rawValue{//中身が単純なDataのとき
-                let isFin = recvDataArray[1] as! Int
-                if isFin == 0 {
-                    tempData.append(recvContents as Data)
-                    self.recvedData = tempData
-                    //画像の変更を反映する処理
-                    self.tempData = NSMutableData()
-                    //ここでNSDataからUIimageに変換を入れて　artImageに設定
-                }else{
-                    tempData.append(recvContents as Data)
-                    
-                }
-
             }
-            
         }
+       
     }
      public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
         
