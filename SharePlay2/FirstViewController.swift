@@ -282,15 +282,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-        let audiosession = AVAudioSession.sharedInstance()
-        do {
-            try audiosession.setActive(false)
-        } catch {
-            // audio session有効化失敗時の処理
-            // (ここではエラーとして停止している）
-            fatalError("session無効化失敗")
-        }
-
+       
         reConnect()
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)

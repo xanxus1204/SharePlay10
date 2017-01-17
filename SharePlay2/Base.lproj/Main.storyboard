@@ -24,7 +24,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hzk-y9-hct">
-                                <rect key="frame" x="137.5" y="67" width="100" height="100"/>
+                                <rect key="frame" x="137" y="67" width="101" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="hzk-y9-hct" secondAttribute="height" multiplier="1:1" id="YPD-It-ZcV"/>
                                 </constraints>
@@ -221,13 +221,26 @@
                                     <action selector="nextButtonTapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="ECV-OQ-uT5"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0V8-vq-yF5">
+                                <rect key="frame" x="90" y="612" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="35" id="A1m-2G-z7I"/>
+                                    <constraint firstAttribute="width" secondItem="0V8-vq-yF5" secondAttribute="height" multiplier="1:1" id="Ojv-ug-oHd"/>
+                                </constraints>
+                                <state key="normal" image="front_button.png"/>
+                                <connections>
+                                    <action selector="frontButtontapped:" destination="VyZ-mK-Ub2" eventType="touchUpInside" id="DiQ-em-K8H"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="93z-d8-jxs" firstAttribute="bottom" secondItem="0V8-vq-yF5" secondAttribute="bottom" id="7TL-i9-yxl"/>
                             <constraint firstItem="j6E-dw-lRX" firstAttribute="leading" secondItem="144-CI-nf5" secondAttribute="trailing" constant="10" id="Ahh-oI-ijj"/>
                             <constraint firstAttribute="trailingMargin" secondItem="GEk-pt-hmk" secondAttribute="trailing" constant="-7" id="Btn-Ua-kaT"/>
                             <constraint firstItem="Pd5-QC-WZw" firstAttribute="leading" secondItem="Thh-6z-3Lt" secondAttribute="leadingMargin" constant="-3" id="CjF-cI-JlT"/>
                             <constraint firstItem="8j5-LL-SC4" firstAttribute="top" secondItem="93z-d8-jxs" secondAttribute="bottom" constant="20" id="GIh-hO-6kc"/>
+                            <constraint firstItem="93z-d8-jxs" firstAttribute="leading" secondItem="0V8-vq-yF5" secondAttribute="trailing" constant="45" id="GW1-KI-q5x"/>
                             <constraint firstItem="j6E-dw-lRX" firstAttribute="top" secondItem="Ug0-NQ-bTN" secondAttribute="bottom" constant="20" id="GWo-SF-S0j"/>
                             <constraint firstItem="Zr6-2f-Dcq" firstAttribute="leading" secondItem="Pd5-QC-WZw" secondAttribute="trailing" constant="8" id="GhU-py-hjD"/>
                             <constraint firstItem="93z-d8-jxs" firstAttribute="centerX" secondItem="Thh-6z-3Lt" secondAttribute="centerX" id="OPH-Vd-KKN"/>
@@ -259,18 +272,19 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qlm-J5-tSb" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="x64-in-pbC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="935.625" y="291.54929577464787"/>
+            <point key="canvasLocation" x="935.20000000000005" y="291.00449775112446"/>
         </scene>
     </scenes>
     <resources>
         <image name="add_button.png" width="130" height="130"/>
         <image name="back_button.png" width="256" height="256"/>
         <image name="create_button.png" width="512" height="512"/>
+        <image name="front_button.png" width="256" height="256"/>
         <image name="next_button.png" width="256" height="256"/>
         <image name="no_image.png" width="600" height="600"/>
         <image name="play_button.png" width="194" height="233"/>
         <image name="search_button.png" width="512" height="512"/>
-        <image name="start_btn.png" width="1125" height="1125"/>
+        <image name="start_btn.png" width="475" height="475"/>
         <image name="volume_max.png" width="256" height="256"/>
         <image name="volume_min.png" width="162" height="173"/>
     </resources>
