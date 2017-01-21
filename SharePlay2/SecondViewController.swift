@@ -131,8 +131,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         // Dispose of any resources that can be recreated.
     }
     func showInfoWithtitle(){//2秒に一回実行される
-        print("all\(allplayingIndex),own\(ownplayingIndex)")
-
         if player != nil{
             let leftTime:TimeInterval = durationOfSong - (player?.currentTime)!
             if leftTime < 10.0 && doOnceFlag{
@@ -458,8 +456,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
     }
     func skipAudio(tofront front:Bool){
-        
+         changeVolume(value: 0)
         if !front{
+            
             allplayingIndex -= 2
             if allplayingIndex < 0{
                 allplayingIndex = 0
@@ -473,8 +472,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 }
                 playitemManager.movePlayItem(toIndex: ownplayingIndex)
             }
-            if ownplayingIndex < self.songtitleArr.count{
-                changeVolume(value: 0)
+            if allplayingIndex < self.songtitleArr.count{
+               
                 playingState = playAudio()
                 networkCom.stopsendingAudio()
                 player?.currentTime = durationOfSong - 10.0
