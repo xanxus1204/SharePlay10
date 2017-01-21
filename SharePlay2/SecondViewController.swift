@@ -10,7 +10,7 @@ import UIKit
 import MultipeerConnectivity
 import MediaPlayer
 
-class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVAudioPlayerDelegate{
+class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVAudioPlayerDelegate,UITableViewDelegate,UITableViewDataSource{
     
     var peerID:MCPeerID!
     
@@ -36,10 +36,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
 
     private var leftPlaylist:Bool = false//まだ再生するべきプレイリストがあるかどうか
     
-    private var sequenceOfPeer:[(title:String,peerID:MCPeerID)] = []
-    
-    private var songtitleArr:[String] = []
-    
     private var showTimer:Timer!
     
     private var showTimerIndex:Int = 0
@@ -60,6 +56,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     private var autoStart:Bool = false
     
+    private var songItems:[SongItem] = []
+    
      var isParent:Bool!
     
      var networkCom:NetworkCommunicater!
@@ -67,15 +65,14 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
      let nc:NotificationCenter = NotificationCenter.default
     
     @IBOutlet weak var titlelabel: UILabel!
-
-    @IBOutlet weak var titleArt: UIImageView!
-    
+    @IBOutlet weak var songTitleTableView: UITableView!
     @IBOutlet weak var volumeSlider: UISlider!
     @IBOutlet weak var stoppauseBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         initialize()
         self.view.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
+        songTitleTableView.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
 //        UIApplication.shared.isIdleTimerDisabled = false //スリープしても良い
         SVProgressHUD.setMinimumDismissTimeInterval(2.0)
         // Do any additional setup after loading the view, typically from a nib.
@@ -86,20 +83,16 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     func initialize(){
         addAudioSessionObservers()
+        songTitleTableView.delegate = self
         let audiosession = AVAudioSession.sharedInstance()
         do {
             try audiosession.setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)//バックグラウンド再生を許可
         } catch  {
-            // エラー処理
-            
         }
         // sessionのアクティブ化
         do {
             try audiosession.setActive(true)
         } catch {
-            // audio session有効化失敗時の処理
-            // (ここではエラーとして停止している）
-            
         }
         nc.addObserver(
             self,
@@ -149,17 +142,17 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             }
         }
         
-        if showTimerIndex < self.songtitleArr.count{
-            if self.songtitleArr.count - showTimerIndex > 5 {
+        if showTimerIndex < self.songItems.count{
+            if self.songItems.count - showTimerIndex > 5 {
                 var text = ""
                 for num in 0...4{
-                    text.append(self.songtitleArr[showTimerIndex+num]+"\n")
+                    text.append(self.songItems[showTimerIndex+num].songTitle+"\n")
                 }
                 SVProgressHUD.showInfo(withStatus: "Waiting...\nプレイリストに追加されました\n" + text)
                 showTimerIndex += 5
             }else{
                 for _ in 1...5{
-                    SVProgressHUD.showInfo(withStatus: "Waiting...\nプレイリストに追加されました\n\(self.songtitleArr[showTimerIndex])")
+                    SVProgressHUD.showInfo(withStatus: "Waiting...\nプレイリストに追加されました\n\(self.songItems[showTimerIndex].songTitle)")
                     Thread.sleep(forTimeInterval: 0.5)
                 }
                 showTimerIndex += 1
@@ -211,12 +204,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     }
 
                 }
-        }else if key == "artImage"{
-                DispatchQueue.main.async {
-                    self.titleArt.image = self.networkCom.artImage
-                    self.view.setNeedsDisplay()
-                }
-                
         }else if key == "recvStr"{
                 doSomething(withStr: networkCom.recvStr!)
         }else if key == "audioData"{
@@ -228,28 +215,35 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 
         }else if key == "recvedData"{//タイトルの配列しかない今のところ
                 var recvedArr:[Any] =  NSKeyedUnarchiver.unarchiveObject(with: networkCom.recvedData as Data) as! [Any]
-               
+                
                 if playitemManager == nil{
                     playitemManager = playItemManager()
                 }
+                let recvedSongTitleData = recvedArr[0] as! Data
+                let recvedartImageDatas = recvedArr[1] as! Data
+                let recevedSongTitle:[String] = NSKeyedUnarchiver.unarchiveObject(with: recvedSongTitleData) as! [String]
+                let recvedartImages:[Data] = NSKeyedUnarchiver.unarchiveObject(with: recvedartImageDatas) as! [Data]
+                let yourID:MCPeerID = recvedArr[2] as! MCPeerID
                 if isParent!{//親なら
-                    
-                    let yourID:MCPeerID = recvedArr[0] as! MCPeerID
-                    recvedArr.remove(at: 0)
-                    for title in recvedArr{
-                        songtitleArr.append(title as! String)
-                        sequenceOfPeer.append((title as! String,yourID))
+                    networkCom.sendDatatoAll(data:networkCom.recvedData)
+                    for num in 0...recevedSongTitle.count-1{
+                        let newItem:SongItem = SongItem(image: UIImage(data: recvedartImages[num]), songTitle: recevedSongTitle[num], peerID: yourID)
+                        songItems.append(newItem)
                     }
-                    
-                    let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
-                    networkCom.sendDatatoAll(data: titleData as NSData)//全員に今のタイトル配列を送る
                     if !leftPlaylist{//現在再生中の曲がなければ
                             sendOrderWhenendOfPlay()
                     }
-
                 }else{//子なら受け入れる
-                    songtitleArr.removeAll()
-                    songtitleArr.append(contentsOf: recvedArr as! [String])
+                    for num in 0...recevedSongTitle.count-1{
+                        let newItem:SongItem = SongItem(image: UIImage(data: recvedartImages[num]), songTitle: recevedSongTitle[num], peerID: yourID)
+                        songItems.append(newItem)
+                    }
+                    
+                }
+                DispatchQueue.main.async {
+                    self.titlelabel.text = self.songItems[self.allplayingIndex-1].songTitle
+                    self.songTitleTableView.reloadData()
+
                 }
                 
             }else if key == "convertComp"{//変換完了した場合の措置
@@ -271,7 +265,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 }
             }
         }
-        sendAndSetImg()
         Thread.sleep(forTimeInterval:sleeptime - convertTime)
         let audiosession = AVAudioSession.sharedInstance()
         do {
@@ -320,6 +313,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
            toggleBtnImage()
         }else if str == "incre"{
             allplayingIndex += 1
+            DispatchQueue.main.async {
+                self.titlelabel.text = self.songItems[self.allplayingIndex-1].songTitle
+                
+            }
         }else if str == "back"{
             skipAudio(tofront: false)
         }else if str == "pause"{
@@ -331,11 +328,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             
         }else if str == "next"{
             skipAudio(tofront: true)
-        }else if str == "noimage"{
-            
-            DispatchQueue.main.async {
-                self.titleArt.image = UIImage(named: "no_image.png")
-            }
         }else if str == "yourturn"{
             myturn = true
             playitemManager.movePlayItem(toIndex: ownplayingIndex)
@@ -391,17 +383,12 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     @IBAction func playstopBtnTapped(_ sender: AnyObject) {
         if playingState{
-            
-            
            playingState = pauseAudio()
             if !playingState{
                 networkCom.sendStrtoAll(str: "pause")
             }
-            
         }else{
              SVProgressHUD.dismiss()
-            
-            
            playingState = playAudio()//playが可能だったつまり再生の状態になったら再生を送る。
             if playingState{
                 networkCom.sendStrtoAll(str: "play")
@@ -425,14 +412,11 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
     }
     @IBAction func selectBtnTapped(_ sender: AnyObject) {
-       
         let picker = MPMediaPickerController()
         picker.delegate = self
         picker.allowsPickingMultipleItems = true
         present(picker,animated: true,completion: nil)
-        
     }
-    
     @IBAction func returnBtnTapped(_ sender: Any) {
         myAlert = AlertControlller(titlestr: "戻りますか？", messagestr: "相手との接続が切れます", okTextstr: "戻る", canceltextstr: "キャンセル")
         myAlert.addOkAction(okblock: {(action:UIAlertAction)-> Void in
@@ -445,7 +429,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         changeVolume(value: sender.value)
     }
         func deleteFile(){
-        
         let manager = FileManager()
         do {
             if streamPlayerUrl != nil{
@@ -472,7 +455,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 }
                 playitemManager.movePlayItem(toIndex: ownplayingIndex)
             }
-            if allplayingIndex < self.songtitleArr.count{
+            if allplayingIndex < self.songItems.count{
                
                 playingState = playAudio()
                 networkCom.stopsendingAudio()
@@ -580,6 +563,34 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         }
 
     }
+    //MARK: TableView
+     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return songItems.count
+    }
+     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SongItemCell", for: indexPath) as? SongItemCell else {
+            fatalError("Invalid cell")
+        }
+        let item = songItems[indexPath.row]
+        cell.update(withItem: item)
+        
+        return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let indexstr = String(indexPath.row)
+        var sendStr = "moveto" + indexstr
+        let alert = AlertControlller(titlestr: "曲をスキップしますか？", messagestr: songItems[indexPath.row].songTitle + "\nへ移動します", okTextstr: "OK", canceltextstr: "Cancel")
+        alert.addOkAction(okblock:{(action:UIAlertAction!) -> Void in
+            
+        })
+        
+        
+        
+    }
+    func AutoScrollto(index:IndexPath){
+        songTitleTableView.selectRow(at:index, animated: true, scrollPosition: UITableViewScrollPosition.top)
+    }
+    
     //MARK: -Segue
     func segueSecondtofirst(){
         
@@ -611,73 +622,68 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         ///親側と子側で分岐
         showInfoWithtitle()
-        if isParent!{
-           
-            for item in mediaItemCollection.items{
-                sequenceOfPeer.append((item.title!,peerID))
-                
-            }
-            var sendArr:[String] = []//新しく追加された曲のタイトル
-            for item in mediaItemCollection.items{
-                sendArr.append(item.title!)
-            }
-            
-            if playitemManager == nil{//最初選んだとき
-                playitemManager = playItemManager(withItems: mediaItemCollection)//最初なので初期化
-                songtitleArr.append(contentsOf: sendArr)
-                leftPlaylist = true
-                sendOrderWhenendOfPlay()
+        var sendArr:[Any] = []
+        var sendTitleStr:[String] = []
+        var sendImageDatas:[Data] = []
+        for item in mediaItemCollection.items{
+            sendTitleStr.append(item.title!)
+            var sendImageData:Data
+            if let artImg = item.artwork{
+                sendImageData = UIImageJPEGRepresentation((artImg.image(at: (artImg.bounds.size)))!, 0.01)!//子供の場合圧縮してData型にしとく
             }else{
-                playitemManager.addPlayItems(mediaItems: mediaItemCollection)
-                playitemManager.movePlayItem(toIndex: ownplayingIndex)
-                songtitleArr.append(contentsOf: sendArr)
-                if !leftPlaylist{
-                    //追加されたのでつぎいきまーす.
+                sendImageData = Data()
+            }
+            sendImageDatas.append(sendImageData)
+        }
+        let sendTitleData = NSKeyedArchiver.archivedData(withRootObject: sendTitleStr)
+        let sendImagesData = NSKeyedArchiver.archivedData(withRootObject: sendImageDatas)
+        sendArr.append(sendTitleData)
+        sendArr.append(sendImagesData)
+        sendArr.append(peerID)
+        let sendArrData = NSKeyedArchiver.archivedData(withRootObject: sendArr)
+            if isParent!{
+                var partsOfSongItems:[SongItem] = []
+                 for item in mediaItemCollection.items{
+                    var songItemImage:UIImage = UIImage()
+                    if let artImg = item.artwork{
+                        songItemImage = (artImg.image(at: (artImg.bounds.size)))!//親なら画像をそのまま自分のやつに追加
+                    }
+                    let songitem:SongItem = SongItem(image: songItemImage, songTitle: item.title!, peerID: peerID)
+                   partsOfSongItems.append(songitem)
+                
+                }
+                networkCom.sendDatatoAll(data: sendArrData as NSData)
+                songItems.append(contentsOf: partsOfSongItems)
+                if playitemManager == nil{//最初選んだとき
+                    playitemManager = playItemManager(withItems: mediaItemCollection)//最初なので初期化
+                    leftPlaylist = true
                     sendOrderWhenendOfPlay()
+                }else{
+                    playitemManager.addPlayItems(mediaItems: mediaItemCollection)
+                    playitemManager.movePlayItem(toIndex: ownplayingIndex)
+                    if !leftPlaylist{
+                        //追加されたのでつぎいきまーす.
+                        sendOrderWhenendOfPlay()
+                    }
+                }
+            }else{
+                
+                networkCom.sendDatatoOne(data: sendArrData as NSData, recvpeer:networkCom.motherID)
+                if playitemManager == nil{
+                    playitemManager = playItemManager(withItems: mediaItemCollection)//最初なので初期化
+                    
+                }else{
+                    playitemManager.addPlayItems(mediaItems: mediaItemCollection)
+                    playitemManager.movePlayItem(toIndex: ownplayingIndex)//ある種の初期化作業
                 }
                 
             }
-            let titleData = NSKeyedArchiver.archivedData(withRootObject: songtitleArr)
-            networkCom.sendDatatoAll(data: titleData as NSData)
-        }else{//子側の処理
-            if playitemManager == nil{
-                playitemManager = playItemManager(withItems: mediaItemCollection)//最初なので初期化
-                
-            }else{
-                playitemManager.addPlayItems(mediaItems: mediaItemCollection)
-                playitemManager.movePlayItem(toIndex: ownplayingIndex)//ある種の初期化作業
-            }
-             var sendArr:[Any] = [self.peerID]//配列の人マス目に自分のIDを格納
-            for item in mediaItemCollection.items{
-                sendArr.append(item.title!)
-            }
-            let titleData = NSKeyedArchiver.archivedData(withRootObject: sendArr)
-            networkCom.sendDatatoOne(data: titleData as NSData, recvpeer: networkCom.motherID)
-           
-        }
-                    mediaPicker.dismiss(animated: true, completion: nil)
-    }
-    func sendAndSetImg(){
         DispatchQueue.main.async {
-            self.titlelabel.text = self.playitemManager.itemProperty.musicTitle
-        }
-         self.networkCom.sendStrtoAll(str:playitemManager.itemProperty.musicTitle)
-        if  let artwork = playitemManager.itemProperty.albumArtWork{
-            networkCom.artImage = artwork
-            DispatchQueue.main.async {
-                self.titleArt.image = self.networkCom.artImage
-            }
-            networkCom.sendImage(image: networkCom.artImage)
+            self.titlelabel.text = self.songItems[self.allplayingIndex-1].songTitle
+            self.songTitleTableView.reloadData()
             
-        }else{
-            DispatchQueue.main.async {
-                self.titleArt.image = UIImage(named: "no_image.png")
-            }
-            networkCom.sendStrtoAll(str: "noimage")
         }
-        
-        
-
+        mediaPicker.dismiss(animated: true, completion: nil)
     }
     func playandStreamingSong(){
         deleteFile()//前生成したファイルを削除
@@ -697,10 +703,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
               return url
     }
     func checkListOfSong(num:Int) -> Bool{
-        if num < songtitleArr.count{
+        if num < songItems.count{
             print("まだあるよ\(num)")
-            print(songtitleArr)
-            return true
+                return true
         }else{
             print("もうないよ\(num)")
             return false
@@ -710,15 +715,15 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     func sendOrderWhenendOfPlay(){
         if isParent!{//親の場合
             var peerofYou:MCPeerID
-            if songtitleArr.count == 1 && allplayingIndex == 0{
+            if songItems.count == 1 && allplayingIndex == 0{
                 leftPlaylist = checkListOfSong(num: 0)
-                peerofYou = sequenceOfPeer[0].peerID
+                peerofYou = songItems[0].peerID
             }else{
                 leftPlaylist = checkListOfSong(num: allplayingIndex)
             }
             
             if leftPlaylist{//次の曲があった場合のみ
-                peerofYou = sequenceOfPeer[allplayingIndex].peerID
+                peerofYou = songItems[allplayingIndex].peerID
                 if peerofYou == peerID{//次の順番が自分なら
                     myturn = true
                     playandStreamingSong()
@@ -741,6 +746,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 }
                     allplayingIndex += 1
                     networkCom.sendStrtoAll(str: "incre")
+                DispatchQueue.main.async {
+                    self.titlelabel.text = self.songItems[self.allplayingIndex-1].songTitle
+                }
             }else{
                 SVProgressHUD.dismiss()
                 SVProgressHUD.showInfo(withStatus: "次の曲がありません")
