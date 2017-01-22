@@ -37,6 +37,8 @@
 		43DC87A21DF53BCD000BF7EF /* playItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DC87A11DF53BCD000BF7EF /* playItemManager.swift */; };
 		43F207D31E2E087C006FFC71 /* front_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F207D21E2E087C006FFC71 /* front_button.png */; };
 		43F207D51E2E0A2D006FFC71 /* start_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F207D41E2E0A2D006FFC71 /* start_btn.png */; };
+		BBAEAF5C1E32E88F00D13D3E /* SongItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */; };
+		BBAEAF601E33158100D13D3E /* SongItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5F1E33158100D13D3E /* SongItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +82,8 @@
 		43F207D21E2E087C006FFC71 /* front_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = front_button.png; sourceTree = "<group>"; };
 		43F207D41E2E0A2D006FFC71 /* start_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = start_btn.png; sourceTree = "<group>"; };
 		BB6DE8D61DABB95600384CEF /* SharePlay2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SharePlay2-Bridging-Header.h"; sourceTree = "<group>"; };
+		BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SongItemCell.swift; path = ../SongItemCell.swift; sourceTree = "<group>"; };
+		BBAEAF5F1E33158100D13D3E /* SongItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +145,8 @@
 				4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */,
 				4354A6971DAE04F700D003D0 /* StreamingPlayer.h */,
 				4354A6981DAE04F700D003D0 /* StreamingPlayer.m */,
+				BBAEAF5F1E33158100D13D3E /* SongItem.swift */,
+				BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */,
 				43D4E2501D9CBADB005631E5 /* Main.storyboard */,
 				43B962AB1E00E29500D42093 /* search_button.png */,
 				43B962AC1E00E29500D42093 /* create_button.png */,
@@ -257,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				43D4E25F1D9CF387005631E5 /* SecondViewController.swift in Sources */,
+				BBAEAF5C1E32E88F00D13D3E /* SongItemCell.swift in Sources */,
 				430D43041DA349F80090465A /* AudioExporter.swift in Sources */,
 				433EF6A71DFF8E7200989310 /* AlertControlller.swift in Sources */,
 				438E5E131DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m in Sources */,
@@ -265,6 +272,7 @@
 				438E5E141DAF570F00E9EE65 /* SVProgressAnimatedView.m in Sources */,
 				4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */,
 				438E5E161DAF570F00E9EE65 /* SVProgressHUD.m in Sources */,
+				BBAEAF601E33158100D13D3E /* SongItem.swift in Sources */,
 				43D4E24D1D9CBADB005631E5 /* AppDelegate.swift in Sources */,
 				43224BF81DD2B7DE00E99D47 /* NetworkCommunicater.swift in Sources */,
 				4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */,

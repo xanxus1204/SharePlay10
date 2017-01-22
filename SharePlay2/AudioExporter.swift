@@ -10,17 +10,17 @@ import Foundation
 import MediaPlayer
 class AudioExporter: NSObject {
     dynamic var convertComp:Bool = false
-    func convertItemtoAAC(item:MPMediaItem) -> NSURL {
+    func convertItemtoAAC(url:URL) -> NSURL {
         
-        let url:NSURL = item.value(forProperty: MPMediaItemPropertyAssetURL) as! NSURL
+        let url:NSURL = url as NSURL
         let urlAsset:AVURLAsset = AVURLAsset(url: url as URL)
         let exportSession:AVAssetExportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetAppleM4A)!
         exportSession.outputFileType = exportSession.supportedFileTypes[0]
         let cacheDir = NSTemporaryDirectory()
         
-        let itemTitleString:String = item.value(forProperty: MPMediaItemPropertyTitle) as! String
+        let itemTitleString:String = "sound"
         
-        let filePath:String = cacheDir + "/" + itemTitleString + ".m4a"
+        let filePath:String = cacheDir + itemTitleString + ".m4a"
         
         
         exportSession.outputURL = NSURL(fileURLWithPath: filePath) as URL

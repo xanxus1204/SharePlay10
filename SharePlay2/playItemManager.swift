@@ -10,25 +10,22 @@ import UIKit
 import MediaPlayer
 
 class playItemManager: NSObject {
-    var toPlayItem:MPMediaItem!
-    var playItemList:[MPMediaItem] = []
-    var playUrl:URL? = nil
+    var playListUrl:[URL] = []
     override init() {
         super.init()
     }
     init(withItems Items:MPMediaItemCollection){
-        playItemList = Items.items
-        toPlayItem = playItemList[0]
-        playUrl = toPlayItem.assetURL
+        for item in Items.items{
+            playListUrl.append(item.assetURL!)
+        }
     }
-    func addPlayItems(mediaItems:MPMediaItemCollection) -> () {
-        playItemList.append(contentsOf: mediaItems.items)
+    func addDummyUrl(){
+        playListUrl.append(URL(fileURLWithPath: "dummy"))
     }
-    func movePlayItem(toIndex index:Int) -> () {
-        if index < playItemList.count{
-            toPlayItem = playItemList[index]
-            playUrl = toPlayItem.assetURL
-                   }
-        
+    func addPlayItems(Items:MPMediaItemCollection) -> () {
+        for item in Items.items{
+            playListUrl.append(item.assetURL!)
+        }
     }
+   
 }
