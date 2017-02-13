@@ -20,9 +20,6 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     dynamic var artImage:UIImage!
     
-    
-    private var musicName:String?
-    
     private var tempData:NSMutableData = NSMutableData()//ファイルの容量が大きいものを受信する時用
     
     private var timer:Timer!
@@ -40,10 +37,10 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
      var peerStates:[peerState] = []
     
     enum dataType:Int {//送信するデータのタイプ
-        case isString = 1
-        case isImage = 2
-        case isAudio = 3
-        case isData = 4
+        case isString  = 1
+        case isImage   = 2
+        case isAudio   = 3
+        case isData    = 4
     }
     dynamic var recvStr:String? = nil
     dynamic var audioData:NSData!

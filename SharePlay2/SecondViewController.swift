@@ -99,7 +99,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             object: nil)
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.clear) //HUDの表示中入力を受け付けないようにする
         networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
-        networkCom.addObserver(self as NSObject, forKeyPath: "artImage", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "recvStr", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "audioData", options: [.new,.old], context: nil)
         networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
@@ -178,7 +177,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     private func removeOb(){
         
         networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
-        networkCom.removeObserver(self as NSObject, forKeyPath: "artImage")
         networkCom.removeObserver(self as NSObject, forKeyPath: "recvStr")
         networkCom.removeObserver(self as NSObject, forKeyPath: "audioData")
         networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
@@ -704,7 +702,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         
         exporter = AudioExporter()
         exporter.addObserver(self as NSObject, forKeyPath: "convertComp", options: [.old,.new], context: nil)//変換が終わったかどうかを判断するキー
-        print("そもそものやつ\(url)")
         let url = exporter.convertItemtoAAC(url: url)
        
               return url

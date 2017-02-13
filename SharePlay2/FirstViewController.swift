@@ -117,7 +117,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             searchBtn.isEnabled = false
                     startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
                     isParent = true //親フラグを立てる
-                    SVProgressHUD.show(withStatus: "募集中\nタップして\nキャンセル")
+                    SVProgressHUD.show(withStatus: "公開中\nタップして\nキャンセル")
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if networkCom.peerNameArray.count == 0{
@@ -194,12 +194,12 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
         myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
             
             invitationHandler(true,self.networkCom.session)
-            SVProgressHUD.show(withStatus: "募集中\n上のボタンをタップして\nスタート")
+            SVProgressHUD.show(withStatus: "公開中\n上のボタンをタップして\nスタート")
         })
         myAlert.addCancelAction(cancelblock: {(action:UIAlertAction!) -> Void in
             
             invitationHandler(false,self.networkCom.session)
-            SVProgressHUD.show(withStatus: "募集中\nタップして\nキャンセル")
+            SVProgressHUD.show(withStatus: "公開中\nタップして\nキャンセル")
         })
         var baseView: UIViewController = self.view.window!.rootViewController!
         while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
@@ -243,20 +243,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             nearbyAd = nil
         }
     }
-    func createRandomNum() -> Int {
-        var random = 0
-        var returnNum = 0
-        var cardinal = 1
-        for _ in 0..<4 {
-            random = Int(arc4random_uniform(10))
-            if random == 0 {
-                random = random + 1
-            }
-            returnNum = returnNum + random * cardinal
-            cardinal = cardinal * 10
-        }
-        return returnNum
-    }
+    
     func reConnect(){
         if nearbyAd != nil{
             nearbyAd.stopAdvertisingPeer()
