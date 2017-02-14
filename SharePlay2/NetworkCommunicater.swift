@@ -24,7 +24,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     
     private var timer:Timer!
     
-    private var delayTime:Double = 0.6
+    private var delayTime:Double = 0.57
     
     dynamic var motherID:MCPeerID!
     
@@ -47,7 +47,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
      init(withID peerID:MCPeerID) {
         super.init()
         session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.optional)//↑で作ったIDを利用してセッションを作成
-        session.delegate = self
+        session.delegate =  self
         
     }
     
@@ -59,7 +59,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         if sendQueue.count > 0{
             
             do {
-                 try session.send(sendQueue[0] as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                 try session.send(sendQueue[0] as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.unreliable)
                 //以下は送信が上手くいった場合のみ実行される
                 sendQueue.remove(at: 0)
                 }catch let error as NSError {
@@ -92,7 +92,18 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
         timer = Timer.scheduledTimer(timeInterval:delayTime, target: self, selector: #selector(NetworkCommunicater.sendDataInterval), userInfo: nil, repeats: true)
         
         for _ in 0..<3{
-            sendDataInterval()//3パケットだけさっと送る
+            if sendQueue.count > 0{
+                
+                do {
+                    try session.send(sendQueue[0] as Data, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
+                    //以下は送信が上手くいった場合のみ実行される
+                    sendQueue.remove(at: 0)
+                }catch let error as NSError {
+                    print(error.localizedDescription)
+                }
+                
+            }
+
         }
         timer.fire()
     }
@@ -174,8 +185,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     // MARK: MCSessionDelegate
       func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         DispatchQueue.main.async {
-            let usingData:NSData = NSData(data: data)
-            let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: usingData as Data) as! NSMutableArray!
+            let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
             if recvDataArray != nil{
                 let  recvType:Int = recvDataArray[0] as! Int
                 let recvContents:NSMutableData =  recvDataArray[2] as! NSMutableData
