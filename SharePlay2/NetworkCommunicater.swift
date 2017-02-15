@@ -183,7 +183,7 @@ class NetworkCommunicater: NSObject,MCSessionDelegate{
     }
     
     // MARK: MCSessionDelegate
-      func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
+    internal func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         DispatchQueue.main.async {
             let recvDataArray:NSMutableArray! = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSMutableArray!
             if recvDataArray != nil{

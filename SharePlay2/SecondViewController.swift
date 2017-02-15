@@ -680,8 +680,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     partsOfSongItems.append(songitem)
                     
                 }
-              
-                    networkCom.sendDatatoAll(data: sendArrData as NSData)
+                DispatchQueue.global().async {
+                    self.networkCom.sendDatatoAll(data: sendArrData as NSData)
+                }
+                
                 
                 
                 songItems.append(contentsOf: partsOfSongItems)
