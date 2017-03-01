@@ -645,9 +645,21 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
        //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         ///親側と子側で分岐
+        for item in mediaItemCollection.items{
+            if item.isCloudItem == true{
+                SVProgressHUD.showInfo(withStatus: "端末にない曲が選択されています。")
+                mediaPicker.dismiss(animated: true, completion: nil)
+                return
+            }
+        }
+        if mediaItemCollection.count > 150{
+            SVProgressHUD.showInfo(withStatus: "一度に選択できる曲は150曲までです")
+            mediaPicker.dismiss(animated: true, completion: nil)
+            return
+        }
         networkCom.sendStrtoAll(str: "pickend")
         mediaPicker.dismiss(animated: true, completion: nil)
-        if mediaItemCollection.count < 150{
+        
             var sendArr:[Any] = []
             var sendTitleStr:[String] = []
             var sendImageDatas:[Data] = []
@@ -710,9 +722,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 }
                 
             }
-        }else{
-            SVProgressHUD.showInfo(withStatus: "一度に選択できる曲は150曲までです")
-        }
+        
+            
+        
         
         
     }

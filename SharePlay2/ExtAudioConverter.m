@@ -15,7 +15,7 @@ static void checkError(OSStatus err,const char *message){
         *(UInt32 *)property = CFSwapInt32HostToBig(err);
         property[4] = '\0';
         NSLog(@"%s = %-4.4s, %d",message, property,(int)err);
-        exit(1);
+       
     }
 }
 
