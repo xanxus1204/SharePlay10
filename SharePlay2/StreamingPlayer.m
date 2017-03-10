@@ -27,7 +27,7 @@ double lastVolume;
     streamInfo.isPlaying = YES;
     streamInfo.readyToPlay = NO;
 }
--(void)play{
+-(BOOL)play{
         if(!streamInfo.started && streamInfo.readyToPlay){
             streamInfo.started = YES;
           OSStatus  err = AudioQueueStart(streamInfo.audioQueueObject, NULL);
@@ -39,9 +39,10 @@ double lastVolume;
         }else{
             NSLog(@"I'm not ready");
         }
+    return streamInfo.isPlaying;
 }
--(void)pause{
-    if (!streamInfo.isPlaying)return;
+-(BOOL)pause{
+    if (!streamInfo.isPlaying)return streamInfo.isPlaying;
     if (streamInfo.started && !streamInfo.isDone) {
         
         OSStatus err = AudioQueuePause(streamInfo.audioQueueObject);
@@ -51,10 +52,12 @@ double lastVolume;
         streamInfo.started = NO;
 
     }
+    return streamInfo.isPlaying;
     
 }
--(void)stop{
-    if (!streamInfo.isPlaying)return;
+
+-(BOOL)stop{
+    if (!streamInfo.isPlaying)return streamInfo.isPlaying;
     if (streamInfo.started && !streamInfo.isDone) {
         streamInfo.isDone = YES;
         OSStatus err = AudioQueueStop(streamInfo.audioQueueObject, YES);
@@ -62,7 +65,9 @@ double lastVolume;
         streamInfo.isPlaying = NO;
         AudioQueueDispose(streamInfo.audioQueueObject, YES);
         streamInfo.audioQueueObject = NULL;
+        AudioFileStreamClose(streamInfo.audioFileStream);
     }
+    return  streamInfo.isPlaying;
 }
 -(void)changeVolume:(float)value{
     lastVolume = value;
@@ -152,11 +157,11 @@ void packetsProc( void *inClientData,
                  UInt32                        inNumberPackets,
                  const void                    *inInputData,
                  AudioStreamPacketDescription  *inPacketDescriptions ){
-    
     StreamInfo* streamInfo = (StreamInfo*)inClientData;
     OSStatus err;
     count ++;
-    if ( count == 5) {
+    if (count == 3){
+        NSLog(@"Prime");
         AudioQueuePrime(streamInfo->audioQueueObject, 0, 0);
     }
     //キューバッファを作成し、エンキューする
@@ -170,10 +175,20 @@ void packetsProc( void *inClientData,
     queueBuffer->mAudioDataByteSize = inNumberBytes;
     queueBuffer->mPacketDescriptionCount = inNumberPackets;
     
+    if (inPacketDescriptions == 0){
         err = AudioQueueEnqueueBuffer(streamInfo->audioQueueObject,
-                                  queueBuffer,
-                                  0,
-                                  NULL);
+                                      queueBuffer,
+                                      0,
+                                      NULL);
+
+            }else{
+                err = AudioQueueEnqueueBuffer(streamInfo->audioQueueObject,
+                                              queueBuffer,
+                                              inNumberPackets,
+                                              inPacketDescriptions);//VBRのファイルの場合
+    }
+
+
     
     if(err)NSLog(@"AudioQueueEnqueueBuffer err = %d",(int)err);
     
@@ -185,31 +200,22 @@ static void checkError(OSStatus err,const char *message){
         *(UInt32 *)property = CFSwapInt32HostToBig(err);
         property[4] = '\0';
         NSLog(@"%s = %-4.4s,%d",message, property,(int)err);
-        exit(1);
+        
     }
 }
-
-
 void outputCallback( void                 *inClientData,
                     AudioQueueRef        inAQ,
                     AudioQueueBufferRef  inBuffer ){
-    StreamInfo* streamInfo = (StreamInfo*)inClientData;
-    //㈰inBufferがstreamInfo->audioQueueBuffer[ ]のどれかを探す
-    UInt32 bufIndex = 0;
-    for (int i = 0; i < kNumberOfBuffers; ++i){
-        if (inBuffer == streamInfo->audioQueueBuffer[i]){
-            bufIndex = i;
-            AudioQueueFreeBuffer(streamInfo->audioQueueObject, streamInfo->audioQueueBuffer[bufIndex]);
-            break;
-        }
-    }
+
 }
 -(void)recvAudio:(NSData *)data{
+    if (data != nil){
+        AudioFileStreamParseBytes(streamInfo.audioFileStream,
+                                  (int)data.length,
+                                  data.bytes,
+                                  0);
+    }
     
-    AudioFileStreamParseBytes(streamInfo.audioFileStream,
-                              (int)data.length,
-                              data.bytes,
-                              0);
     
 }
 

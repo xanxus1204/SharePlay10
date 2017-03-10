@@ -2,7 +2,6 @@
 //  ExtAudioConverter.m
 //  ExtAudio
 //
-//  Created by Norihisa Nagano
 //
 
 #import "ExtAudioConverter.h"
@@ -16,11 +15,11 @@ static void checkError(OSStatus err,const char *message){
         *(UInt32 *)property = CFSwapInt32HostToBig(err);
         property[4] = '\0';
         NSLog(@"%s = %-4.4s, %d",message, property,(int)err);
-        exit(1);
+       
     }
 }
 
--(void)convertFrom:(NSURL*)fromURL
+-(BOOL)convertFrom:(NSURL*)fromURL
              toURL:(NSURL*)toURL{
     ExtAudioFileRef infile,outfile;
     OSStatus err;
@@ -32,10 +31,13 @@ static void checkError(OSStatus err,const char *message){
     AudioStreamBasicDescription outputFormat;
     AVAudioSession * audiosession =[AVAudioSession sharedInstance];
     
-    [audiosession setActive:YES error:nil];
     [audiosession setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
+    [audiosession setActive:YES error:nil];
+
     //変換するフォーマット(IMA4)
     memset(&outputFormat, 0, sizeof(AudioStreamBasicDescription));
+    
+    
     outputFormat.mSampleRate       = 44100.0;
     outputFormat.mFormatID         = kAudioFormatAppleIMA4;//IMA4
     outputFormat.mChannelsPerFrame = 2;
@@ -57,8 +59,6 @@ static void checkError(OSStatus err,const char *message){
                            0, NULL,
                            &size,
                            &outputFormat);//変換後のフォーマット
-    
-    
     err = ExtAudioFileGetProperty(infile,//変換前のファイルのプロパティを取得
                                   kExtAudioFileProperty_FileDataFormat,
                                   &size,
@@ -133,6 +133,7 @@ static void checkError(OSStatus err,const char *message){
         //読み込むフレームが無くなったら終了する
         if(numPacketToRead == 0){
             NSLog(@"変換完了");
+           
             break;
             
         }
@@ -144,8 +145,10 @@ static void checkError(OSStatus err,const char *message){
     ExtAudioFileDispose(infile);
     ExtAudioFileDispose(outfile);
     free(buffer);
+    [audiosession setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
+    [audiosession setActive:YES error:nil];
+
     
-    NSNotification *finishn = [NSNotification notificationWithName:@"finishConvert" object:nil];
-    [[NSNotificationCenter defaultCenter] postNotification:finishn];
+    return  YES;
 }
 @end

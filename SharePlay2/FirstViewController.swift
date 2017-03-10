@@ -9,169 +9,208 @@
 import UIKit
 import MultipeerConnectivity
 
-class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDelegate,MCSessionDelegate,MCNearbyServiceBrowserDelegate,MCNearbyServiceAdvertiserDelegate{
+class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDelegate,MCNearbyServiceBrowserDelegate,MCNearbyServiceAdvertiserDelegate{
     
-    private var peerID: MCPeerID! //セッション作成時に使うID
-    
-    private var session: MCSession! //セッションを管理するオブジェクト
-    
+    var peerID:MCPeerID!
     private var browser: MCNearbyServiceBrowser! //ピアーを探索するときに使うオブジェクト
     private var nearbyAd:MCNearbyServiceAdvertiser! //サービスを公開するときに使うオブジェクト
-    
-    private var peerNameArray:[String] = []
-    
-    
-    private let roomName:String = "abcdefg"
-    
-    private var roomNum:Int = 0
+    var networkCom:NetworkCommunicater!
+    private let roomName:String = "shareplay-10f"
     
     private var isParent:Bool = false
     
+    private var myAlert:AlertControlller!
+    
+    
     @IBOutlet weak var startBtn: UIButton!
     
-    
-    @IBOutlet weak var roomLabel: UILabel!
-    
-
     @IBOutlet weak var peerTable: UITableView!
     
+    @IBOutlet weak var createBtn: UIButton!
+    
+    @IBOutlet weak var searchBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
+        peerTable.backgroundColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1.0)
         initialize()
+        SVProgressHUD.setDefaultStyle(SVProgressHUDStyle.dark)
+        SVProgressHUD.setDefaultAnimationType(SVProgressHUDAnimationType.native)
+        }
+    override func viewWillAppear(_ animated: Bool) {
+        UIApplication.shared.isIdleTimerDisabled = true
+        print("willapper")
+        self.startBtn.alpha = 1
+        SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.none)
     }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if let key = keyPath{
+            if key == "motherID"{//変化したプロパティがPEERnamearryだった場合
+                DispatchQueue.main.async {
+                    if self.networkCom.motherID != nil{
+                        if self.networkCom.motherID .isEqual(self.peerID) || self.isParent{
+                            self.startBtn.isHidden = false
+                            UIView.animate(withDuration: 1.0, delay: 0, options: [UIViewAnimationOptions.repeat, UIViewAnimationOptions.allowUserInteraction], animations:  {()-> Void in
+                                self.startBtn.alpha = 0.1
+                            }, completion: nil)
+                            
+                        }else{
+                            self.stopClient()
+                            self.networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
+                            self.networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
+                            self.segueFirstToSecond()
+                        }
+                    }
+                    }
+                }else if key == "peerNameArray"{
+                if networkCom.peerNameArray.count == 0{
+                    DispatchQueue.main.async {
+                        SVProgressHUD.dismiss()
+                        self.startBtn.isHidden = true
+                    }
+                }
+                DispatchQueue.main.async {
+                    self.peerTable.reloadData()
+                }
+                
+            }
+            }
+        }
+    
     func initialize(){
-        peerID = MCPeerID(displayName: UIDevice.current.name)//peerIDの設定端末の名前を渡す
-        session = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.none)//↑で作ったIDを利用してセッションを作成
-        session.delegate = self //MCSessiondelegateを設定
-        roomNum = 0
+        self.startBtn.isHidden = true
+        let userDefaults = UserDefaults.standard //データ永続化用
+        let oldName:String? = userDefaults.string(forKey: "DisplayName")
+        let deviceName:String = UIDevice.current.name
+        if deviceName == " " || deviceName == "　"{//端末の名前がスペースあるいは半角スペースのとき
+            SVProgressHUD.showInfo(withStatus:"アプリを終了して\n設定->一般->情報から\n名前を設定してください")
+            self.view.isUserInteractionEnabled = false //操作できなくする。
+        }
+       
+            if oldName == deviceName{
+                let peerIDData = userDefaults.data(forKey: "PeerID")
+                peerID = NSKeyedUnarchiver.unarchiveObject(with: peerIDData!) as! MCPeerID!
+                
+            }else{
+                
+                peerID = MCPeerID(displayName: deviceName)//peerIDの設定端末の名前を渡す
+                let peerIDData = NSKeyedArchiver.archivedData(withRootObject: peerID)
+                userDefaults.set(peerIDData, forKey: "PeerID")
+                userDefaults.set(deviceName, forKey: "DisplayName")
+                userDefaults.synchronize()
+            }
+        networkCom = NetworkCommunicater(withID: peerID)
+        
+        networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
         startBtn.isHidden = true
-        roomLabel.text = nil
-        peerNameArray.removeAll()
         peerTable.reloadData()
     }
     
     @IBAction func createBtnTapped(_ sender: AnyObject) {
-        isParent = true
-       
-        if roomNum == 0 {
-            roomNum = createRandomNum() //部屋作成時の４けたの鍵
+        print("親")
+            createBtn.isEnabled = false
+            searchBtn.isEnabled = false
+                    startServerWithName(name: self.roomName)//公開ボタンを押すと公開される
+                    isParent = true //親フラグを立てる
+                    SVProgressHUD.show(withStatus: "公開中\nタップして\nキャンセル")
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if networkCom.peerNameArray.count == 0{
+            createBtn.isEnabled = true
+            searchBtn.isEnabled = true
+            SVProgressHUD.dismiss()
+            stopClient()
+            stopServer()
         }
-        let roomNumName = String(describing: roomNum)
-        roomLabel.text = roomNumName
-        let alert = UIAlertController(title: roomNumName, message: "友達に教えてあげよう", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "閉じる", style: UIAlertActionStyle.default, handler: {(action:UIAlertAction!)-> Void in
-         self.startServerWithName(name: self.roomName + roomNumName)
-            SVProgressHUD.show(withStatus:"公開中...")
-            
-        })
-        alert.addAction(okAction)
-        present(alert, animated: true, completion: nil)
-       
         
     }
     
     @IBAction func searchBtnTapped(_ sender: AnyObject) {
-        isParent = false
-        roomLabel.text = nil
-            stopClient()
-        let alert:UIAlertController = UIAlertController(title: "部屋番号を入力", message: "友達に教えてもらおう", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: "決定", style: UIAlertActionStyle.default, handler:
-            {(action:UIAlertAction!)-> Void in
-            let textFields:Array<UITextField>? = alert.textFields as Array<UITextField>?
-            if textFields != nil{
-                    
-                    let roomNumName = textFields?[0].text
-                    let predicate = NSPredicate(format: "SELF MATCHES '\\\\d+'")//0-9の数字のみ採用
-                if predicate.evaluate(with: roomNumName){
-                    if self.roomNum != Int(roomNumName!)!{
-                        self.startClientWithName(name: self.roomName + roomNumName!)
-                        self.roomNum = Int(roomNumName!)!
-                        SVProgressHUD.show(withStatus:"検索中...")
-                        
-                    }
-                }
-            }
-        })
-        alert.addAction(okAction)
-        alert.addTextField(configurationHandler: {(text:UITextField!) -> Void in    text.keyboardType = UIKeyboardType.decimalPad})
-        present(alert, animated: true, completion: nil)
-            }
+        print("子")
+        self.isParent = false //親フラグを建てないs
+        createBtn.isEnabled = false
+        searchBtn.isEnabled = false
+        self.startClientWithName(name: self.roomName)
+        SVProgressHUD.show(withStatus: "検索中\nタップして\nキャンセル")
+        
+    }
     @IBAction func startBtnTapped(_ sender: AnyObject) {
+            SVProgressHUD.dismiss()
             stopServer()
+            networkCom.removeObserver(self as NSObject, forKeyPath: "motherID")
+            networkCom.removeObserver(self as NSObject, forKeyPath: "peerNameArray")
             segueFirstToSecond()
+            startBtn.isHidden = true
     }
     //MARK: tableview delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return  peerNameArray.count
+        return  networkCom.peerNameArray.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "peerCell",for: indexPath)
-        let peerName = peerNameArray[indexPath.row]
-        cell.textLabel!.text = peerName
-    
+        if indexPath.row < networkCom.peerNameArray.count{
+            let peerName = networkCom.peerNameArray[indexPath.row]
+            cell.textLabel!.text = peerName
+
+        }else{
+            cell.textLabel?.text = nil
+            print("nilを返している")
+        }
         return cell
 
     }
-    
     //MARK: MCSessiondelegate
     // 接続状況が変化したとき.
-    
-    public func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState){
-        
-        if state == MCSessionState.connected{
-            print(peerID.displayName)
-            peerNameArray.append(peerID.displayName)
-          
-        print("接続完了")
-            SVProgressHUD.dismiss()
-            if self.browser != nil{
-            self.browser.stopBrowsingForPeers()//探す側の場合接続完了時に探すのをやめる
-            DispatchQueue.main.async(execute: {() -> Void in
-                self.segueFirstToSecond()})
 
-            }else{
-                DispatchQueue.main.async(execute: {() -> Void in
-                    self.startBtn.isHidden = false
-                    self.peerTable.reloadData()})
-            }
-        }else if state == MCSessionState.notConnected{
-            var num = 0
-            for name in peerNameArray {
-                
-                if name == peerID.displayName{
-                    print(name)
-                    peerNameArray.remove(at: num)
-                    DispatchQueue.main.async(execute: {() -> Void in
-                        self.peerTable.reloadData()})
-                }
-                num = num + 1
-            }
-            print("接続解除,あるいはキャンセルされたか")
-            SVProgressHUD.dismiss()
-            reConnect()
-        }
-    }
-    //MARK: MCNearbyservicebrowserdelegate
-    
     //相手を見つけたとき
     public func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?){
-        print("見つけた")
-        browser.invitePeer(peerID, to: session, withContext: nil, timeout: 0)
-    }
+        
+        SVProgressHUD.dismiss()
+        myAlert = AlertControlller(titlestr: "この相手に接続しますか？", messagestr: peerID.displayName, okTextstr: "はい", canceltextstr: "いいえ")
+        myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
+            browser.invitePeer(peerID, to: self.networkCom.session, withContext: nil, timeout: 0)
+            SVProgressHUD.show(withStatus: "接続中")
+            
+        })
+        myAlert.addCancelAction(cancelblock: {(alert:UIAlertAction) -> Void in})
+        var baseView: UIViewController = self.view.window!.rootViewController!
+        while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
+            baseView = baseView.presentedViewController!
+        }
+        baseView.present(myAlert.alert, animated: true, completion: nil)
+
+           }
     //MARK: MCNearbyserviceadvitiserdelegate
     //招待されたとき
     public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Swift.Void){
-        print("招待された")
-        invitationHandler(true,self.session)
+        
+        SVProgressHUD.dismiss()
+            myAlert = AlertControlller(titlestr: "接続要求", messagestr: peerID.displayName, okTextstr: "許可", canceltextstr: "拒否")
+        myAlert.addOkAction(okblock: {(action:UIAlertAction!) -> Void in
+            
+            invitationHandler(true,self.networkCom.session)
+            SVProgressHUD.show(withStatus: "公開中\n上のボタンをタップして\nスタート")
+        })
+        myAlert.addCancelAction(cancelblock: {(action:UIAlertAction!) -> Void in
+            
+            invitationHandler(false,self.networkCom.session)
+            SVProgressHUD.show(withStatus: "公開中\nタップして\nキャンセル")
+        })
+        var baseView: UIViewController = self.view.window!.rootViewController!
+        while baseView.presentedViewController != nil && !baseView.presentedViewController!.isBeingDismissed {
+                baseView = baseView.presentedViewController!
+            }
+        baseView.present(myAlert.alert, animated: true, completion:nil)
     }
     //MARK: 自作関数　主にデータ送受信系
     func startServerWithName(name:String?) -> Swift.Void {
-        stopClient()
+        stopClient()//サーバーとしての作業及びクライアントとしての作業をどちらもやめる
+        stopServer()
         if name != nil{
             if nearbyAd == nil{
                 nearbyAd = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: name!)//サービス用のアドバタイズオブジェクト生成
@@ -183,6 +222,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     }
     func startClientWithName(name:String?) -> Swift.Void {
         stopServer()
+        stopClient()
         if name != nil{
                 browser = MCNearbyServiceBrowser(peer: peerID, serviceType: name!) //探索用オブジェクトの生成
                 browser.delegate = self //delegateの設定
@@ -203,20 +243,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             nearbyAd = nil
         }
     }
-    func createRandomNum() -> Int {
-        var random = 0
-        var returnNum = 0
-        var cardinal = 1
-        for _ in 0..<4 {
-            random = Int(arc4random_uniform(10))
-            if random == 0 {
-                random = random + 1
-            }
-            returnNum = returnNum + random * cardinal
-            cardinal = cardinal * 10
-        }
-        return returnNum
-    }
+    
     func reConnect(){
         if nearbyAd != nil{
             nearbyAd.stopAdvertisingPeer()
@@ -226,51 +253,34 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
             browser.stopBrowsingForPeers()
             browser = nil
         }
-        roomNum = 0
-        
     }
-    
     //MARK: segue
-    
     func segueFirstToSecond(){
+        SVProgressHUD.dismiss()
         performSegue(withIdentifier: "1to2", sender: nil)
     }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "1to2" {
             // インスタンスの引き継ぎ
             let secondViewController:SecondViewController = segue.destination as! SecondViewController
-            secondViewController.session = self.session
-            secondViewController.peerNameArray = self.peerNameArray
+            secondViewController.networkCom = self.networkCom
             secondViewController.isParent = self.isParent
-            
+            secondViewController.peerID = self.peerID
         }
     }
     @IBAction func backtoFirst(segue:UIStoryboardSegue){//2から1に戻ってきたとき
-        print("戻ってきた")
-        DispatchQueue.main.async {
-            self.reConnect()
-            self.initialize()
-        }
-        
+       
+        reConnect()
+        networkCom.addObserver(self as NSObject, forKeyPath: "motherID", options: [.new,.old], context: nil)
+        networkCom.addObserver(self as NSObject, forKeyPath: "peerNameArray", options: [.new,.old], context: nil)
+
     }
-    //MARK: MCSession使わないやつ
-    // ピアからデータを受信したとき.
-    public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
-        print("あがが、そんなばかなああああ！！！")
-    }
-    // ピアからストリームを受信したとき.
-    public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID){
-    }
-    // リソースからとってくるとき（URL指定とか？).
-    public func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress){
-    }
-    // そのとってくるやつが↑終わったとき
-    public func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?){
-    }
+    
     // A nearby peer has stopped advertising.
     public func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID){
+        print("lostpeer")
     }
+    
 }
 
 
