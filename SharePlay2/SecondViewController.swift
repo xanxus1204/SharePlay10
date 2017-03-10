@@ -645,16 +645,20 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
        //MARK: - MPMediapicker
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         ///親側と子側で分岐
+        print(mediaItemCollection.items[0].assetURL ?? "ないもの");
+        
         for item in mediaItemCollection.items{
-            if item.isCloudItem == true{
-                SVProgressHUD.showInfo(withStatus: "端末にない曲が選択されています。")
+            if item.assetURL == nil{
+                SVProgressHUD.showInfo(withStatus: "AppleMusicには対応していません")
                 mediaPicker.dismiss(animated: true, completion: nil)
+                networkCom.sendStrtoAll(str: "pickend")
                 return
             }
         }
         if mediaItemCollection.count > 150{
             SVProgressHUD.showInfo(withStatus: "一度に選択できる曲は150曲までです")
             mediaPicker.dismiss(animated: true, completion: nil)
+            networkCom.sendStrtoAll(str: "pickend")
             return
         }
         networkCom.sendStrtoAll(str: "pickend")

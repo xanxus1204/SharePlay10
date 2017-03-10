@@ -37,6 +37,38 @@
 		43DC87A21DF53BCD000BF7EF /* playItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DC87A11DF53BCD000BF7EF /* playItemManager.swift */; };
 		43F207D31E2E087C006FFC71 /* front_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F207D21E2E087C006FFC71 /* front_button.png */; };
 		43F207D51E2E0A2D006FFC71 /* start_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F207D41E2E0A2D006FFC71 /* start_btn.png */; };
+		BBABA14A1E71A10A00CAFC71 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E25E1D9CF387005631E5 /* SecondViewController.swift */; };
+		BBABA14B1E71A10A00CAFC71 /* SongItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */; };
+		BBABA14C1E71A10A00CAFC71 /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430D42FD1DA349F80090465A /* AudioExporter.swift */; };
+		BBABA14D1E71A10A00CAFC71 /* AlertControlller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433EF6A61DFF8E7200989310 /* AlertControlller.swift */; };
+		BBABA14E1E71A10A00CAFC71 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E0A1DAF570F00E9EE65 /* SVIndefiniteAnimatedView.m */; };
+		BBABA14F1E71A10A00CAFC71 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E24E1D9CBADB005631E5 /* FirstViewController.swift */; };
+		BBABA1501E71A10A00CAFC71 /* playItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DC87A11DF53BCD000BF7EF /* playItemManager.swift */; };
+		BBABA1511E71A10A00CAFC71 /* SVProgressAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E0C1DAF570F00E9EE65 /* SVProgressAnimatedView.m */; };
+		BBABA1521E71A10A00CAFC71 /* StreamingPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6981DAE04F700D003D0 /* StreamingPlayer.m */; };
+		BBABA1531E71A10A00CAFC71 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E101DAF570F00E9EE65 /* SVProgressHUD.m */; };
+		BBABA1541E71A10A00CAFC71 /* SongItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5F1E33158100D13D3E /* SongItem.swift */; };
+		BBABA1551E71A10A00CAFC71 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D4E24C1D9CBADB005631E5 /* AppDelegate.swift */; };
+		BBABA1561E71A10A00CAFC71 /* NetworkCommunicater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43224BF71DD2B7DE00E99D47 /* NetworkCommunicater.swift */; };
+		BBABA1571E71A10A00CAFC71 /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */; };
+		BBABA1581E71A10A00CAFC71 /* SVRadialGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 438E5E121DAF570F00E9EE65 /* SVRadialGradientLayer.m */; };
+		BBABA15B1E71A10A00CAFC71 /* volume_min.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962A81DFFD82400D42093 /* volume_min.png */; };
+		BBABA15C1E71A10A00CAFC71 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2551D9CBADB005631E5 /* LaunchScreen.storyboard */; };
+		BBABA15D1E71A10A00CAFC71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2531D9CBADB005631E5 /* Assets.xcassets */; };
+		BBABA15E1E71A10A00CAFC71 /* create_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 433A565A1E517E5400C10BD2 /* create_button.png */; };
+		BBABA15F1E71A10A00CAFC71 /* start_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F207D41E2E0A2D006FFC71 /* start_btn.png */; };
+		BBABA1601E71A10A00CAFC71 /* add_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962951DFFC5DC00D42093 /* add_button.png */; };
+		BBABA1611E71A10A00CAFC71 /* volume_max.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962A71DFFD82400D42093 /* volume_max.png */; };
+		BBABA1621E71A10A00CAFC71 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43D4E2501D9CBADB005631E5 /* Main.storyboard */; };
+		BBABA1631E71A10A00CAFC71 /* front_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F207D21E2E087C006FFC71 /* front_button.png */; };
+		BBABA1641E71A10A00CAFC71 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 438E5E0E1DAF570F00E9EE65 /* SVProgressHUD.bundle */; };
+		BBABA1651E71A10A00CAFC71 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 433EF6A81DFFACAC00989310 /* Settings.bundle */; };
+		BBABA1661E71A10A00CAFC71 /* back_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962971DFFC5E800D42093 /* back_button.png */; };
+		BBABA1671E71A10A00CAFC71 /* no_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 432348421DB0A775006B13FE /* no_image.png */; };
+		BBABA1681E71A10A00CAFC71 /* next_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 4389F8041E25BD6D00E60431 /* next_button.png */; };
+		BBABA1691E71A10A00CAFC71 /* play_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962A11DFFCBBE00D42093 /* play_button.png */; };
+		BBABA16A1E71A10A00CAFC71 /* stop_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B962A21DFFCBBE00D42093 /* stop_button.png */; };
+		BBABA16B1E71A10A00CAFC71 /* search_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 433A565C1E517F1A00C10BD2 /* search_button.png */; };
 		BBAEAF5C1E32E88F00D13D3E /* SongItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */; };
 		BBAEAF601E33158100D13D3E /* SongItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5F1E33158100D13D3E /* SongItem.swift */; };
 /* End PBXBuildFile section */
@@ -82,12 +114,21 @@
 		43F207D21E2E087C006FFC71 /* front_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = front_button.png; sourceTree = "<group>"; };
 		43F207D41E2E0A2D006FFC71 /* start_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = start_btn.png; sourceTree = "<group>"; };
 		BB6DE8D61DABB95600384CEF /* SharePlay2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SharePlay2-Bridging-Header.h"; sourceTree = "<group>"; };
+		BBABA16F1E71A10A00CAFC71 /* SharePlay-staging.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SharePlay-staging.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBABA1701E71A10A00CAFC71 /* SharePlay2 copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SharePlay2 copy-Info.plist"; path = "/Users/suguru/SharePlay10/SharePlay2 copy-Info.plist"; sourceTree = "<absolute>"; };
 		BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SongItemCell.swift; path = ../SongItemCell.swift; sourceTree = "<group>"; };
 		BBAEAF5F1E33158100D13D3E /* SongItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		43D4E2461D9CBADB005631E5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBABA1591E71A10A00CAFC71 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -120,6 +161,7 @@
 				43D4E24B1D9CBADB005631E5 /* SharePlay2 */,
 				438E5E081DAF570F00E9EE65 /* SVProgressHUD */,
 				43D4E24A1D9CBADB005631E5 /* Products */,
+				BBABA1701E71A10A00CAFC71 /* SharePlay2 copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -127,6 +169,7 @@
 			isa = PBXGroup;
 			children = (
 				43D4E2491D9CBADB005631E5 /* SharePlay2.app */,
+				BBABA16F1E71A10A00CAFC71 /* SharePlay-staging.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -189,6 +232,23 @@
 			productReference = 43D4E2491D9CBADB005631E5 /* SharePlay2.app */;
 			productType = "com.apple.product-type.application";
 		};
+		BBABA1481E71A10A00CAFC71 /* SharePlay-staging */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBABA16C1E71A10A00CAFC71 /* Build configuration list for PBXNativeTarget "SharePlay-staging" */;
+			buildPhases = (
+				BBABA1491E71A10A00CAFC71 /* Sources */,
+				BBABA1591E71A10A00CAFC71 /* Frameworks */,
+				BBABA15A1E71A10A00CAFC71 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SharePlay-staging";
+			productName = SharePlay2;
+			productReference = BBABA16F1E71A10A00CAFC71 /* SharePlay-staging.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -210,6 +270,9 @@
 							};
 						};
 					};
+					BBABA1481E71A10A00CAFC71 = {
+						DevelopmentTeam = 69LS254W7V;
+					};
 				};
 			};
 			buildConfigurationList = 43D4E2441D9CBADB005631E5 /* Build configuration list for PBXProject "SharePlay2" */;
@@ -226,6 +289,7 @@
 			projectRoot = "";
 			targets = (
 				43D4E2481D9CBADB005631E5 /* SharePlay2 */,
+				BBABA1481E71A10A00CAFC71 /* SharePlay-staging */,
 			);
 		};
 /* End PBXProject section */
@@ -255,6 +319,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BBABA15A1E71A10A00CAFC71 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBABA15B1E71A10A00CAFC71 /* volume_min.png in Resources */,
+				BBABA15C1E71A10A00CAFC71 /* LaunchScreen.storyboard in Resources */,
+				BBABA15D1E71A10A00CAFC71 /* Assets.xcassets in Resources */,
+				BBABA15E1E71A10A00CAFC71 /* create_button.png in Resources */,
+				BBABA15F1E71A10A00CAFC71 /* start_btn.png in Resources */,
+				BBABA1601E71A10A00CAFC71 /* add_button.png in Resources */,
+				BBABA1611E71A10A00CAFC71 /* volume_max.png in Resources */,
+				BBABA1621E71A10A00CAFC71 /* Main.storyboard in Resources */,
+				BBABA1631E71A10A00CAFC71 /* front_button.png in Resources */,
+				BBABA1641E71A10A00CAFC71 /* SVProgressHUD.bundle in Resources */,
+				BBABA1651E71A10A00CAFC71 /* Settings.bundle in Resources */,
+				BBABA1661E71A10A00CAFC71 /* back_button.png in Resources */,
+				BBABA1671E71A10A00CAFC71 /* no_image.png in Resources */,
+				BBABA1681E71A10A00CAFC71 /* next_button.png in Resources */,
+				BBABA1691E71A10A00CAFC71 /* play_button.png in Resources */,
+				BBABA16A1E71A10A00CAFC71 /* stop_button.png in Resources */,
+				BBABA16B1E71A10A00CAFC71 /* search_button.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -277,6 +365,28 @@
 				43224BF81DD2B7DE00E99D47 /* NetworkCommunicater.swift in Sources */,
 				4354A69A1DAE04F700D003D0 /* ExtAudioConverter.m in Sources */,
 				438E5E171DAF570F00E9EE65 /* SVRadialGradientLayer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBABA1491E71A10A00CAFC71 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBABA14A1E71A10A00CAFC71 /* SecondViewController.swift in Sources */,
+				BBABA14B1E71A10A00CAFC71 /* SongItemCell.swift in Sources */,
+				BBABA14C1E71A10A00CAFC71 /* AudioExporter.swift in Sources */,
+				BBABA14D1E71A10A00CAFC71 /* AlertControlller.swift in Sources */,
+				BBABA14E1E71A10A00CAFC71 /* SVIndefiniteAnimatedView.m in Sources */,
+				BBABA14F1E71A10A00CAFC71 /* FirstViewController.swift in Sources */,
+				BBABA1501E71A10A00CAFC71 /* playItemManager.swift in Sources */,
+				BBABA1511E71A10A00CAFC71 /* SVProgressAnimatedView.m in Sources */,
+				BBABA1521E71A10A00CAFC71 /* StreamingPlayer.m in Sources */,
+				BBABA1531E71A10A00CAFC71 /* SVProgressHUD.m in Sources */,
+				BBABA1541E71A10A00CAFC71 /* SongItem.swift in Sources */,
+				BBABA1551E71A10A00CAFC71 /* AppDelegate.swift in Sources */,
+				BBABA1561E71A10A00CAFC71 /* NetworkCommunicater.swift in Sources */,
+				BBABA1571E71A10A00CAFC71 /* ExtAudioConverter.m in Sources */,
+				BBABA1581E71A10A00CAFC71 /* SVRadialGradientLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,6 +548,49 @@
 			};
 			name = Release;
 		};
+		BBABA16D1E71A10A00CAFC71 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 69LS254W7V;
+				INFOPLIST_FILE = "SharePlay2 copy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "kurumecs.SharePlay2-sataging";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "SharePlay2/SharePlay2-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BBABA16E1E71A10A00CAFC71 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 69LS254W7V;
+				INFOPLIST_FILE = "SharePlay2 copy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "kurumecs.SharePlay2-sataging";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "SharePlay2/SharePlay2-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -455,6 +608,15 @@
 			buildConfigurations = (
 				43D4E25C1D9CBADB005631E5 /* Debug */,
 				43D4E25D1D9CBADB005631E5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBABA16C1E71A10A00CAFC71 /* Build configuration list for PBXNativeTarget "SharePlay-staging" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBABA16D1E71A10A00CAFC71 /* Debug */,
+				BBABA16E1E71A10A00CAFC71 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

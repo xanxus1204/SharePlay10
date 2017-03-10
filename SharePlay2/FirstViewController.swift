@@ -15,7 +15,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
     private var browser: MCNearbyServiceBrowser! //ピアーを探索するときに使うオブジェクト
     private var nearbyAd:MCNearbyServiceAdvertiser! //サービスを公開するときに使うオブジェクト
     var networkCom:NetworkCommunicater!
-    private let roomName:String = "shareplay-10e"
+    private let roomName:String = "shareplay-10f"
     
     private var isParent:Bool = false
     
