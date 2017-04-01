@@ -49,6 +49,10 @@
 		BB9E84791E8FA2160059D6CF /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 438E5E0E1DAF570F00E9EE65 /* SVProgressHUD.bundle */; };
 		BB9E847A1E8FA2160059D6CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB9E84601E8FA1D10059D6CF /* Assets.xcassets */; };
 		BB9E847B1E8FA2160059D6CF /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 433EF6A81DFFACAC00989310 /* Settings.bundle */; };
+		BB9E84821E8FD0600059D6CF /* KABAllAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9E84811E8FD0600059D6CF /* KABAllAudioPlayer.swift */; };
+		BB9E84831E8FD0600059D6CF /* KABAllAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9E84811E8FD0600059D6CF /* KABAllAudioPlayer.swift */; };
+		BB9E84851E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9E84841E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift */; };
+		BB9E84861E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9E84841E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift */; };
 		BBAEAF5C1E32E88F00D13D3E /* SongItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */; };
 		BBAEAF601E33158100D13D3E /* SongItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEAF5F1E33158100D13D3E /* SongItem.swift */; };
 /* End PBXBuildFile section */
@@ -86,6 +90,8 @@
 		BB9E84601E8FA1D10059D6CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = SharePlay2/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		BB9E847F1E8FA2160059D6CF /* SharePlay2 staging.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SharePlay2 staging.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9E84801E8FA2160059D6CF /* SharePlay2 copy2-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SharePlay2 copy2-Info.plist"; path = "/Users/suguru/SharePlay10/SharePlay2 copy2-Info.plist"; sourceTree = "<absolute>"; };
+		BB9E84811E8FD0600059D6CF /* KABAllAudioPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KABAllAudioPlayer.swift; sourceTree = "<group>"; };
+		BB9E84841E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KABAppleMusicPlayer.swift; sourceTree = "<group>"; };
 		BBABA1701E71A10A00CAFC71 /* SharePlay2 copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SharePlay2 copy-Info.plist"; path = "/Users/suguru/SharePlay10/SharePlay2 copy-Info.plist"; sourceTree = "<absolute>"; };
 		BBAEAF5B1E32E88F00D13D3E /* SongItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SongItemCell.swift; path = ../SongItemCell.swift; sourceTree = "<group>"; };
 		BBAEAF5F1E33158100D13D3E /* SongItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongItem.swift; sourceTree = "<group>"; };
@@ -163,9 +169,11 @@
 				BB9E845E1E8FA1380059D6CF /* AudioSessionManager.swift */,
 				433EF6A61DFF8E7200989310 /* AlertControlller.swift */,
 				43224BF71DD2B7DE00E99D47 /* NetworkCommunicater.swift */,
+				BB9E84811E8FD0600059D6CF /* KABAllAudioPlayer.swift */,
+				BB9E84841E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift */,
+				BB9E845C1E8F9DB70059D6CF /* KABLocalAudioPlayer.swift */,
 				43DC87A11DF53BCD000BF7EF /* playItemManager.swift */,
 				430D42FD1DA349F80090465A /* AudioExporter.swift */,
-				BB9E845C1E8F9DB70059D6CF /* KABLocalAudioPlayer.swift */,
 				4354A6951DAE04F700D003D0 /* ExtAudioConverter.h */,
 				4354A6961DAE04F700D003D0 /* ExtAudioConverter.m */,
 				4354A6971DAE04F700D003D0 /* StreamingPlayer.h */,
@@ -296,6 +304,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB9E84851E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift in Sources */,
 				43D4E25F1D9CF387005631E5 /* SecondViewController.swift in Sources */,
 				BBAEAF5C1E32E88F00D13D3E /* SongItemCell.swift in Sources */,
 				430D43041DA349F80090465A /* AudioExporter.swift in Sources */,
@@ -308,6 +317,7 @@
 				4354A69B1DAE04F700D003D0 /* StreamingPlayer.m in Sources */,
 				438E5E161DAF570F00E9EE65 /* SVProgressHUD.m in Sources */,
 				BBAEAF601E33158100D13D3E /* SongItem.swift in Sources */,
+				BB9E84821E8FD0600059D6CF /* KABAllAudioPlayer.swift in Sources */,
 				43D4E24D1D9CBADB005631E5 /* AppDelegate.swift in Sources */,
 				BB9E845D1E8F9DB70059D6CF /* KABLocalAudioPlayer.swift in Sources */,
 				43224BF81DD2B7DE00E99D47 /* NetworkCommunicater.swift in Sources */,
@@ -320,6 +330,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB9E84861E8FD0BD0059D6CF /* KABAppleMusicPlayer.swift in Sources */,
 				BB9E84641E8FA2160059D6CF /* SecondViewController.swift in Sources */,
 				BB9E84651E8FA2160059D6CF /* SongItemCell.swift in Sources */,
 				BB9E84661E8FA2160059D6CF /* AudioExporter.swift in Sources */,
@@ -332,6 +343,7 @@
 				BB9E846D1E8FA2160059D6CF /* StreamingPlayer.m in Sources */,
 				BB9E846E1E8FA2160059D6CF /* SVProgressHUD.m in Sources */,
 				BB9E846F1E8FA2160059D6CF /* SongItem.swift in Sources */,
+				BB9E84831E8FD0600059D6CF /* KABAllAudioPlayer.swift in Sources */,
 				BB9E84701E8FA2160059D6CF /* AppDelegate.swift in Sources */,
 				BB9E84711E8FA2160059D6CF /* KABLocalAudioPlayer.swift in Sources */,
 				BB9E84721E8FA2160059D6CF /* NetworkCommunicater.swift in Sources */,

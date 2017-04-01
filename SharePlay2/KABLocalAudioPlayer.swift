@@ -9,5 +9,13 @@
 import UIKit
 
 class KABLocalAudioPlayer: AVAudioPlayer {
-
+    var playlist:[URL?]!
+    var playingIndex:Int!
+    var numOfPlaylist:Int!
+    override init() {
+        super.init()
+        playlist = []
+        playingIndex = 0
+        numOfPlaylist = playlist.count
+    }
 }
