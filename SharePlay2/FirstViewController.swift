@@ -11,7 +11,7 @@ import MultipeerConnectivity
 
 class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDelegate,MCNearbyServiceBrowserDelegate,MCNearbyServiceAdvertiserDelegate{
     
-    var peerID:MCPeerID!
+    var peerID:MCPeerID!//これもできれば外で管理したい
     private var browser: MCNearbyServiceBrowser! //ピアーを探索するときに使うオブジェクト
     private var nearbyAd:MCNearbyServiceAdvertiser! //サービスを公開するときに使うオブジェクト
     var networkCom:NetworkCommunicater!

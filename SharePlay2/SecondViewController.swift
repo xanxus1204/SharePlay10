@@ -14,6 +14,8 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     var peerID:MCPeerID!
     
+    private var audiosessionManager:AudioSessionManager!
+    
     private var allplayingIndex:Int = 0
     
     private var player:AVAudioPlayer? = nil
@@ -80,18 +82,9 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     }
     func initialize(){
-        addAudioSessionObservers()
         songTitleTableView.delegate = self
-        let audiosession = AVAudioSession.sharedInstance()
-        do {
-            try audiosession.setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)//バックグラウンド再生を許可
-        } catch  {
-        }
-        // sessionのアクティブ化
-        do {
-            try audiosession.setActive(true)
-        } catch {
-        }
+        audiosessionManager = AudioSessionManager()
+        audiosessionManager.setSessionPlayandRecord()
         nc.addObserver(
             self,
             selector: #selector(SecondViewController.doBeforeTerminate),
@@ -288,16 +281,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             }
         }
         Thread.sleep(forTimeInterval:sleeptime - convertTime)
-        let audiosession = AVAudioSession.sharedInstance()
-        do {
-            try audiosession.setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)//バックグラウンド再生を許可
-        }catch{
-            // エラー処理
-        }
-        do {
-            try audiosession.setActive(true)
-        } catch {
-        }
+        audiosessionManager.setSessionPlayandRecord()
         do{
             player = try  AVAudioPlayer(contentsOf: self.playitemManager.playListUrl[allplayingIndex])
             player?.delegate = self
@@ -454,7 +438,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         let manager = FileManager()
         do {
             if streamPlayerUrl != nil{
-                try manager.removeItem(at: streamPlayerUrl as! URL)
+                try manager.removeItem(at: streamPlayerUrl! as URL)
             }
         } catch  {
             print("削除できず")
@@ -649,6 +633,11 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         
         for item in mediaItemCollection.items{
             if item.assetURL == nil{
+                if #available(iOS 10.3, *) {
+                    print(item.playbackStoreID)
+                } else {
+                    // Fallback on earlier versions
+                }
                 SVProgressHUD.showInfo(withStatus: "AppleMusicには対応していません")
                 mediaPicker.dismiss(animated: true, completion: nil)
                 networkCom.sendStrtoAll(str: "pickend")
@@ -812,33 +801,6 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             self.stoppauseBtn.setImage(image2, for: UIControlState.normal)
         }
         playingState = player.isPlaying
-        
-        
-       
-       
-    }
-    // MARK: AVAudiosession Interruption
-    func addAudioSessionObservers() {
-        let center = NotificationCenter.default
-        center.addObserver(self, selector: #selector(SecondViewController.handleInterruption(_:)), name: NSNotification.Name.AVAudioSessionInterruption, object: nil)
-    }
-    /// Interruption : 電話による割り込み
-    func handleInterruption(_ notification: Notification) {
-        
-        let interruptionTypeObj = (notification as NSNotification).userInfo![AVAudioSessionInterruptionTypeKey] as! NSNumber
-        if let interruptionType = AVAudioSessionInterruptionType(rawValue:
-            interruptionTypeObj.uintValue) {
-            
-            switch interruptionType {
-            case .began:
-                print("Interruption Begin")
-               
-                                break
-            case .ended:
-                break
-                
-            }
-        }
         
     }
     
