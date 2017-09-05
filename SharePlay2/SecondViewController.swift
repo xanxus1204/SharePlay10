@@ -454,7 +454,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         let manager = FileManager()
         do {
             if streamPlayerUrl != nil{
-                try manager.removeItem(at: streamPlayerUrl as! URL)
+                try manager.removeItem(at: streamPlayerUrl! as URL)
             }
         } catch  {
             print("削除できず")
