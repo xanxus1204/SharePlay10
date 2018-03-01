@@ -131,7 +131,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         if player != nil{
             let leftTime:TimeInterval = durationOfSong - (player?.currentTime)!
             if leftTime < 7.0 && doOnceFlag{
-                print("いまだ！\(leftTime)")
+                
                 sleeptime = leftTime
                 SVProgressHUD.show(withStatus: "準備中...")
                 let strtime = String(Int(sleeptime * 100))
@@ -277,7 +277,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
 }
     func doWhenConvertCompleted(){
          convertTime = CFAbsoluteTimeGetCurrent() - convertBgnTime
-        print("こんだけかかった\(convertTime)")
+        
         DispatchQueue.main.async {
             self.networkCom.sendStrtoAll(str: "stop")
 
@@ -306,13 +306,13 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             doOnceFlag = true
             player?.volume = self.volumeSlider.value
         }catch{
-            print("あんまりだあ")
+            
         }
         // sessionのアクティブ化
         self.changeVolume(value: self.volumeSlider.value)
        
         if autoStart == true{
-            print("自動で次にいくよ\(self.allplayingIndex)")
+            
             networkCom.sendStrtoAll(str: "play")
             Thread.sleep(forTimeInterval: 0.03)
             player?.play()
@@ -384,7 +384,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
             
             
         }else if str == "Imhere"{
-            print("ので")
+            
             SVProgressHUD.dismiss()
         }else{
             
@@ -457,7 +457,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                 try manager.removeItem(at: streamPlayerUrl! as URL)
             }
         } catch  {
-            print("削除できず")
+            
         }
     }
     func skipAudio(toIndex index:Int){
@@ -500,18 +500,18 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
         if  player != nil && myturn{
             player?.play()
             result = (player?.isPlaying)!
-            print("play自分")
+            
         }else{
             if changePlayer{
                 if streamingPlayer != nil{
                     result = streamingPlayer.play()
-                    print("play普通")
+                    
                 }
 
             }else{
                 if streamingPlayer46 != nil{
                     result = streamingPlayer46.play()
-                    print("play46")
+                    
                 }
 
             }
@@ -752,10 +752,10 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     }
     func checkListOfSong(num:Int) -> Bool{
         if num < songItems.count{
-            print("まだあるよ\(num)")
+            
                 return true
         }else{
-            print("もうないよ\(num)")
+            
             return false
         }
     }
@@ -776,7 +776,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                     myturn = true
                     playandStreamingSong()
                     
-                    print("またわたしかよ")
+                    
                 }else{// 次の順番のやつに対して送る
                     var thereisPeer:Bool = false
                     for  peer in networkCom.peerStates {
@@ -785,7 +785,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
                         }
                     }
                     if thereisPeer{
-                        print("つぎはお前だ!")
+                        
                         networkCom.sendStrtoOne(str: "yourturn", peer: peerofYou)
                     }else{
                         sendOrderWhenendOfPlay()
@@ -805,7 +805,7 @@ class SecondViewController: UIViewController,MPMediaPickerControllerDelegate,AVA
     
     // MARK: AVAudioplayerDelegate
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
-        print("終わり")
+        
         SVProgressHUD.dismiss()
         let image2 = UIImage(named: "play_button.png")
         DispatchQueue.main.async {

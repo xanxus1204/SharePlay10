@@ -159,7 +159,7 @@ class FirstViewController: UIViewController,UITableViewDataSource,UITableViewDel
 
         }else{
             cell.textLabel?.text = nil
-            print("nilを返している")
+    
         }
         return cell
 
